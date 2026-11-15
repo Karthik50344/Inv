@@ -1,4 +1,10 @@
 import 'package:get_it/get_it.dart';
+import 'package:inventrix/features/dashboard/domain/usecases/get_dashboard.dart';
+import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_bloc.dart';
+import 'package:inventrix/features/reports/domain/services/report_filter_options.dart';
+import 'package:inventrix/features/reports/domain/usecases/build_report.dart';
+import 'package:inventrix/features/reports/domain/usecases/export_report.dart';
+import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
 import 'package:inventrix/core/services/clock.dart';
 import 'package:inventrix/core/services/id_generator.dart';
 import 'package:inventrix/features/categories/domain/repositories/category_repository.dart';
@@ -328,12 +334,8 @@ void registerBlocs(GetIt g) {
         clock: g<Clock>(),
       ),
     )
-    ..registerFactory(
-      () => OutstandingCubit(getBalance: g<GetPartyBalance>()),
-    )
-    ..registerFactory(
-      () => PartyBalanceCubit(getBalance: g<GetPartyBalance>()),
-    )
+    ..registerFactory(() => OutstandingCubit(getBalance: g<GetPartyBalance>()))
+    ..registerFactory(() => PartyBalanceCubit(getBalance: g<GetPartyBalance>()))
     ..registerFactory(
       () => InvoiceSettlementCubit(openInvoices: g<GetOpenInvoices>()),
     )
@@ -385,6 +387,17 @@ void registerBlocs(GetIt g) {
       () => ExpenseReportCubit(
         expenses: g<ExpenseRepository>(),
         categories: g<ExpenseCategoryRepository>(),
+        clock: g<Clock>(),
+      ),
+    )
+    ..registerFactory(
+      () => DashboardBloc(getDashboard: g<GetDashboard>(), clock: g<Clock>()),
+    )
+    ..registerFactory(
+      () => ReportBloc(
+        buildReport: g<BuildReport>(),
+        exportReport: g<ExportReportCsv>(),
+        options: g<ReportFilterOptions>(),
         clock: g<Clock>(),
       ),
     );

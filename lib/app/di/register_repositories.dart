@@ -9,6 +9,10 @@ import 'package:inventrix/features/customers/domain/repositories/customer_reposi
 import 'package:inventrix/features/inventory/data/repositories/drift_inventory_repository.dart';
 import 'package:inventrix/features/inventory/domain/repositories/inventory_repository.dart';
 import 'package:inventrix/features/expenses/data/repositories/drift_expense_category_repository.dart';
+import 'package:inventrix/features/reports/data/repositories/drift_report_repository.dart';
+import 'package:inventrix/features/reports/data/repositories/share_plus_report_exporter.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_exporter.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_repository.dart';
 import 'package:inventrix/features/expenses/data/repositories/drift_expense_repository.dart';
 import 'package:inventrix/features/expenses/data/repositories/file_attachment_storage.dart';
 import 'package:inventrix/features/expenses/domain/repositories/attachment_storage.dart';
@@ -143,10 +147,15 @@ void registerRepositories(GetIt locator) {
         clock: locator<Clock>(),
       ),
     )
-    ..registerLazySingleton<InvoicePdfRenderer>(PdfInvoiceRenderer.new)
-    ..registerLazySingleton<InvoiceFileSharer>(
-      SharePlusInvoiceFileSharer.new,
+    ..registerLazySingleton<ReportRepository>(
+      () => DriftReportRepository(
+        locator<AppDatabase>(),
+        locator<SettingsRepository>(),
+      ),
     )
+    ..registerLazySingleton<ReportExporter>(SharePlusReportExporter.new)
+    ..registerLazySingleton<InvoicePdfRenderer>(PdfInvoiceRenderer.new)
+    ..registerLazySingleton<InvoiceFileSharer>(SharePlusInvoiceFileSharer.new)
     ..registerLazySingleton<ImageStorage>(
       () => FileImageStorage(
         ids: locator<IdGenerator>(),

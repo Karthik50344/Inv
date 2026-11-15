@@ -1,7 +1,10 @@
 import 'fakes.dart';
 import 'inventory_fakes.dart';
+
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_exporter.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_repository.dart';
 import 'package:inventrix/app/di/register_blocs.dart';
 import 'package:inventrix/app/di/register_usecases.dart';
 import 'package:inventrix/app/router/app_router.dart';
@@ -32,10 +35,12 @@ import 'package:inventrix/shared/domain/audit/audit_log_repository.dart';
 import 'package:inventrix/shared/domain/services/document_sequence_repository.dart';
 import 'package:inventrix/shared/domain/services/invoice_payment_guard.dart';
 import 'package:inventrix/shared/domain/services/invoice_return_lookup.dart';
+
 import 'expense_fakes.dart';
 import 'payment_fakes.dart';
 import 'purchase_fakes.dart';
 import 'return_fakes.dart';
+import 'report_fakes.dart';
 import 'sales_fakes.dart';
 
 /// A locator wired with in-memory fake repositories and the real use cases
@@ -80,6 +85,8 @@ class TestWiring {
       ..registerSingleton<ExpenseRepository>(expenseRepository)
       ..registerSingleton<ExpenseCategoryRepository>(expenseCategories)
       ..registerSingleton<AttachmentStorage>(attachmentStorage)
+      ..registerSingleton<ReportRepository>(reports)
+      ..registerSingleton<ReportExporter>(reportExporter)
       ..registerSingleton<ReturnRepository>(returns)
       ..registerSingleton<InvoiceReturnLookup>(returns)
       ..registerSingleton<InvoiceReturnGuard>(returns)
@@ -107,6 +114,8 @@ class TestWiring {
   final FakeInvoiceFileSharer fileSharer = FakeInvoiceFileSharer();
   final FakePaymentRepository payments = FakePaymentRepository();
   final FakeReturnRepository returns = FakeReturnRepository();
+  final FakeReportRepository reports = FakeReportRepository();
+  final FakeReportExporter reportExporter = FakeReportExporter();
   final FakeExpenseRepository expenseRepository = FakeExpenseRepository();
   final FakeExpenseCategoryRepository expenseCategories =
       FakeExpenseCategoryRepository();

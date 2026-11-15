@@ -53,6 +53,9 @@ dependencies:
   # the latest compatible ones.
   pdf: ">=3.11.0 <5.0.0"
   share_plus: ">=11.0.0 <20.0.0"
+  # Dashboard and report charts (Phase 9). Wide range for the same reason:
+  # pub.dev could not be reached; `flutter pub get` picks a compatible one.
+  fl_chart: ">=0.69.0 <3.0.0"
 
 dev_dependencies:
   flutter_test:

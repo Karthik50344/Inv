@@ -18,7 +18,14 @@ import 'package:inventrix/features/customers/presentation/bloc/customer_form_cub
 import 'package:inventrix/features/customers/presentation/pages/customer_detail_page.dart';
 import 'package:inventrix/features/customers/presentation/pages/customer_form_page.dart';
 import 'package:inventrix/features/customers/presentation/pages/customers_page.dart';
+import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_bloc.dart';
+import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_event.dart';
 import 'package:inventrix/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:inventrix/features/reports/domain/entities/report_kind.dart';
+import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
+import 'package:inventrix/features/reports/presentation/bloc/report_event.dart';
+import 'package:inventrix/features/reports/presentation/pages/report_page.dart';
+import 'package:inventrix/features/reports/presentation/pages/reports_page.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_filter.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_status.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/inventory_bloc.dart';
@@ -99,6 +106,7 @@ abstract final class AppRouter {
     RouteNames.payments,
     RouteNames.returns,
     RouteNames.expenses,
+    RouteNames.reports,
   };
 
   /// Creates a router. There is no login: the dashboard opens directly.
@@ -128,7 +136,11 @@ abstract final class AppRouter {
                 GoRoute(
                   path: RoutePaths.dashboard,
                   name: RouteNames.dashboard,
-                  builder: (context, state) => const DashboardPage(),
+                  builder: (context, state) => BlocProvider(
+                    create: (_) =>
+                        di<DashboardBloc>()..add(const DashboardStarted()),
+                    child: const DashboardPage(),
+                  ),
                 ),
               ],
             ),
@@ -454,6 +466,32 @@ abstract final class AppRouter {
                       ],
                     ),
                     GoRoute(
+                      path: 'reports',
+                      name: RouteNames.reports,
+                      builder: (context, state) => const ReportsPage(),
+                      routes: [
+                        GoRoute(
+                          path: ':kind',
+                          name: RouteNames.reportView,
+                          builder: (context, state) {
+                            final kind = ReportKind.fromSlug(
+                              state.pathParameters['kind']!,
+                            );
+                            if (kind == null) {
+                              return NotFoundPage(
+                                location: state.uri.toString(),
+                              );
+                            }
+                            return BlocProvider(
+                              create: (_) =>
+                                  di<ReportBloc>()..add(ReportStarted(kind)),
+                              child: ReportPage(kind: kind),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    GoRoute(
                       path: 'expenses',
                       name: RouteNames.expenses,
                       builder: (context, state) => BlocProvider(
@@ -500,8 +538,9 @@ abstract final class AppRouter {
                               path: 'edit',
                               name: RouteNames.expenseEdit,
                               builder: (context, state) => BlocProvider(
-                                create: (_) => di<ExpenseFormCubit>()
-                                  ..load(expenseId: id(state)),
+                                create: (_) =>
+                                    di<ExpenseFormCubit>()
+                                      ..load(expenseId: id(state)),
                                 child: ExpenseFormPage(expenseId: id(state)),
                               ),
                             ),
@@ -545,7 +584,8 @@ abstract final class AppRouter {
                                 : InvoiceKind.sales;
                             return BlocProvider(
                               create: (_) =>
-                                  di<ReturnDetailCubit>()..load(kind, id(state)),
+                                  di<ReturnDetailCubit>()
+                                    ..load(kind, id(state)),
                               child: ReturnDetailPage(
                                 kind: kind,
                                 returnId: id(state),

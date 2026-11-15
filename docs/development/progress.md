@@ -306,3 +306,52 @@ Expense categories (create, rename, archive/restore, search; 8 seeded defaults),
 ### Next
 Run the commands above on Phases 1-8 and send me the output so I can fix whatever breaks before Phase 9 (Dashboard and Reports).
 
+
+
+## Phase 9 — Dashboard and Reports
+
+> Built on request while Phases 1-8 still await their first real `flutter test` run. Phase 9 therefore rests on code that has not been compiled against Flutter/Drift.
+
+### Scope delivered
+Dashboard (period figures, stock and balance alerts, sales-vs-purchases chart, recent documents, period chips incl. custom range, pull to refresh) replacing the placeholder, and eleven reports (sales, purchases, inventory, stock movements, low stock, product performance, customer outstanding, supplier outstanding, payments, expenses, profitability) with period, customer/supplier/product filters, `fl_chart` bar charts and CSV export. Assumptions for gross profit, expenses and cash are documented in `docs/workflows/reports.md` and printed on the reports. No schema change.
+
+### Files
+- Shared: `shared/domain/value_objects/date_range.dart` (`DateRange`).
+- Domain `features/reports/domain/**`: `ReportKind`, `ReportPeriod`, `ReportFilter`, `ReportDocument` model (typed cells, metrics, tables, charts), figure types, `ReportRepository`, `ReportExporter`, `ProfitFigures`, `TimeBuckets`, `ReportCsv`, document builders (register, stock, finance), `ReportFilterOptions`, use cases `BuildReport`, `GetProfitFigures`, `ExportReportCsv`. `features/dashboard/domain/**`: `DashboardSnapshot`, `GetDashboard`.
+- Data: `DriftReportRepository`, `report_queries.dart` (22 SQL constants), `SharePlusReportExporter`.
+- Presentation: `DashboardBloc`, `ReportBloc` (+ events); `DashboardPage`, `ReportsPage`, `ReportPage`; `ReportView`, `TrendBarChart`, `PeriodChips`, `ReportFormatters`.
+- Modified: `app_router.dart` (dashboard gets its bloc; `/more/reports` and `/more/reports/:kind`, Reports no longer a placeholder), `route_names.dart`, DI (`register_repositories/usecases/blocs`), `pubspec.yaml` (+`fl_chart`, wide unverified range), `test_locator.dart`, `injection_test.dart`.
+- Tests added: `report_domain_test` (28), `report_use_cases_test` (20), `report_blocs_test` (16), `report_pages_test` (6 widget tests, not executed), `test/support/report_fakes.dart`.
+
+### Verified in the authoring sandbox (Dart 3.14.0, no Flutter SDK, no pub.dev; stand-in packages for equatable/bloc/flutter_test)
+- **64 new tests executed, 0 failed** (domain maths, period/bucket edge cases, CSV rules, builders, use cases, BLoCs). Six mutations (returns not subtracted, expenses not deducted, formula-injection guard removed, bucket matching removed, expenses at gross instead of net, credit balances counted as receivable) were each caught.
+- **All 22 report SQL queries were executed against real SQLite** (python `sqlite3`, tables with the same column names as the Drift definitions) with a fixture covering voided/draft/out-of-range/other-currency documents, reversed payments, restocked and unrestocked returns, customer/supplier/product filters and the ledger date boundary; every expected figure matched.
+- `tool/check_imports.dart`: dependency rules OK. Strict `dart analyze` (strict-casts, strict-raw-types) clean on the reports/dashboard domain and BLoCs, `DateRange`, and the new runnable tests and fakes. All new files pass `dart format`.
+- Regression run of every test file that can run without Flutter/Drift: 646 tests passed. 12 failures sit in five older files (`customer_bloc`, `supplier_bloc`, `inventory_cubits`, `product_bloc`, one `expense_use_cases` test); the messages point at my minimal stand-in packages (listener closing a synchronous broadcast stream, `Iterable` vs `List` equality), not at project code. Treat them as unverified until the real run.
+
+### NOT verified (needs Flutter SDK + pub.dev)
+- Everything that imports Drift or Flutter: `DriftReportRepository` (variable binding, `QueryRow.read`), `SharePlusReportExporter`, all pages and widgets, router and DI edits, `report_pages_test`, the `injection_test` additions.
+- **`fl_chart` code was written from memory of its API** (`BarChart`, `BarTouchTooltipData`, `FlTitlesData`) and `pubspec.yaml` has a wide version range; a major release may need small edits.
+- Regenerate `app_database.g.dart` as for earlier phases (no schema change in Phase 9).
+- The older phases remain unrun, so none of this can be marked complete.
+
+### Known issues / decisions to review
+- Operating result uses expenses **excluding tax** (tax assumed recoverable); the alternative is the amount paid.
+- CSV only; PDF export not implemented.
+- Tables read at most 1000 rows; the screen draws at most 100.
+- Stock movement days are UTC days.
+- Dashboard does not auto-refresh when data changes on another tab.
+- Outstanding reports loop over parties (N+1 queries).
+- The Phase 8 `ExpensePeriod` and the new `ReportPeriod` are near duplicates (cleanup candidate).
+- Running `dart format .` with the sandbox's Dart 3.14 touches many older files; only files edited for this phase were left formatted.
+
+### Acceptance criteria (Phase 9)
+- Dashboard reflects database data, report totals reconcile, report calculations tested: **domain level and SQL verified by executed tests**; date filtering **verified in SQL and BLoC tests**; charts show correct values: **bucket sums verified, rendering unverified**; empty states: **BLoC verified, widgets unverified**.
+- Phase 9 is **not** marked complete until the real `flutter test` run passes.
+
+### Next
+Run `flutter pub get`, `dart run build_runner build --delete-conflicting-outputs`, `dart format .`, `flutter analyze`, `flutter test` and send me the output; fixing Phases 1-9 together is the best next step before Phase 10 (Backup and Restore).
+
+
+### Phase 9 follow-up: richer dashboard
+Added a line chart (running net sales), two donuts (expenses by category, stock health), ranked bars (where the money went, top products, cash and balances) and four tiles (gross margin, average sale, returns, tax collected). New data: `DashboardSnapshot.topProducts`, `trendChart`, `averageSale`, `taxCollected`, `healthyStockCount`; `TimeBuckets.cumulative`. Executed tests: 29 + 22 + 16 pass (report domain, use cases, BLoCs). The new chart widgets (`dashboard_charts.dart`, `fl_chart` LineChart/PieChart) and the dashboard layout are **not compiled or run**; "healthy" stock is products with stock minus low-stock ones, so archived products holding stock can slightly inflate it.

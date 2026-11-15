@@ -1,5 +1,13 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:inventrix/features/dashboard/domain/usecases/get_dashboard.dart';
+import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_bloc.dart';
+import 'package:inventrix/features/reports/data/repositories/drift_report_repository.dart';
+import 'package:inventrix/features/reports/data/repositories/share_plus_report_exporter.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_exporter.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_repository.dart';
+import 'package:inventrix/features/reports/domain/usecases/build_report.dart';
+import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
 import 'package:inventrix/features/expenses/data/repositories/drift_expense_repository.dart';
 import 'package:inventrix/features/expenses/domain/repositories/attachment_storage.dart';
 import 'package:inventrix/features/expenses/domain/repositories/expense_repository.dart';
@@ -105,6 +113,14 @@ void main() {
     await locator<ExpenseDetailCubit>().close();
     await locator<ExpenseCategoriesCubit>().close();
     await locator<ExpenseReportCubit>().close();
+    expect(locator<ReportRepository>(), isA<DriftReportRepository>());
+    expect(locator<ReportExporter>(), isA<SharePlusReportExporter>());
+    expect(locator<BuildReport>(), isA<BuildReport>());
+    expect(locator<GetDashboard>(), isA<GetDashboard>());
+    final dashboardBloc = locator<DashboardBloc>();
+    expect(dashboardBloc, isA<DashboardBloc>());
+    await dashboardBloc.close();
+    await locator<ReportBloc>().close();
     await a.close();
     await b.close();
   });

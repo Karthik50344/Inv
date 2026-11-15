@@ -12,6 +12,7 @@ abstract final class RouteNames {
   static const String returns = 'returns';
   static const String expenses = 'expenses';
   static const String reports = 'reports';
+  static const String reportView = 'reportView';
   static const String backup = 'backup';
   static const String settings = 'settings';
   static const String lowStock = 'lowStock';
@@ -49,6 +50,7 @@ abstract final class RouteNames {
 
   /// New return form.
   static const String returnNew = 'returnNew';
+
   /// Return detail.
   static const String returnDetail = 'returnDetail';
 }
