@@ -1,0 +1,15 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-raw-types: true
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - drift_schemas/**
+
+linter:
+  rules:
+    # Doc comments are written where they add value, not on every member.
+    public_member_api_docs: false
