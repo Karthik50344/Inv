@@ -36,6 +36,7 @@ part 'app_database.g.dart';
     ExpenseCategories,
     Expenses,
     Attachments,
+    BackupHistory,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -44,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Current schema version. Increment with every schema change and add a
   /// migration step plus a migration test.
-  static const int currentSchemaVersion = 8;
+  static const int currentSchemaVersion = 9;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -62,6 +63,7 @@ class AppDatabase extends _$AppDatabase {
         ...kSchemaExtraStatementsV6,
         ...kSchemaExtraStatementsV7,
         ...kSchemaExtraStatementsV8,
+        ...kSchemaExtraStatementsV9,
       ]) {
         await customStatement(statement);
       }
@@ -127,6 +129,12 @@ class AppDatabase extends _$AppDatabase {
           await customStatement(statement);
         }
         await _seedExpenseCategories();
+      }
+      if (from < 9) {
+        await migrator.createTable(backupHistory);
+        for (final statement in kSchemaExtraStatementsV9) {
+          await customStatement(statement);
+        }
       }
     },
     beforeOpen: (details) async {

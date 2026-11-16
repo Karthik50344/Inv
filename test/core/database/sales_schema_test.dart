@@ -108,9 +108,7 @@ void main() {
 
     test('the customer must exist', () async {
       expect(
-        await failureOf(
-          () => insertSalesInvoice(db, 'i1', customerId: 'nope'),
-        ),
+        await failureOf(() => insertSalesInvoice(db, 'i1', customerId: 'nope')),
         isA<ValidationFailure>(),
       );
     });
@@ -210,9 +208,8 @@ void main() {
       );
       expect(
         await failureOf(
-          () => db.customStatement(
-            "UPDATE sales_invoices SET status = 'draft'",
-          ),
+          () =>
+              db.customStatement("UPDATE sales_invoices SET status = 'draft'"),
         ),
         isA<DatabaseFailure>(),
       );
@@ -221,9 +218,7 @@ void main() {
 
     test('invoices cannot be deleted', () async {
       expect(
-        await failureOf(
-          () => db.customStatement('DELETE FROM sales_invoices'),
-        ),
+        await failureOf(() => db.customStatement('DELETE FROM sales_invoices')),
         isA<DatabaseFailure>(),
       );
     });
@@ -245,9 +240,8 @@ void main() {
     test('voiding needs a reason and a time', () async {
       expect(
         await failureOf(
-          () => db.customStatement(
-            "UPDATE sales_invoices SET status = 'voided'",
-          ),
+          () =>
+              db.customStatement("UPDATE sales_invoices SET status = 'voided'"),
         ),
         isA<ValidationFailure>(),
       );
@@ -269,9 +263,8 @@ void main() {
       );
       expect(
         await failureOf(
-          () => db.customStatement(
-            "UPDATE sales_invoices SET status = 'draft'",
-          ),
+          () =>
+              db.customStatement("UPDATE sales_invoices SET status = 'draft'"),
         ),
         isA<DatabaseFailure>(),
       );

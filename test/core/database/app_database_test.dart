@@ -16,9 +16,9 @@ void main() {
   tearDown(() async => db.close());
 
   group('initialization', () {
-    test('uses schema version 8', () {
-      expect(db.schemaVersion, 8);
-      expect(AppDatabase.currentSchemaVersion, 8);
+    test('uses schema version 9', () {
+      expect(db.schemaVersion, 9);
+      expect(AppDatabase.currentSchemaVersion, 9);
     });
 
     test('enables foreign key enforcement', () async {

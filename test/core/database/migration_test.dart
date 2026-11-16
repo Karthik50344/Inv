@@ -307,114 +307,112 @@ void main() {
     },
   );
 
-  test(
-    'upgrading 5 -> 6 adds payments, keeps data, seeds methods and enforces '
-    'append-only rows',
-    () async {
-      var db = AppDatabase(NativeDatabase(file));
-      await db.initialize();
-      await insertCustomer(db, 'c1');
-      await insertSalesInvoice(
-        db,
-        'i1',
-        status: 'posted',
-        number: 'INV-000001',
-        postedAt: 2,
-        totalMinor: 1000,
-        netMinor: 1000,
-        taxMinor: 0,
-      );
-      for (final table in [
-        'payment_allocations',
-        'payment_reversals',
-        'payments',
-        'payment_methods',
-      ]) {
-        await db.customStatement('DROP TABLE $table');
-      }
-      await db.customStatement('PRAGMA user_version = 5');
-      await db.close();
+  test('upgrading 5 -> 6 adds payments, keeps data, seeds methods and enforces '
+      'append-only rows', () async {
+    var db = AppDatabase(NativeDatabase(file));
+    await db.initialize();
+    await insertCustomer(db, 'c1');
+    await insertSalesInvoice(
+      db,
+      'i1',
+      status: 'posted',
+      number: 'INV-000001',
+      postedAt: 2,
+      totalMinor: 1000,
+      netMinor: 1000,
+      taxMinor: 0,
+    );
+    for (final table in [
+      'payment_allocations',
+      'payment_reversals',
+      'payments',
+      'payment_methods',
+    ]) {
+      await db.customStatement('DROP TABLE $table');
+    }
+    await db.customStatement('PRAGMA user_version = 5');
+    await db.close();
 
-      db = AppDatabase(NativeDatabase(file));
-      await db.initialize();
-      expect(await count(db, 'sales_invoices'), 1);
-      expect(await count(db, 'payment_methods'), 4);
-      await db.customStatement(
-        'INSERT INTO payments (id, number, kind, party_type, customer_id, '
-        'party_name, method_id, method_name, payment_date, amount_minor, '
-        'currency_code, decimal_places, idempotency_key, created_at) VALUES '
-        "('p1', 'PAY-000001', 'payment', 'customer', 'c1', 'Acme', 'pm-cash', "
-        "'Cash', 1, 500, 'INR', 2, 'k1', 1)",
-      );
-      final edit = await failureOf(
-        () => db.customStatement('UPDATE payments SET amount_minor = 1'),
-      );
-      expect(edit, isA<DatabaseFailure>());
-      expect(await db.integrityCheck(), ['ok']);
-      await db.close();
-    },
-  );
+    db = AppDatabase(NativeDatabase(file));
+    await db.initialize();
+    expect(await count(db, 'sales_invoices'), 1);
+    expect(await count(db, 'payment_methods'), 4);
+    await db.customStatement(
+      'INSERT INTO payments (id, number, kind, party_type, customer_id, '
+      'party_name, method_id, method_name, payment_date, amount_minor, '
+      'currency_code, decimal_places, idempotency_key, created_at) VALUES '
+      "('p1', 'PAY-000001', 'payment', 'customer', 'c1', 'Acme', 'pm-cash', "
+      "'Cash', 1, 500, 'INR', 2, 'k1', 1)",
+    );
+    final edit = await failureOf(
+      () => db.customStatement('UPDATE payments SET amount_minor = 1'),
+    );
+    expect(edit, isA<DatabaseFailure>());
+    expect(await db.integrityCheck(), ['ok']);
+    await db.close();
+  });
 
-  test(
-    'upgrading 6 -> 7 adds the return tables and their guards',
-    () async {
-      var db = AppDatabase(NativeDatabase(file));
-      await db.initialize();
-      await insertUnit(db, 'u1');
-      await insertProduct(db, 'p1');
-      for (final table in ['attachments', 'expenses', 'expense_categories']) {
-        await db.customStatement('DROP TABLE $table');
-      }
-      for (final table in [
-        'purchase_return_items',
-        'purchase_returns',
-        'sales_return_items',
+  test('upgrading 6 -> 7 adds the return tables and their guards', () async {
+    var db = AppDatabase(NativeDatabase(file));
+    await db.initialize();
+    await insertUnit(db, 'u1');
+    await insertProduct(db, 'p1');
+    for (final table in ['attachments', 'expenses', 'expense_categories']) {
+      await db.customStatement('DROP TABLE $table');
+    }
+    for (final table in [
+      'purchase_return_items',
+      'purchase_returns',
+      'sales_return_items',
+      'sales_returns',
+    ]) {
+      await db.customStatement('DROP TABLE $table');
+    }
+    await db.customStatement('PRAGMA user_version = 6');
+    await db.close();
+
+    db = AppDatabase(NativeDatabase(file));
+    await db.initialize();
+    final tables =
+        (await db
+                .customSelect(
+                  "SELECT name FROM sqlite_master WHERE type = 'table'",
+                )
+                .get())
+            .map((r) => r.read<String>('name'))
+            .toSet();
+    expect(
+      tables,
+      containsAll(<String>[
         'sales_returns',
-      ]) {
-        await db.customStatement('DROP TABLE $table');
-      }
-      await db.customStatement('PRAGMA user_version = 6');
-      await db.close();
-
-      db = AppDatabase(NativeDatabase(file));
-      await db.initialize();
-      final tables = (await db
-              .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
-      expect(
-        tables,
-        containsAll(<String>[
-          'sales_returns',
-          'sales_return_items',
-          'purchase_returns',
-          'purchase_return_items',
-        ]),
-      );
-      final objects = (await db
-              .customSelect(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('index', 'trigger')",
-              )
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
-      expect(
-        objects,
-        containsAll(<String>[
-          'uq_sales_returns_number',
-          'uq_purchase_returns_idempotency',
-          'trg_sales_return_items_not_more_than_sold',
-          'trg_purchase_returns_posted_invoice',
-          'trg_sales_invoices_void_after_returns',
-        ]),
-      );
-      expect(await count(db, 'products'), 1);
-      expect(await db.integrityCheck(), ['ok']);
-      await db.close();
-    },
-  );
+        'sales_return_items',
+        'purchase_returns',
+        'purchase_return_items',
+      ]),
+    );
+    final objects =
+        (await db
+                .customSelect(
+                  "SELECT name FROM sqlite_master "
+                  "WHERE type IN ('index', 'trigger')",
+                )
+                .get())
+            .map((r) => r.read<String>('name'))
+            .toSet();
+    expect(
+      objects,
+      containsAll(<String>[
+        'uq_sales_returns_number',
+        'uq_purchase_returns_idempotency',
+        'trg_sales_return_items_not_more_than_sold',
+        'trg_purchase_returns_posted_invoice',
+        'trg_sales_invoices_void_after_returns',
+      ]),
+    );
+    expect(await count(db, 'products'), 1);
+    expect(await db.integrityCheck(), ['ok']);
+    await db.close();
+  });
 
   test(
     'upgrading 7 -> 8 adds expenses, attachments and seeded categories',
@@ -431,23 +429,27 @@ void main() {
 
       db = AppDatabase(NativeDatabase(file));
       await db.initialize();
-      final tables = (await db
-              .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
+      final tables =
+          (await db
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'))
+              .toSet();
       expect(
         tables,
         containsAll(<String>['expense_categories', 'expenses', 'attachments']),
       );
-      final objects = (await db
-              .customSelect(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('index', 'trigger')",
-              )
-              .get())
-          .map((r) => r.read<String>('name'))
-          .toSet();
+      final objects =
+          (await db
+                  .customSelect(
+                    "SELECT name FROM sqlite_master "
+                    "WHERE type IN ('index', 'trigger')",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'))
+              .toSet();
       expect(
         objects,
         containsAll(<String>[
@@ -464,6 +466,32 @@ void main() {
       await db.close();
     },
   );
+
+  test('upgrading 8 -> 9 adds the backup history table', () async {
+    var db = AppDatabase(NativeDatabase(file));
+    await db.initialize();
+    await insertUnit(db, 'u1');
+    await insertProduct(db, 'p1');
+    await db.customStatement('DROP TABLE backup_history');
+    await db.customStatement('PRAGMA user_version = 8');
+    await db.close();
+
+    db = AppDatabase(NativeDatabase(file));
+    await db.initialize();
+    final objects =
+        (await db
+                .customSelect(
+                  "SELECT name FROM sqlite_master "
+                  "WHERE name IN ('backup_history', 'idx_backup_history_created')",
+                )
+                .get())
+            .map((r) => r.read<String>('name'))
+            .toSet();
+    expect(objects, {'backup_history', 'idx_backup_history_created'});
+    expect(await count(db, 'products'), 1);
+    expect(await db.integrityCheck(), ['ok']);
+    await db.close();
+  });
 
   test('uses the specified database file name', () async {
     final db = AppDatabase(NativeDatabase(file));

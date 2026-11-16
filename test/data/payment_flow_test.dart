@@ -1,6 +1,7 @@
 import '../core/database/database_test_helpers.dart';
 import '../support/fakes.dart';
 import 'data_test_support.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventrix/core/database/drift_transaction_runner.dart';
 import 'package:inventrix/core/errors/failure.dart';
@@ -69,10 +70,9 @@ void main() {
   Money inr(String t) =>
       Money.tryParse(t, currencyCode: 'INR', decimalPlaces: 2)!;
 
-  Future<int> count(String table) async => (await h.db
-      .customSelect('SELECT COUNT(*) AS c FROM $table')
-      .getSingle())
-      .read<int>('c');
+  Future<int> count(String table) async =>
+      (await h.db.customSelect('SELECT COUNT(*) AS c FROM $table').getSingle())
+          .read<int>('c');
 
   setUp(() async {
     h = DataHarness();
@@ -169,8 +169,7 @@ void main() {
           paymentDate: DateTime.utc(2026, 2, 10),
           idempotencyKey: key ?? 'k${++keyCounter}',
           allocations: [
-            if (to != null)
-              AllocationRequest(invoiceId: 'i1', amount: inr(to)),
+            if (to != null) AllocationRequest(invoiceId: 'i1', amount: inr(to)),
           ],
         ),
       );
@@ -180,7 +179,10 @@ void main() {
     expect(r.isSuccess, isTrue);
     expect(await count('payments'), 1);
     expect(await count('payment_allocations'), 1);
-    final view = (await open.settlementOf(InvoiceKind.sales, 'i1')).valueOrNull!;
+    final view = (await open.settlementOf(
+      InvoiceKind.sales,
+      'i1',
+    )).valueOrNull!;
     expect(view.status, PaymentStatus.paid);
     expect(view.payments.single.number, 'PAY-000001');
     final b = (await balances(PartyType.customer, 'c1')).valueOrNull!;
@@ -189,7 +191,10 @@ void main() {
 
   test('partial payments leave the rest outstanding', () async {
     await pay('30', to: '30');
-    final view = (await open.settlementOf(InvoiceKind.sales, 'i1')).valueOrNull!;
+    final view = (await open.settlementOf(
+      InvoiceKind.sales,
+      'i1',
+    )).valueOrNull!;
     expect(view.status, PaymentStatus.partiallyPaid);
     expect(view.invoice.outstanding, inr('70'));
   });
@@ -208,27 +213,37 @@ void main() {
     expect(await count('payment_allocations'), 1);
   });
 
-  test('a failing audit write rolls back payment, allocations and number',
-      () async {
-    audit.fail = true;
-    final r = await pay('100', to: '100');
-    expect(r.failureOrNull, isA<DatabaseFailure>());
-    expect(await count('payments'), 0);
-    expect(await count('payment_allocations'), 0);
-    audit.fail = false;
-    final again = await pay('100', to: '100');
-    expect(again.valueOrNull.number, 'PAY-000001');
-  });
+  test(
+    'a failing audit write rolls back payment, allocations and number',
+    () async {
+      audit.fail = true;
+      final r = await pay('100', to: '100');
+      expect(r.failureOrNull, isA<DatabaseFailure>());
+      expect(await count('payments'), 0);
+      expect(await count('payment_allocations'), 0);
+      audit.fail = false;
+      final again = await pay('100', to: '100');
+      expect(again.valueOrNull.number, 'PAY-000001');
+    },
+  );
 
   test('reversal keeps the record and reopens the invoice', () async {
     final p = (await pay('100', to: '100')).valueOrNull;
-    expect((await reverse(p.id as String, reason: 'Bounced')).isSuccess, isTrue);
+    expect(
+      (await reverse(p.id as String, reason: 'Bounced')).isSuccess,
+      isTrue,
+    );
     expect(await count('payments'), 1);
     expect(await count('payment_reversals'), 1);
-    final view = (await open.settlementOf(InvoiceKind.sales, 'i1')).valueOrNull!;
+    final view = (await open.settlementOf(
+      InvoiceKind.sales,
+      'i1',
+    )).valueOrNull!;
     expect(view.status, PaymentStatus.unpaid);
-    expect((await balances(PartyType.customer, 'c1')).valueOrNull!.balance,
-        inr('100'));
+    expect(
+      (await balances(PartyType.customer, 'c1')).valueOrNull!.balance,
+      inr('100'),
+    );
     expect((await reverse(p.id as String, reason: 'again')).isFailure, isTrue);
   });
 
@@ -245,7 +260,10 @@ void main() {
       ),
     );
     expect(r.valueOrNull!.number, 'RFD-000001');
-    final view = (await open.settlementOf(InvoiceKind.sales, 'i1')).valueOrNull!;
+    final view = (await open.settlementOf(
+      InvoiceKind.sales,
+      'i1',
+    )).valueOrNull!;
     expect(view.status, PaymentStatus.partiallyRefunded);
     final history = (await payments.search(const PaymentFilter())).valueOrNull!;
     expect(history.length, 2);

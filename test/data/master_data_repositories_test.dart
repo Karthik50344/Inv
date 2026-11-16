@@ -80,9 +80,8 @@ void main() {
       await h.categories.update(category().archived(t0));
       expect((await h.categories.nameExists('tools')).valueOrNull, isFalse);
       expect(
-        (await h.categories.create(
-          category(id: 'c3', name: 'Tools'),
-        )).isSuccess,
+        (await h.categories.create(category(id: 'c3', name: 'Tools')))
+            .isSuccess,
         isTrue,
       );
     });

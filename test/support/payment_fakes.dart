@@ -137,12 +137,18 @@ class FakePaymentRepository
     for (final p in items.values.where((p) => p.isActive)) {
       for (final a in p.allocations) {
         if (a.invoiceKind != kind || !wanted.contains(a.invoiceId)) continue;
-        net.update(a.invoiceId, (v) => v + a.amount.minorUnits,
-            ifAbsent: () => a.amount.minorUnits);
+        net.update(
+          a.invoiceId,
+          (v) => v + a.amount.minorUnits,
+          ifAbsent: () => a.amount.minorUnits,
+        );
         count.update(a.invoiceId, (v) => v + 1, ifAbsent: () => 1);
         if (a.amount.isNegative) {
-          refunded.update(a.invoiceId, (v) => v - a.amount.minorUnits,
-              ifAbsent: () => -a.amount.minorUnits);
+          refunded.update(
+            a.invoiceId,
+            (v) => v - a.amount.minorUnits,
+            ifAbsent: () => -a.amount.minorUnits,
+          );
         }
       }
     }
@@ -200,10 +206,12 @@ class FakePaymentMethodRepository implements PaymentMethodRepository {
   @override
   Future<Result<List<PaymentMethod>>> list({
     bool includeArchived = false,
-  }) async => Result.success([
-    for (final m in items.values)
-      if (includeArchived || !m.isArchived) m,
-  ]..sort((a, b) => a.name.compareTo(b.name)));
+  }) async => Result.success(
+    [
+      for (final m in items.values)
+        if (includeArchived || !m.isArchived) m,
+    ]..sort((a, b) => a.name.compareTo(b.name)),
+  );
 
   @override
   Future<Result<PaymentMethod>> getById(String id) async => items[id] == null
@@ -213,8 +221,7 @@ class FakePaymentMethodRepository implements PaymentMethodRepository {
   @override
   Future<Result<void>> create(PaymentMethod method) async {
     final clash = items.values.any(
-      (m) =>
-          !m.isArchived && m.name.toLowerCase() == method.name.toLowerCase(),
+      (m) => !m.isArchived && m.name.toLowerCase() == method.name.toLowerCase(),
     );
     if (clash) return const Result.failure(DuplicateEntryFailure('dup'));
     items[method.id] = method;
@@ -361,11 +368,8 @@ class PaymentFixture {
   }
 
   /// An INR amount from text such as `'100.50'`.
-  Money money(String text) => Money.tryParse(
-    text,
-    currencyCode: 'INR',
-    decimalPlaces: 2,
-  )!;
+  Money money(String text) =>
+      Money.tryParse(text, currencyCode: 'INR', decimalPlaces: 2)!;
 
   /// Adds a posted sales invoice for [customerId].
   SalesInvoice addSale(
@@ -387,7 +391,13 @@ class PaymentFixture {
       invoiceDate: date ?? DateTime.utc(2026, 3, 1),
       dueDate: dueDate,
       lines: const [],
-      totals: SalesTotals(gross: t, discount: zero, net: t, tax: zero, total: t),
+      totals: SalesTotals(
+        gross: t,
+        discount: zero,
+        net: t,
+        tax: zero,
+        total: t,
+      ),
       createdAt: clock.now(),
       updatedAt: clock.now(),
       postedAt: clock.now(),

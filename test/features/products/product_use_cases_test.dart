@@ -232,12 +232,10 @@ void main() {
     });
 
     test('does not rewrite history-bearing fields of other products', () async {
-      final a = (await create(
-        draft(sku: 'A-1', name: 'A', selling: '5'),
-      )).valueOrNull!;
-      final b = (await create(
-        draft(sku: 'B-1', name: 'B', selling: '7'),
-      )).valueOrNull!;
+      final a = (await create(draft(sku: 'A-1', name: 'A', selling: '5')))
+          .valueOrNull!;
+      final b = (await create(draft(sku: 'B-1', name: 'B', selling: '7')))
+          .valueOrNull!;
       await update(a.id, draft(sku: 'A-1', name: 'A2', selling: '6'));
       expect(f.products.items[b.id], b);
     });

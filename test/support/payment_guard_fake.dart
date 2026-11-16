@@ -9,8 +9,10 @@ final class NoPaymentsGuard implements InvoicePaymentGuard {
   const NoPaymentsGuard();
 
   @override
-  Future<Result<bool>> hasActivePayments(InvoiceKind kind, String invoiceId) async =>
-      const Result.success(false);
+  Future<Result<bool>> hasActivePayments(
+    InvoiceKind kind,
+    String invoiceId,
+  ) async => const Result.success(false);
 }
 
 /// A guard whose answer can be switched, to test void rules.

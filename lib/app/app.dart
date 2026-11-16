@@ -6,10 +6,17 @@ import 'package:inventrix/core/constants/app_constants.dart';
 /// Root widget of Inventrix.
 class InventrixApp extends StatelessWidget {
   /// Creates the app using [router] for navigation.
-  const InventrixApp({required this.router, super.key});
+  const InventrixApp({
+    required this.router,
+    this.scaffoldMessengerKey,
+    super.key,
+  });
 
   /// Router configuration.
   final GoRouter router;
+
+  /// Lets the host show a message after the app was rebuilt.
+  final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +25,7 @@ class InventrixApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
+      scaffoldMessengerKey: scaffoldMessengerKey,
       routerConfig: router,
     );
   }

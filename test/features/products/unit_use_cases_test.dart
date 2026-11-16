@@ -61,16 +61,14 @@ void main() {
       decimalPlaces: 3,
     )).valueOrNull!;
     expect(
-      fieldErrorsOf(
-        await create(name: 'Other', symbol: 'KG', decimalPlaces: 0),
-      ).containsKey('symbol'),
+      fieldErrorsOf(await create(name: 'Other', symbol: 'KG', decimalPlaces: 0))
+          .containsKey('symbol'),
       isTrue,
     );
     await archive(kg.id);
     expect(
-      fieldErrorsOf(
-        await create(name: 'Other', symbol: 'kg', decimalPlaces: 0),
-      ).containsKey('symbol'),
+      fieldErrorsOf(await create(name: 'Other', symbol: 'kg', decimalPlaces: 0))
+          .containsKey('symbol'),
       isTrue,
     );
   });
@@ -147,9 +145,8 @@ void main() {
     )).valueOrNull!;
     await archive(unit.id);
     expect(
-      (await RestoreUnit(repository: f.units, clock: f.clock)(
-        unit.id,
-      )).isSuccess,
+      (await RestoreUnit(repository: f.units, clock: f.clock)(unit.id))
+          .isSuccess,
       isTrue,
     );
     expect(f.units.items[unit.id]!.isArchived, isFalse);

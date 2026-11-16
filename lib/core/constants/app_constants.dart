@@ -6,6 +6,10 @@ abstract final class AppConstants {
   /// SQLite file base name; `drift_flutter` appends `.sqlite`.
   static const String databaseName = 'inventory_management';
 
+  /// Version of the app, written into every backup manifest. Keep in step
+  /// with the `version:` line of `pubspec.yaml`.
+  static const String appVersion = '1.0.0';
+
   /// Default currency used until the user changes it in settings.
   static const String defaultCurrencyCode = 'INR';
 

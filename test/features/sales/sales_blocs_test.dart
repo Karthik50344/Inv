@@ -245,10 +245,7 @@ void main() {
       await cubit.load();
       await cubit.submit();
       expect(cubit.state.submitStatus, SubmitStatus.validationError);
-      expect(
-        cubit.state.fieldErrors.keys,
-        contains('lines'),
-      );
+      expect(cubit.state.fieldErrors.keys, contains('lines'));
       await cubit.close();
     });
 
@@ -341,21 +338,14 @@ void main() {
   group('CustomerDetailCubit receivable', () {
     CustomerDetailCubit build() => CustomerDetailCubit(
       repository: f.customers,
-      archiveCustomer: ArchiveCustomer(
-        repository: f.customers,
-        clock: f.clock,
-      ),
-      restoreCustomer: RestoreCustomer(
-        repository: f.customers,
-        clock: f.clock,
-      ),
+      archiveCustomer: ArchiveCustomer(repository: f.customers, clock: f.clock),
+      restoreCustomer: RestoreCustomer(repository: f.customers, clock: f.clock),
       getReceivable: f.receivable,
     );
 
     test('shows posted sales and the outstanding amount', () async {
-      final posted = (await f.post(
-        (await f.draft([line('3')])).id,
-      )).valueOrNull!;
+      final posted = (await f.post((await f.draft([line('3')])).id))
+          .valueOrNull!;
       expect(posted.totals.total, inr(3000));
       final cubit = build();
       await cubit.load('c1');

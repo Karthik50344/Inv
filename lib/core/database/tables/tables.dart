@@ -1,6 +1,7 @@
 export 'package:inventrix/core/database/tables/app_settings.dart';
 export 'package:inventrix/core/database/tables/attachments.dart';
 export 'package:inventrix/core/database/tables/audit_logs.dart';
+export 'package:inventrix/core/database/tables/backup_history.dart';
 export 'package:inventrix/core/database/tables/business_profiles.dart';
 export 'package:inventrix/core/database/tables/categories.dart';
 export 'package:inventrix/core/database/tables/customers.dart';

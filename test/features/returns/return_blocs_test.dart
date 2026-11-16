@@ -31,7 +31,11 @@ void main() {
       build: () => ReturnsBloc(returns: f.returns),
       act: (b) => b.add(const ReturnsStarted()),
       expect: () => [
-        isA<ReturnsState>().having((s) => s.status, 'status', ViewStatus.loading),
+        isA<ReturnsState>().having(
+          (s) => s.status,
+          'status',
+          ViewStatus.loading,
+        ),
         isA<ReturnsState>().having((s) => s.status, 'status', ViewStatus.empty),
       ],
     );
@@ -42,7 +46,9 @@ void main() {
       await f.postedSale({p.id: '2'});
       final sale = f.sales.items.values.first;
       await f.doReturn(InvoiceKind.sales, sale.id, {sale.lines.first.id: '1'});
-      await f.doReturn(InvoiceKind.purchase, bill.id, {bill.lines.first.id: '1'});
+      await f.doReturn(InvoiceKind.purchase, bill.id, {
+        bill.lines.first.id: '1',
+      });
       final bloc = ReturnsBloc(returns: f.returns)..add(const ReturnsStarted());
       await Future<void>.delayed(const Duration(milliseconds: 20));
       expect(bloc.state.items.length, 2);
@@ -61,9 +67,9 @@ void main() {
     test('loads a return and reports unknown ids', () async {
       final p = await f.stockedProduct();
       final sale = await f.postedSale({p.id: '2'});
-      final doc = (await f.doReturn(InvoiceKind.sales, sale.id,
-              {sale.lines.first.id: '1'}))
-          .valueOrNull!;
+      final doc = (await f.doReturn(InvoiceKind.sales, sale.id, {
+        sale.lines.first.id: '1',
+      })).valueOrNull!;
       final cubit = ReturnDetailCubit(returns: f.returns);
       await cubit.load(InvoiceKind.sales, doc.id);
       expect(cubit.state.status, DetailStatus.loaded);

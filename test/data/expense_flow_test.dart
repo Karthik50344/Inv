@@ -1,6 +1,4 @@
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:inventrix/core/database/app_database.dart';
 import 'package:inventrix/core/database/drift_transaction_runner.dart';
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';

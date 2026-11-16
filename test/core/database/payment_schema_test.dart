@@ -86,10 +86,12 @@ void main() {
     final rows = await db
         .customSelect('SELECT name FROM payment_methods ORDER BY name')
         .get();
-    expect(
-      rows.map((r) => r.read<String>('name')).toList(),
-      ['Bank transfer', 'Card', 'Cash', 'Other'],
-    );
+    expect(rows.map((r) => r.read<String>('name')).toList(), [
+      'Bank transfer',
+      'Card',
+      'Cash',
+      'Other',
+    ]);
   });
 
   group('payment header', () {
@@ -109,7 +111,12 @@ void main() {
         await failureOf(() => pay('p1', supplierId: 's1')),
         isA<ValidationFailure>(),
       );
-      await pay('p2', partyType: 'supplier', customerId: null, supplierId: 's1');
+      await pay(
+        'p2',
+        partyType: 'supplier',
+        customerId: null,
+        supplierId: 's1',
+      );
     });
 
     test('only refunds reference a payment, and they must', () async {
@@ -217,30 +224,40 @@ void main() {
     test('payments are positive and refunds negative', () async {
       await pay('p1');
       await alloc('a1', 'p1', 5000);
-      expect(await failureOf(() => alloc('a2', 'p1', -1)),
-          isA<DatabaseFailure>());
+      expect(
+        await failureOf(() => alloc('a2', 'p1', -1)),
+        isA<DatabaseFailure>(),
+      );
       await pay('r1', kind: 'refund', refundOf: 'p1', amount: 100);
-      expect(await failureOf(() => alloc('a3', 'r1', 100)),
-          isA<DatabaseFailure>());
+      expect(
+        await failureOf(() => alloc('a3', 'r1', 100)),
+        isA<DatabaseFailure>(),
+      );
       await alloc('a4', 'r1', -100);
     });
 
     test('never exceed the invoice total', () async {
       await pay('p1');
       await alloc('a1', 'p1', 6000);
-      expect(await failureOf(() => alloc('a2', 'p1', 4001)),
-          isA<DatabaseFailure>());
+      expect(
+        await failureOf(() => alloc('a2', 'p1', 4001)),
+        isA<DatabaseFailure>(),
+      );
       await alloc('a3', 'p1', 4000);
-      expect(await failureOf(() => alloc('a4', 'p1', 1)),
-          isA<DatabaseFailure>());
+      expect(
+        await failureOf(() => alloc('a4', 'p1', 1)),
+        isA<DatabaseFailure>(),
+      );
     });
 
     test('cannot drive an invoice below zero through refunds', () async {
       await pay('p1');
       await alloc('a1', 'p1', 1000);
       await pay('r1', kind: 'refund', refundOf: 'p1', amount: 1001);
-      expect(await failureOf(() => alloc('a2', 'r1', -1001)),
-          isA<DatabaseFailure>());
+      expect(
+        await failureOf(() => alloc('a2', 'r1', -1001)),
+        isA<DatabaseFailure>(),
+      );
     });
 
     test('reversed payments free up the invoice again', () async {
@@ -254,7 +271,12 @@ void main() {
     });
 
     test('purchase invoices are limited the same way', () async {
-      await pay('p1', partyType: 'supplier', customerId: null, supplierId: 's1');
+      await pay(
+        'p1',
+        partyType: 'supplier',
+        customerId: null,
+        supplierId: 's1',
+      );
       await alloc('a1', 'p1', 5000, sales: null, purchase: 'b1');
       expect(
         await failureOf(
@@ -276,7 +298,9 @@ void main() {
     expect(rows.read<int>('c'), 1);
     expect(
       await failureOf(
-        () => db.customStatement("DELETE FROM payment_methods WHERE id = 'pm-cash'"),
+        () => db.customStatement(
+          "DELETE FROM payment_methods WHERE id = 'pm-cash'",
+        ),
       ),
       isA<ValidationFailure>(),
     );

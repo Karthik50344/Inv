@@ -1,4 +1,5 @@
 import 'payment_guard_fake.dart';
+
 import 'dart:typed_data';
 
 import 'package:inventrix/core/errors/failure.dart';
@@ -248,12 +249,7 @@ class SalesFixture extends InventoryFixture {
     sales = FakeSalesRepository();
     sequences = FakeDocumentSequenceRepository();
     customers = FakeCustomerRepository();
-    saleTx = FakeTransactionRunner([
-      inventory,
-      audit,
-      sales,
-      sequences,
-    ]);
+    saleTx = FakeTransactionRunner([inventory, audit, sales, sequences]);
     lineBuilder = SalesLineBuilder(
       products: products,
       units: units,

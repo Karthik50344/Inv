@@ -20158,6 +20158,733 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
   }
 }
 
+class $BackupHistoryTable extends BackupHistory
+    with TableInfo<$BackupHistoryTable, BackupHistoryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BackupHistoryTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL CHECK (kind IN (\'backup\',\'safety\',\'restore\'))',
+  );
+  static const VerificationMeta _fileNameMeta = const VerificationMeta(
+    'fileName',
+  );
+  @override
+  late final GeneratedColumn<String> fileName = GeneratedColumn<String>(
+    'file_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storedPathMeta = const VerificationMeta(
+    'storedPath',
+  );
+  @override
+  late final GeneratedColumn<String> storedPath = GeneratedColumn<String>(
+    'stored_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sizeBytesMeta = const VerificationMeta(
+    'sizeBytes',
+  );
+  @override
+  late final GeneratedColumn<int> sizeBytes = GeneratedColumn<int>(
+    'size_bytes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (size_bytes >= 0)',
+  );
+  static const VerificationMeta _sha256Meta = const VerificationMeta('sha256');
+  @override
+  late final GeneratedColumn<String> sha256 = GeneratedColumn<String>(
+    'sha256',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _schemaVersionMeta = const VerificationMeta(
+    'schemaVersion',
+  );
+  @override
+  late final GeneratedColumn<int> schemaVersion = GeneratedColumn<int>(
+    'schema_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _appVersionMeta = const VerificationMeta(
+    'appVersion',
+  );
+  @override
+  late final GeneratedColumn<String> appVersion = GeneratedColumn<String>(
+    'app_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _outcomeMeta = const VerificationMeta(
+    'outcome',
+  );
+  @override
+  late final GeneratedColumn<String> outcome = GeneratedColumn<String>(
+    'outcome',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (outcome IN (\'success\',\'failed\'))',
+  );
+  static const VerificationMeta _errorMessageMeta = const VerificationMeta(
+    'errorMessage',
+  );
+  @override
+  late final GeneratedColumn<String> errorMessage = GeneratedColumn<String>(
+    'error_message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exportedAtMeta = const VerificationMeta(
+    'exportedAt',
+  );
+  @override
+  late final GeneratedColumn<int> exportedAt = GeneratedColumn<int>(
+    'exported_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    kind,
+    fileName,
+    storedPath,
+    sizeBytes,
+    sha256,
+    schemaVersion,
+    appVersion,
+    outcome,
+    errorMessage,
+    createdAt,
+    exportedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'backup_history';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BackupHistoryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('file_name')) {
+      context.handle(
+        _fileNameMeta,
+        fileName.isAcceptableOrUnknown(data['file_name']!, _fileNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fileNameMeta);
+    }
+    if (data.containsKey('stored_path')) {
+      context.handle(
+        _storedPathMeta,
+        storedPath.isAcceptableOrUnknown(data['stored_path']!, _storedPathMeta),
+      );
+    }
+    if (data.containsKey('size_bytes')) {
+      context.handle(
+        _sizeBytesMeta,
+        sizeBytes.isAcceptableOrUnknown(data['size_bytes']!, _sizeBytesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sizeBytesMeta);
+    }
+    if (data.containsKey('sha256')) {
+      context.handle(
+        _sha256Meta,
+        sha256.isAcceptableOrUnknown(data['sha256']!, _sha256Meta),
+      );
+    }
+    if (data.containsKey('schema_version')) {
+      context.handle(
+        _schemaVersionMeta,
+        schemaVersion.isAcceptableOrUnknown(
+          data['schema_version']!,
+          _schemaVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_schemaVersionMeta);
+    }
+    if (data.containsKey('app_version')) {
+      context.handle(
+        _appVersionMeta,
+        appVersion.isAcceptableOrUnknown(data['app_version']!, _appVersionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_appVersionMeta);
+    }
+    if (data.containsKey('outcome')) {
+      context.handle(
+        _outcomeMeta,
+        outcome.isAcceptableOrUnknown(data['outcome']!, _outcomeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_outcomeMeta);
+    }
+    if (data.containsKey('error_message')) {
+      context.handle(
+        _errorMessageMeta,
+        errorMessage.isAcceptableOrUnknown(
+          data['error_message']!,
+          _errorMessageMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('exported_at')) {
+      context.handle(
+        _exportedAtMeta,
+        exportedAt.isAcceptableOrUnknown(data['exported_at']!, _exportedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BackupHistoryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BackupHistoryRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      fileName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_name'],
+      )!,
+      storedPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stored_path'],
+      ),
+      sizeBytes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}size_bytes'],
+      )!,
+      sha256: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sha256'],
+      ),
+      schemaVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}schema_version'],
+      )!,
+      appVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}app_version'],
+      )!,
+      outcome: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}outcome'],
+      )!,
+      errorMessage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}error_message'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      exportedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}exported_at'],
+      ),
+    );
+  }
+
+  @override
+  $BackupHistoryTable createAlias(String alias) {
+    return $BackupHistoryTable(attachedDatabase, alias);
+  }
+}
+
+class BackupHistoryRow extends DataClass
+    implements Insertable<BackupHistoryRow> {
+  final String id;
+  final String kind;
+  final String fileName;
+
+  /// Archive file name inside the backups folder; null once deleted.
+  final String? storedPath;
+  final int sizeBytes;
+  final String? sha256;
+  final int schemaVersion;
+  final String appVersion;
+  final String outcome;
+  final String? errorMessage;
+  final int createdAt;
+  final int? exportedAt;
+  const BackupHistoryRow({
+    required this.id,
+    required this.kind,
+    required this.fileName,
+    this.storedPath,
+    required this.sizeBytes,
+    this.sha256,
+    required this.schemaVersion,
+    required this.appVersion,
+    required this.outcome,
+    this.errorMessage,
+    required this.createdAt,
+    this.exportedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['kind'] = Variable<String>(kind);
+    map['file_name'] = Variable<String>(fileName);
+    if (!nullToAbsent || storedPath != null) {
+      map['stored_path'] = Variable<String>(storedPath);
+    }
+    map['size_bytes'] = Variable<int>(sizeBytes);
+    if (!nullToAbsent || sha256 != null) {
+      map['sha256'] = Variable<String>(sha256);
+    }
+    map['schema_version'] = Variable<int>(schemaVersion);
+    map['app_version'] = Variable<String>(appVersion);
+    map['outcome'] = Variable<String>(outcome);
+    if (!nullToAbsent || errorMessage != null) {
+      map['error_message'] = Variable<String>(errorMessage);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    if (!nullToAbsent || exportedAt != null) {
+      map['exported_at'] = Variable<int>(exportedAt);
+    }
+    return map;
+  }
+
+  BackupHistoryCompanion toCompanion(bool nullToAbsent) {
+    return BackupHistoryCompanion(
+      id: Value(id),
+      kind: Value(kind),
+      fileName: Value(fileName),
+      storedPath: storedPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(storedPath),
+      sizeBytes: Value(sizeBytes),
+      sha256: sha256 == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sha256),
+      schemaVersion: Value(schemaVersion),
+      appVersion: Value(appVersion),
+      outcome: Value(outcome),
+      errorMessage: errorMessage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(errorMessage),
+      createdAt: Value(createdAt),
+      exportedAt: exportedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exportedAt),
+    );
+  }
+
+  factory BackupHistoryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BackupHistoryRow(
+      id: serializer.fromJson<String>(json['id']),
+      kind: serializer.fromJson<String>(json['kind']),
+      fileName: serializer.fromJson<String>(json['fileName']),
+      storedPath: serializer.fromJson<String?>(json['storedPath']),
+      sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
+      sha256: serializer.fromJson<String?>(json['sha256']),
+      schemaVersion: serializer.fromJson<int>(json['schemaVersion']),
+      appVersion: serializer.fromJson<String>(json['appVersion']),
+      outcome: serializer.fromJson<String>(json['outcome']),
+      errorMessage: serializer.fromJson<String?>(json['errorMessage']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      exportedAt: serializer.fromJson<int?>(json['exportedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'kind': serializer.toJson<String>(kind),
+      'fileName': serializer.toJson<String>(fileName),
+      'storedPath': serializer.toJson<String?>(storedPath),
+      'sizeBytes': serializer.toJson<int>(sizeBytes),
+      'sha256': serializer.toJson<String?>(sha256),
+      'schemaVersion': serializer.toJson<int>(schemaVersion),
+      'appVersion': serializer.toJson<String>(appVersion),
+      'outcome': serializer.toJson<String>(outcome),
+      'errorMessage': serializer.toJson<String?>(errorMessage),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'exportedAt': serializer.toJson<int?>(exportedAt),
+    };
+  }
+
+  BackupHistoryRow copyWith({
+    String? id,
+    String? kind,
+    String? fileName,
+    Value<String?> storedPath = const Value.absent(),
+    int? sizeBytes,
+    Value<String?> sha256 = const Value.absent(),
+    int? schemaVersion,
+    String? appVersion,
+    String? outcome,
+    Value<String?> errorMessage = const Value.absent(),
+    int? createdAt,
+    Value<int?> exportedAt = const Value.absent(),
+  }) => BackupHistoryRow(
+    id: id ?? this.id,
+    kind: kind ?? this.kind,
+    fileName: fileName ?? this.fileName,
+    storedPath: storedPath.present ? storedPath.value : this.storedPath,
+    sizeBytes: sizeBytes ?? this.sizeBytes,
+    sha256: sha256.present ? sha256.value : this.sha256,
+    schemaVersion: schemaVersion ?? this.schemaVersion,
+    appVersion: appVersion ?? this.appVersion,
+    outcome: outcome ?? this.outcome,
+    errorMessage: errorMessage.present ? errorMessage.value : this.errorMessage,
+    createdAt: createdAt ?? this.createdAt,
+    exportedAt: exportedAt.present ? exportedAt.value : this.exportedAt,
+  );
+  BackupHistoryRow copyWithCompanion(BackupHistoryCompanion data) {
+    return BackupHistoryRow(
+      id: data.id.present ? data.id.value : this.id,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      fileName: data.fileName.present ? data.fileName.value : this.fileName,
+      storedPath: data.storedPath.present
+          ? data.storedPath.value
+          : this.storedPath,
+      sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
+      sha256: data.sha256.present ? data.sha256.value : this.sha256,
+      schemaVersion: data.schemaVersion.present
+          ? data.schemaVersion.value
+          : this.schemaVersion,
+      appVersion: data.appVersion.present
+          ? data.appVersion.value
+          : this.appVersion,
+      outcome: data.outcome.present ? data.outcome.value : this.outcome,
+      errorMessage: data.errorMessage.present
+          ? data.errorMessage.value
+          : this.errorMessage,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      exportedAt: data.exportedAt.present
+          ? data.exportedAt.value
+          : this.exportedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupHistoryRow(')
+          ..write('id: $id, ')
+          ..write('kind: $kind, ')
+          ..write('fileName: $fileName, ')
+          ..write('storedPath: $storedPath, ')
+          ..write('sizeBytes: $sizeBytes, ')
+          ..write('sha256: $sha256, ')
+          ..write('schemaVersion: $schemaVersion, ')
+          ..write('appVersion: $appVersion, ')
+          ..write('outcome: $outcome, ')
+          ..write('errorMessage: $errorMessage, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('exportedAt: $exportedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    kind,
+    fileName,
+    storedPath,
+    sizeBytes,
+    sha256,
+    schemaVersion,
+    appVersion,
+    outcome,
+    errorMessage,
+    createdAt,
+    exportedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BackupHistoryRow &&
+          other.id == this.id &&
+          other.kind == this.kind &&
+          other.fileName == this.fileName &&
+          other.storedPath == this.storedPath &&
+          other.sizeBytes == this.sizeBytes &&
+          other.sha256 == this.sha256 &&
+          other.schemaVersion == this.schemaVersion &&
+          other.appVersion == this.appVersion &&
+          other.outcome == this.outcome &&
+          other.errorMessage == this.errorMessage &&
+          other.createdAt == this.createdAt &&
+          other.exportedAt == this.exportedAt);
+}
+
+class BackupHistoryCompanion extends UpdateCompanion<BackupHistoryRow> {
+  final Value<String> id;
+  final Value<String> kind;
+  final Value<String> fileName;
+  final Value<String?> storedPath;
+  final Value<int> sizeBytes;
+  final Value<String?> sha256;
+  final Value<int> schemaVersion;
+  final Value<String> appVersion;
+  final Value<String> outcome;
+  final Value<String?> errorMessage;
+  final Value<int> createdAt;
+  final Value<int?> exportedAt;
+  final Value<int> rowid;
+  const BackupHistoryCompanion({
+    this.id = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.fileName = const Value.absent(),
+    this.storedPath = const Value.absent(),
+    this.sizeBytes = const Value.absent(),
+    this.sha256 = const Value.absent(),
+    this.schemaVersion = const Value.absent(),
+    this.appVersion = const Value.absent(),
+    this.outcome = const Value.absent(),
+    this.errorMessage = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.exportedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BackupHistoryCompanion.insert({
+    required String id,
+    required String kind,
+    required String fileName,
+    this.storedPath = const Value.absent(),
+    required int sizeBytes,
+    this.sha256 = const Value.absent(),
+    required int schemaVersion,
+    required String appVersion,
+    required String outcome,
+    this.errorMessage = const Value.absent(),
+    required int createdAt,
+    this.exportedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       kind = Value(kind),
+       fileName = Value(fileName),
+       sizeBytes = Value(sizeBytes),
+       schemaVersion = Value(schemaVersion),
+       appVersion = Value(appVersion),
+       outcome = Value(outcome),
+       createdAt = Value(createdAt);
+  static Insertable<BackupHistoryRow> custom({
+    Expression<String>? id,
+    Expression<String>? kind,
+    Expression<String>? fileName,
+    Expression<String>? storedPath,
+    Expression<int>? sizeBytes,
+    Expression<String>? sha256,
+    Expression<int>? schemaVersion,
+    Expression<String>? appVersion,
+    Expression<String>? outcome,
+    Expression<String>? errorMessage,
+    Expression<int>? createdAt,
+    Expression<int>? exportedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (kind != null) 'kind': kind,
+      if (fileName != null) 'file_name': fileName,
+      if (storedPath != null) 'stored_path': storedPath,
+      if (sizeBytes != null) 'size_bytes': sizeBytes,
+      if (sha256 != null) 'sha256': sha256,
+      if (schemaVersion != null) 'schema_version': schemaVersion,
+      if (appVersion != null) 'app_version': appVersion,
+      if (outcome != null) 'outcome': outcome,
+      if (errorMessage != null) 'error_message': errorMessage,
+      if (createdAt != null) 'created_at': createdAt,
+      if (exportedAt != null) 'exported_at': exportedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BackupHistoryCompanion copyWith({
+    Value<String>? id,
+    Value<String>? kind,
+    Value<String>? fileName,
+    Value<String?>? storedPath,
+    Value<int>? sizeBytes,
+    Value<String?>? sha256,
+    Value<int>? schemaVersion,
+    Value<String>? appVersion,
+    Value<String>? outcome,
+    Value<String?>? errorMessage,
+    Value<int>? createdAt,
+    Value<int?>? exportedAt,
+    Value<int>? rowid,
+  }) {
+    return BackupHistoryCompanion(
+      id: id ?? this.id,
+      kind: kind ?? this.kind,
+      fileName: fileName ?? this.fileName,
+      storedPath: storedPath ?? this.storedPath,
+      sizeBytes: sizeBytes ?? this.sizeBytes,
+      sha256: sha256 ?? this.sha256,
+      schemaVersion: schemaVersion ?? this.schemaVersion,
+      appVersion: appVersion ?? this.appVersion,
+      outcome: outcome ?? this.outcome,
+      errorMessage: errorMessage ?? this.errorMessage,
+      createdAt: createdAt ?? this.createdAt,
+      exportedAt: exportedAt ?? this.exportedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (fileName.present) {
+      map['file_name'] = Variable<String>(fileName.value);
+    }
+    if (storedPath.present) {
+      map['stored_path'] = Variable<String>(storedPath.value);
+    }
+    if (sizeBytes.present) {
+      map['size_bytes'] = Variable<int>(sizeBytes.value);
+    }
+    if (sha256.present) {
+      map['sha256'] = Variable<String>(sha256.value);
+    }
+    if (schemaVersion.present) {
+      map['schema_version'] = Variable<int>(schemaVersion.value);
+    }
+    if (appVersion.present) {
+      map['app_version'] = Variable<String>(appVersion.value);
+    }
+    if (outcome.present) {
+      map['outcome'] = Variable<String>(outcome.value);
+    }
+    if (errorMessage.present) {
+      map['error_message'] = Variable<String>(errorMessage.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (exportedAt.present) {
+      map['exported_at'] = Variable<int>(exportedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('kind: $kind, ')
+          ..write('fileName: $fileName, ')
+          ..write('storedPath: $storedPath, ')
+          ..write('sizeBytes: $sizeBytes, ')
+          ..write('sha256: $sha256, ')
+          ..write('schemaVersion: $schemaVersion, ')
+          ..write('appVersion: $appVersion, ')
+          ..write('outcome: $outcome, ')
+          ..write('errorMessage: $errorMessage, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('exportedAt: $exportedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -20205,6 +20932,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $ExpenseCategoriesTable(this);
   late final $ExpensesTable expenses = $ExpensesTable(this);
   late final $AttachmentsTable attachments = $AttachmentsTable(this);
+  late final $BackupHistoryTable backupHistory = $BackupHistoryTable(this);
   late final Index idxProductsCategoryId = Index(
     'idx_products_category_id',
     'CREATE INDEX idx_products_category_id ON products (category_id)',
@@ -20253,6 +20981,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     expenseCategories,
     expenses,
     attachments,
+    backupHistory,
     idxProductsCategoryId,
     idxProductsName,
     idxStockMovementsProductOccurred,
@@ -36900,6 +37629,353 @@ typedef $$AttachmentsTableProcessedTableManager =
       AttachmentRow,
       PrefetchHooks Function()
     >;
+typedef $$BackupHistoryTableCreateCompanionBuilder =
+    BackupHistoryCompanion Function({
+      required String id,
+      required String kind,
+      required String fileName,
+      Value<String?> storedPath,
+      required int sizeBytes,
+      Value<String?> sha256,
+      required int schemaVersion,
+      required String appVersion,
+      required String outcome,
+      Value<String?> errorMessage,
+      required int createdAt,
+      Value<int?> exportedAt,
+      Value<int> rowid,
+    });
+typedef $$BackupHistoryTableUpdateCompanionBuilder =
+    BackupHistoryCompanion Function({
+      Value<String> id,
+      Value<String> kind,
+      Value<String> fileName,
+      Value<String?> storedPath,
+      Value<int> sizeBytes,
+      Value<String?> sha256,
+      Value<int> schemaVersion,
+      Value<String> appVersion,
+      Value<String> outcome,
+      Value<String?> errorMessage,
+      Value<int> createdAt,
+      Value<int?> exportedAt,
+      Value<int> rowid,
+    });
+
+class $$BackupHistoryTableFilterComposer
+    extends Composer<_$AppDatabase, $BackupHistoryTable> {
+  $$BackupHistoryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get storedPath => $composableBuilder(
+    column: $table.storedPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sha256 => $composableBuilder(
+    column: $table.sha256,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get schemaVersion => $composableBuilder(
+    column: $table.schemaVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get appVersion => $composableBuilder(
+    column: $table.appVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get outcome => $composableBuilder(
+    column: $table.outcome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get errorMessage => $composableBuilder(
+    column: $table.errorMessage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get exportedAt => $composableBuilder(
+    column: $table.exportedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BackupHistoryTableOrderingComposer
+    extends Composer<_$AppDatabase, $BackupHistoryTable> {
+  $$BackupHistoryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get storedPath => $composableBuilder(
+    column: $table.storedPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sha256 => $composableBuilder(
+    column: $table.sha256,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get schemaVersion => $composableBuilder(
+    column: $table.schemaVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get appVersion => $composableBuilder(
+    column: $table.appVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get outcome => $composableBuilder(
+    column: $table.outcome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get errorMessage => $composableBuilder(
+    column: $table.errorMessage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get exportedAt => $composableBuilder(
+    column: $table.exportedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BackupHistoryTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BackupHistoryTable> {
+  $$BackupHistoryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get fileName =>
+      $composableBuilder(column: $table.fileName, builder: (column) => column);
+
+  GeneratedColumn<String> get storedPath => $composableBuilder(
+    column: $table.storedPath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get sizeBytes =>
+      $composableBuilder(column: $table.sizeBytes, builder: (column) => column);
+
+  GeneratedColumn<String> get sha256 =>
+      $composableBuilder(column: $table.sha256, builder: (column) => column);
+
+  GeneratedColumn<int> get schemaVersion => $composableBuilder(
+    column: $table.schemaVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get appVersion => $composableBuilder(
+    column: $table.appVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get outcome =>
+      $composableBuilder(column: $table.outcome, builder: (column) => column);
+
+  GeneratedColumn<String> get errorMessage => $composableBuilder(
+    column: $table.errorMessage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get exportedAt => $composableBuilder(
+    column: $table.exportedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$BackupHistoryTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BackupHistoryTable,
+          BackupHistoryRow,
+          $$BackupHistoryTableFilterComposer,
+          $$BackupHistoryTableOrderingComposer,
+          $$BackupHistoryTableAnnotationComposer,
+          $$BackupHistoryTableCreateCompanionBuilder,
+          $$BackupHistoryTableUpdateCompanionBuilder,
+          (
+            BackupHistoryRow,
+            BaseReferences<
+              _$AppDatabase,
+              $BackupHistoryTable,
+              BackupHistoryRow
+            >,
+          ),
+          BackupHistoryRow,
+          PrefetchHooks Function()
+        > {
+  $$BackupHistoryTableTableManager(_$AppDatabase db, $BackupHistoryTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BackupHistoryTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BackupHistoryTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BackupHistoryTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<String> fileName = const Value.absent(),
+                Value<String?> storedPath = const Value.absent(),
+                Value<int> sizeBytes = const Value.absent(),
+                Value<String?> sha256 = const Value.absent(),
+                Value<int> schemaVersion = const Value.absent(),
+                Value<String> appVersion = const Value.absent(),
+                Value<String> outcome = const Value.absent(),
+                Value<String?> errorMessage = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int?> exportedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BackupHistoryCompanion(
+                id: id,
+                kind: kind,
+                fileName: fileName,
+                storedPath: storedPath,
+                sizeBytes: sizeBytes,
+                sha256: sha256,
+                schemaVersion: schemaVersion,
+                appVersion: appVersion,
+                outcome: outcome,
+                errorMessage: errorMessage,
+                createdAt: createdAt,
+                exportedAt: exportedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String kind,
+                required String fileName,
+                Value<String?> storedPath = const Value.absent(),
+                required int sizeBytes,
+                Value<String?> sha256 = const Value.absent(),
+                required int schemaVersion,
+                required String appVersion,
+                required String outcome,
+                Value<String?> errorMessage = const Value.absent(),
+                required int createdAt,
+                Value<int?> exportedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BackupHistoryCompanion.insert(
+                id: id,
+                kind: kind,
+                fileName: fileName,
+                storedPath: storedPath,
+                sizeBytes: sizeBytes,
+                sha256: sha256,
+                schemaVersion: schemaVersion,
+                appVersion: appVersion,
+                outcome: outcome,
+                errorMessage: errorMessage,
+                createdAt: createdAt,
+                exportedAt: exportedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BackupHistoryTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BackupHistoryTable,
+      BackupHistoryRow,
+      $$BackupHistoryTableFilterComposer,
+      $$BackupHistoryTableOrderingComposer,
+      $$BackupHistoryTableAnnotationComposer,
+      $$BackupHistoryTableCreateCompanionBuilder,
+      $$BackupHistoryTableUpdateCompanionBuilder,
+      (
+        BackupHistoryRow,
+        BaseReferences<_$AppDatabase, $BackupHistoryTable, BackupHistoryRow>,
+      ),
+      BackupHistoryRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -36958,4 +38034,6 @@ class $AppDatabaseManager {
       $$ExpensesTableTableManager(_db, _db.expenses);
   $$AttachmentsTableTableManager get attachments =>
       $$AttachmentsTableTableManager(_db, _db.attachments);
+  $$BackupHistoryTableTableManager get backupHistory =>
+      $$BackupHistoryTableTableManager(_db, _db.backupHistory);
 }

@@ -355,3 +355,47 @@ Run `flutter pub get`, `dart run build_runner build --delete-conflicting-outputs
 
 ### Phase 9 follow-up: richer dashboard
 Added a line chart (running net sales), two donuts (expenses by category, stock health), ranked bars (where the money went, top products, cash and balances) and four tiles (gross margin, average sale, returns, tax collected). New data: `DashboardSnapshot.topProducts`, `trendChart`, `averageSale`, `taxCollected`, `healthyStockCount`; `TimeBuckets.cumulative`. Executed tests: 29 + 22 + 16 pass (report domain, use cases, BLoCs). The new chart widgets (`dashboard_charts.dart`, `fl_chart` LineChart/PieChart) and the dashboard layout are **not compiled or run**; "healthy" stock is products with stock minus low-stock ones, so archived products holding stock can slightly inflate it.
+
+
+---
+
+## Phase 10 — Backup, Restore and Data Protection
+
+> Built on request while Phases 1-9 still await their first real `flutter test` run. Everything that imports Drift, Flutter, `file_picker`, `share_plus` or `path_provider` is **uncompiled**.
+
+### Scope delivered
+Backup creation (consistent `VACUUM INTO` snapshot, integrity gate, ZIP with manifest and SHA-256, post-write verification, history incl. failures), export (share sheet / save to device, checksum re-checked first), stored-copy deletion, strict restore validation (zip-slip, links, unknown/missing/extra entries, size limits, checksums, compatibility, integrity), confirmation dialog, restore with safety backup, rename-based swap, rollback, crash journal and start-up recovery, app runtime restart (`InventrixRuntime`/`InventrixHost`), schema v9 (`backup_history`), Backup screen. See `docs/workflows/backup_restore.md`.
+
+### Files
+- Domain `features/backup/domain/**`: entities, `ArchivePathRules`, `ManifestCodec`, `RestoreCompatibility`, `BackupNaming`, journal codec, contracts, use cases (`CreateBackup`, `ListBackups`, `DeleteStoredBackup`, `ExportBackup`, `PrepareRestore`, `DiscardStagedBackup`, `RestoreBackup`, `RecoverInterruptedRestore`, `ReconcileRestoreJournal`).
+- Data: `ZipBackupPackager`, `FileRestoreSwapper`, `FileRestoreJournalStore`, `AppStorageLocations` (all plain `dart:io`), plus Drift/Flutter-dependent `DriftBackupHistoryRepository`, `DriftDatabaseSnapshotter`, `SqliteDatabaseInspector`, `PlatformBackupExporter`, table `backup_history`.
+- App: `app/runtime/*` (runtime, host, startup failure screen, unavailable runtime), `register_backup.dart`; modified `bootstrap.dart`, `app.dart`, `injection.dart`, router, `schema_extras.dart`, `app_database.dart` (v9), `tables.dart`, `app_constants.dart`, `pubspec.yaml` (+`archive`, `crypto`).
+- Presentation: `BackupBloc`, `BackupPage`, `RestoreConfirmationDialog`.
+- Tests added: `zip_backup_packager_test` (9), `backup_use_cases_test` (24), `backup_bloc_test` (6), `backup_page_test`, `backup_history_repository_test`, 8 -> 9 migration test, DI test; `support/backup_fakes.dart`; `test_locator.dart` extended; `app_database_test` now expects v9.
+
+### Verified in the authoring sandbox (Dart 3.14.0; real `archive` 4.7.1 and `crypto` 3.0.5 sources; stand-ins for `equatable`, `logging`, `flutter_test`)
+- **33 tests executed, 0 failed**: packager round trip, tampered content, `../` traversal, absolute/backslash/unknown entries, extra entry not in manifest, non-ZIP, foreign manifest, non-empty staging; backup creation, name collisions, damaged-database refusal, export checksum check; restore confirmation gate, data + attachment replacement, safety backup content, swap while closed, migration failure, safety-backup failure, shutdown failure, start failure rollback, refused swap, interrupted-swap recovery, completed-restore reconciliation (once), no-op rollback. All on **real files** in temp folders.
+- The tests found and I fixed two real bugs: a `File` object interpolated into a path (`'$live...'`) and a rollback after a refused swap that could have moved an unrelated leftover over live data.
+- `dart analyze` clean on `features/backup/domain`, `features/backup/data/services` (file-based classes), the new tests and fakes. `tool/check_imports.dart`: dependency rules OK.
+
+### NOT verified (needs Flutter SDK + pub.dev)
+- Regenerate `app_database.g.dart` (`dart run build_runner build --delete-conflicting-outputs`; new table `backup_history`, schema v9), then `flutter pub get`, `dart format .`, `flutter analyze`, `flutter test`.
+- Uncompiled: the `BackupHistory` table and `AppDatabase` edits, `DriftBackupHistoryRepository`, `DriftDatabaseSnapshotter` (`VACUUM INTO ?` with a bound parameter), `SqliteDatabaseInspector` (`sqlite3` 2.x `open`/`select`/`close`), `PlatformBackupExporter` (`FilePicker.saveFile`, `SharePlus` `ShareResultStatus` — written from memory), runtime/host/bootstrap, DI, router, BLoC, pages. Tests written but not run: `backup_history_repository_test` (incl. a real `VACUUM INTO`), the 8 -> 9 migration, `backup_bloc_test`, `backup_page_test`, DI test.
+- **Never exercised on a device**: that `PRAGMA database_list` returns the real file path through Drift's isolate, that renaming the database while Drift's connection is closed works on Android/iOS, the share/save flows, and the full restart (`resetDependencies` → `configureDependencies`). Test a real restore on a device before relying on it.
+- `pubspec.yaml`: `archive`/`crypto` ranges are wide and unverified against pub.dev.
+
+### Known issues / decisions to review
+- Product photos are part of the backup (added beyond the spec's wording); layout documented.
+- `AppConstants.appVersion` is a constant and must be kept in step with `pubspec.yaml`.
+- No automatic or scheduled backups yet; no pruning of old backups or safety copies (user deletes them on the screen).
+- The restore history rows are written on the next start (journal), so the history briefly lacks them.
+- Large databases are held in memory during verification/save-as (see workflow doc).
+- I ran the sandbox `dart format` over `lib/app`, `lib/features/backup` and `test/`; it may have reformatted older files with the Dart 3.14 style.
+
+### Acceptance criteria (Phase 10)
+- Archive valid, checksums validated, failed restore does not destroy data, path traversal rejected: **verified by executed tests on real files**.
+- Database integrity verification, `VACUUM INTO` snapshot, restore of a real Drift database, restart of the app, backup surviving uninstall when exported: **unverified until the Flutter run / device test**.
+- Phase 10 is **not** marked complete.
+
+### Next
+Run `flutter pub get`, `dart run build_runner build --delete-conflicting-outputs`, `dart format .`, `flutter analyze`, `flutter test`, then a manual restore on a device, and send me the output; fixing Phases 1-10 together is the best next step before Phase 11 (Settings).

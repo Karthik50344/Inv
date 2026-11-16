@@ -105,12 +105,20 @@ void main() {
   test('idempotency lookup and forInvoice', () async {
     await repo.insert(doc());
     await repo.insert(
-      doc(id: 'r2', number: 'SRN-000002', key: 'k2', qty: 500, net: 300, tax: 54),
+      doc(
+        id: 'r2',
+        number: 'SRN-000002',
+        key: 'k2',
+        qty: 500,
+        net: 300,
+        tax: 54,
+      ),
     );
     expect(
-      (await repo.findByIdempotencyKey(InvoiceKind.sales, 'k2'))
-          .valueOrNull!
-          .id,
+      (await repo.findByIdempotencyKey(
+        InvoiceKind.sales,
+        'k2',
+      )).valueOrNull!.id,
       'r2',
     );
     expect(
@@ -124,19 +132,38 @@ void main() {
   test('database refuses to return more than was invoiced', () async {
     await repo.insert(doc(qty: 2500, net: 800, tax: 100));
     final r = await repo.insert(
-      doc(id: 'r2', number: 'SRN-000002', key: 'k2', qty: 1000, net: 100, tax: 10),
+      doc(
+        id: 'r2',
+        number: 'SRN-000002',
+        key: 'k2',
+        qty: 1000,
+        net: 100,
+        tax: 10,
+      ),
     );
     expect(r.isFailure, isTrue);
   });
 
   test('totals, party totals and guard', () async {
-    expect((await repo.hasReturns(InvoiceKind.sales, 'i1')).valueOrNull, isFalse);
+    expect(
+      (await repo.hasReturns(InvoiceKind.sales, 'i1')).valueOrNull,
+      isFalse,
+    );
     await repo.insert(doc(refund: 500));
     await repo.insert(
-      doc(id: 'r2', number: 'SRN-000002', key: 'k2', qty: 500, net: 300, tax: 54),
+      doc(
+        id: 'r2',
+        number: 'SRN-000002',
+        key: 'k2',
+        qty: 500,
+        net: 300,
+        tax: 54,
+      ),
     );
-    final totals =
-        (await repo.totalsFor(InvoiceKind.sales, ['i1', 'other'])).valueOrNull!;
+    final totals = (await repo.totalsFor(InvoiceKind.sales, [
+      'i1',
+      'other',
+    ])).valueOrNull!;
     expect(totals['i1']!.returnedMinor, 1180 + 354);
     expect(totals['i1']!.refundedMinor, 500);
     expect(totals['i1']!.count, 2);
@@ -156,13 +183,23 @@ void main() {
       decimalPlaces: 2,
     )).valueOrNull!;
     expect(other.returnedMinor, 0);
-    expect((await repo.hasReturns(InvoiceKind.sales, 'i1')).valueOrNull, isTrue);
+    expect(
+      (await repo.hasReturns(InvoiceKind.sales, 'i1')).valueOrNull,
+      isTrue,
+    );
   });
 
   test('search filters by kind, invoice and text, newest first', () async {
     await repo.insert(doc());
     await repo.insert(
-      doc(id: 'r2', number: 'SRN-000002', key: 'k2', qty: 500, net: 300, tax: 54),
+      doc(
+        id: 'r2',
+        number: 'SRN-000002',
+        key: 'k2',
+        qty: 500,
+        net: 300,
+        tax: 54,
+      ),
     );
     final both = (await repo.search(const ReturnFilter())).valueOrNull!;
     expect(both.map((s) => s.number), ['SRN-000002', 'SRN-000001']);

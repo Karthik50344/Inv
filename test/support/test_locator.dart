@@ -1,3 +1,15 @@
+import 'dart:io';
+
+import 'package:inventrix/features/backup/data/services/app_storage_locations.dart';
+import 'package:inventrix/features/backup/data/services/file_restore_swapper.dart';
+import 'package:inventrix/features/backup/data/services/zip_backup_packager.dart';
+import 'package:inventrix/features/backup/domain/usecases/create_backup.dart';
+import 'package:inventrix/features/backup/domain/usecases/manage_backups.dart';
+import 'package:inventrix/features/backup/domain/usecases/prepare_restore.dart';
+import 'package:inventrix/features/backup/domain/usecases/restore_backup.dart';
+import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
+
+import 'backup_fakes.dart' as bk;
 import 'fakes.dart';
 import 'inventory_fakes.dart';
 
@@ -93,6 +105,65 @@ class TestWiring {
       ..registerSingleton<TransactionRunner>(transactions);
     registerUseCases(locator);
     registerBlocs(locator);
+    _registerBackup();
+  }
+
+  /// Backup screen on an empty temp folder with a fake database.
+  void _registerBackup() {
+    final root = Directory.systemTemp.createTempSync('inventrix_widget_');
+    final db = File('${root.path}/inventory_management.sqlite')
+      ..writeAsStringSync('data');
+    final locations = AppStorageLocations(
+      documents: () async => root,
+      temporary: () async => root,
+      databasePath: () async => db.path,
+    );
+    final history = bk.InMemoryHistory();
+    final inspector = bk.FakeInspector();
+    final packager = ZipBackupPackager();
+    final ids = bk.SeqIds();
+    final backupClock = bk.FakeClock();
+    final create = CreateBackup(
+      snapshotter: bk.FakeSnapshotter(db),
+      inspector: inspector,
+      packager: packager,
+      locations: locations,
+      history: history,
+      ids: ids,
+      clock: backupClock,
+      appVersion: '1.0.0',
+    );
+    locator.registerFactory<BackupBloc>(
+      () => BackupBloc(
+        listBackups: ListBackups(history: history, locations: locations),
+        createBackup: create,
+        exportBackup: ExportBackup(
+          history: history,
+          locations: locations,
+          packager: packager,
+          exporter: bk.FakeExporter(),
+          clock: backupClock,
+        ),
+        deleteBackup: DeleteStoredBackup(history: history, locations: locations),
+        prepareRestore: PrepareRestore(
+          packager: packager,
+          inspector: inspector,
+          locations: locations,
+        ),
+        discardStaged: DiscardStagedBackup(locations: locations),
+        restoreBackup: RestoreBackup(
+          inspector: inspector,
+          locations: locations,
+          createBackup: create,
+          swapper: FileRestoreSwapper(),
+          journal: bk.InMemoryJournal(),
+          runtime: bk.FakeRuntime(),
+          ids: ids,
+          clock: backupClock,
+        ),
+        locations: locations,
+      ),
+    );
   }
 
   final GetIt locator = GetIt.asNewInstance();

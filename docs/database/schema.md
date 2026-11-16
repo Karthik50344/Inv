@@ -53,7 +53,7 @@ Triggers/guards: no UPDATE/DELETE on this table (enforced by `BEFORE UPDATE/DELE
 | 8 | expenses | `number` (set when posted, unique), `status` (draft/posted/cancelled/voided), `expense_date` (UTC midnight), `category_id` + `category_name`, `description`, `payee`, `method_id` + `method_name`, `reference`, `notes`, `currency_code`, `decimal_places`, `amount_includes_tax`, `tax_rate_id`/`tax_name`/`tax_rate_bp`, `net_minor`, `tax_minor`, `total_minor` (CHECK total = net + tax, total > 0), `posted_at`/`cancelled_at`/`voided_at`/`void_reason`. Posted rows immutable (trigger); never deleted |
 | 8 | attachments | `owner_type` (`expense` for now), `owner_id`, `file_name`, `stored_path` (relative), `mime_type`, `size_bytes`; insert only for draft/posted expenses, delete only for drafts, never updated (triggers). SHA-256 per file is added with backup in Phase 10 |
 | 3+ | audit_logs | `entity_type`, `entity_id`, `action`, `summary`, `occurred_at` (no sensitive payloads) |
-| 10 | backup_history | `file_name`, `created_at`, `size_bytes`, `sha256`, `location`, `status` |
+| 10 | backup_history (v9) | `id`, `kind` (backup/safety/restore), `file_name`, `stored_path` (file name in the app's `backups/` folder, NULL once deleted), `size_bytes`, `sha256`, `schema_version`, `app_version`, `outcome` (success/failed), `error_message`, `created_at`, `exported_at`; index on `created_at` |
 
 ## Derived calculations (queries, not stored)
 - **Payment status:** `unpaid` (allocated = 0), `partiallyPaid`, `paid` (allocated ≥ total), `overdue` (unpaid/partial and due_date < today), `partiallyRefunded`/`refunded` (refund allocations), `writtenOff` (explicit write-off record).

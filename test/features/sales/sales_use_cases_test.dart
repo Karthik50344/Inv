@@ -389,9 +389,7 @@ void main() {
       final again = await f
           .draft([line(p, '1')])
           .then((_) => null)
-          .onError(
-            (_, __) => null,
-          );
+          .onError((_, __) => null);
       expect(again, isNull);
       expect((await balance(p)).quantityOnHand, Quantity.zero);
     });
@@ -510,9 +508,8 @@ void main() {
       final a = await product(name: 'A', stock: '50');
       final b = await product(name: 'B', price: '3', stock: '50', cost: '1.5');
       for (final qty in ['1', '4', '7']) {
-        (await f.post(
-          (await f.draft([line(a, qty), line(b, qty)])).id,
-        )).valueOrNull!;
+        (await f.post((await f.draft([line(a, qty), line(b, qty)])).id))
+            .valueOrNull!;
       }
       final report = (await f.reconcile()).valueOrNull!;
       expect(report.isConsistent, isTrue);
@@ -644,8 +641,10 @@ void main() {
       expect(f.sales.items[d.id]!.status, DocumentStatus.posted);
       expect((await balance(p)).quantityOnHand, Quantity.fromUnits(7));
       f.guard.active = false;
-      expect((await f.voidSale(d.id, reason: 'Wrong customer')).isSuccess,
-          isTrue);
+      expect(
+        (await f.voidSale(d.id, reason: 'Wrong customer')).isSuccess,
+        isTrue,
+      );
     });
 
     test('puts the stock back and keeps the document', () async {

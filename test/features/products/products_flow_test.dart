@@ -6,6 +6,7 @@ import 'package:inventrix/features/products/presentation/pages/product_detail_pa
 import 'package:inventrix/features/products/presentation/pages/product_form_page.dart';
 import 'package:inventrix/features/products/presentation/pages/products_page.dart';
 import 'package:flutter/material.dart';
+
 import '../../support/test_locator.dart';
 import '../../support/widget_helpers.dart';
 

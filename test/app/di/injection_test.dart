@@ -25,6 +25,12 @@ import 'package:inventrix/features/payments/presentation/bloc/payment_form_cubit
 import 'package:inventrix/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:inventrix/features/sales/domain/usecases/void_sale.dart';
 import 'package:inventrix/shared/domain/services/invoice_payment_guard.dart';
+import 'package:inventrix/app/runtime/unavailable_app_runtime.dart';
+import 'package:inventrix/features/backup/data/repositories/drift_backup_history_repository.dart';
+import 'package:inventrix/features/backup/domain/repositories/app_runtime.dart';
+import 'package:inventrix/features/backup/domain/repositories/backup_history_repository.dart';
+import 'package:inventrix/features/backup/domain/usecases/restore_backup.dart';
+import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/di/injection.dart';
@@ -147,5 +153,22 @@ void main() {
       database: AppDatabase(NativeDatabase.memory()),
     );
     expect(locator.isRegistered<AppDatabase>(), isTrue);
+  });
+
+  test('resolves the backup feature; restore is unavailable without a runtime',
+      () async {
+    await configureDependencies(
+      locator: locator,
+      database: AppDatabase(NativeDatabase.memory()),
+    );
+    expect(
+      locator<BackupHistoryRepository>(),
+      isA<DriftBackupHistoryRepository>(),
+    );
+    expect(locator<AppRuntime>(), isA<UnavailableAppRuntime>());
+    expect(locator<RestoreBackup>(), isA<RestoreBackup>());
+    final bloc = locator<BackupBloc>();
+    expect(bloc, isA<BackupBloc>());
+    await bloc.close();
   });
 }

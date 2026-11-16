@@ -1,6 +1,7 @@
 import '../support/fakes.dart';
 import '../support/payment_guard_fake.dart';
 import 'data_test_support.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventrix/core/database/drift_transaction_runner.dart';
 import 'package:inventrix/core/errors/failure.dart';
@@ -320,21 +321,17 @@ void main() {
       const PurchaseFilter(status: DocumentStatus.posted),
     )).valueOrNull!;
     expect(list.single.id, b);
-    list = (await purchases.search(
-      const PurchaseFilter(query: 'PUR-000001'),
-    )).valueOrNull!;
+    list = (await purchases.search(const PurchaseFilter(query: 'PUR-000001')))
+        .valueOrNull!;
     expect(list.single.id, b);
-    list = (await purchases.search(
-      const PurchaseFilter(query: 'inv-77'),
-    )).valueOrNull!;
+    list = (await purchases.search(const PurchaseFilter(query: 'inv-77')))
+        .valueOrNull!;
     expect(list.length, 2);
-    list = (await purchases.search(
-      const PurchaseFilter(query: '100%'),
-    )).valueOrNull!;
+    list = (await purchases.search(const PurchaseFilter(query: '100%')))
+        .valueOrNull!;
     expect(list, isEmpty);
-    list = (await purchases.search(
-      const PurchaseFilter(supplierId: 'other'),
-    )).valueOrNull!;
+    list = (await purchases.search(const PurchaseFilter(supplierId: 'other')))
+        .valueOrNull!;
     expect(list, isEmpty);
     expect(a, isNotEmpty);
   });

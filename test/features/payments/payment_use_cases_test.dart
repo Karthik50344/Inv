@@ -17,7 +17,10 @@ void main() {
   setUp(() => f = PaymentFixture());
 
   Future<PaymentStatus?> statusOf(String id) async {
-    final view = (await f.open.settlementOf(InvoiceKind.sales, id)).valueOrNull!;
+    final view = (await f.open.settlementOf(
+      InvoiceKind.sales,
+      id,
+    )).valueOrNull!;
     return view.status;
   }
 
@@ -38,8 +41,10 @@ void main() {
     test('partial payment leaves the rest outstanding', () async {
       f.addSale('i1', '100');
       await f.pay('40', to: {'i1': '40'});
-      final view = (await f.open.settlementOf(InvoiceKind.sales, 'i1'))
-          .valueOrNull!;
+      final view = (await f.open.settlementOf(
+        InvoiceKind.sales,
+        'i1',
+      )).valueOrNull!;
       expect(view.status, PaymentStatus.partiallyPaid);
       expect(view.invoice.outstanding, f.money('60'));
       expect(view.payments.length, 1);
@@ -48,7 +53,10 @@ void main() {
     test('one payment can settle several invoices', () async {
       f.addSale('i1', '100');
       f.addSale('i2', '50');
-      final p = (await f.pay('150', to: {'i1': '100', 'i2': '50'})).valueOrNull!;
+      final p = (await f.pay(
+        '150',
+        to: {'i1': '100', 'i2': '50'},
+      )).valueOrNull!;
       expect(p.allocations.length, 2);
       expect(p.allocatedTotal, f.money('150'));
       expect(await statusOf('i2'), PaymentStatus.paid);
@@ -74,8 +82,10 @@ void main() {
         to: {'b1': '200'},
       )).valueOrNull!;
       expect(p.isMoneyIn, isFalse);
-      final view = (await f.open.settlementOf(InvoiceKind.purchase, 'b1'))
-          .valueOrNull!;
+      final view = (await f.open.settlementOf(
+        InvoiceKind.purchase,
+        'b1',
+      )).valueOrNull!;
       expect(view.status, PaymentStatus.paid);
     });
 
@@ -123,8 +133,10 @@ void main() {
       expect((await f.pay('10', to: {'d': '10'})).isFailure, isTrue);
       expect((await f.pay('10', to: {'v': '10'})).isFailure, isTrue);
       expect((await f.pay('10', to: {'walk': '10'})).isFailure, isTrue);
-      expect((await f.pay('10', to: {'nope': '10'})).failureOrNull,
-          isA<NotFoundFailure>());
+      expect(
+        (await f.pay('10', to: {'nope': '10'})).failureOrNull,
+        isA<NotFoundFailure>(),
+      );
       f.addPurchase('b1', '100');
       expect((await f.pay('10', to: {'b1': '10'})).isFailure, isTrue);
     });
@@ -158,8 +170,10 @@ void main() {
       expect(b.valueOrNull!.id, a.valueOrNull!.id);
       expect(f.payments.items.length, 1);
       expect(f.sequences.counters['payment'], 1);
-      final view = (await f.open.settlementOf(InvoiceKind.sales, 'i1'))
-          .valueOrNull!;
+      final view = (await f.open.settlementOf(
+        InvoiceKind.sales,
+        'i1',
+      )).valueOrNull!;
       expect(view.invoice.netPaid, f.money('40'));
     });
 
@@ -198,7 +212,10 @@ void main() {
       ]);
       expect(r.valueOrNull!.allocations.length, 1);
       expect(await statusOf('i1'), PaymentStatus.paid);
-      expect(PaymentPosition.of(r.valueOrNull!, const []).credit, f.money('40'));
+      expect(
+        PaymentPosition.of(r.valueOrNull!, const []).credit,
+        f.money('40'),
+      );
     });
 
     test('cannot exceed the remaining credit, also when repeated', () async {
@@ -248,40 +265,60 @@ void main() {
 
     test('requires a reason and cannot be repeated', () async {
       final p = (await f.pay('10')).valueOrNull!;
-      expect((await f.reverse(p.id, reason: ' ')).failureOrNull,
-          isA<ValidationFailure>());
+      expect(
+        (await f.reverse(p.id, reason: ' ')).failureOrNull,
+        isA<ValidationFailure>(),
+      );
       expect((await f.reverse(p.id, reason: 'x')).isSuccess, isTrue);
-      expect((await f.reverse(p.id, reason: 'x')).failureOrNull,
-          isA<ValidationFailure>());
+      expect(
+        (await f.reverse(p.id, reason: 'x')).failureOrNull,
+        isA<ValidationFailure>(),
+      );
       expect(f.audit.entries.where((e) => e.action == 'reversed').length, 1);
     });
 
-    test('a payment with an active refund must keep it reversed first',
-        () async {
-      f.addSale('i1', '100');
-      final p = (await f.pay('100', to: {'i1': '100'})).valueOrNull!;
-      final refund = (await f.doRefund(p.id, '30', from: {'i1': '30'}))
-          .valueOrNull!;
-      expect((await f.reverse(p.id, reason: 'x')).failureOrNull,
-          isA<ValidationFailure>());
-      expect((await f.reverse(refund.id, reason: 'undo')).isSuccess, isTrue);
-      expect((await f.reverse(p.id, reason: 'x')).isSuccess, isTrue);
-    });
+    test(
+      'a payment with an active refund must keep it reversed first',
+      () async {
+        f.addSale('i1', '100');
+        final p = (await f.pay('100', to: {'i1': '100'})).valueOrNull!;
+        final refund = (await f.doRefund(
+          p.id,
+          '30',
+          from: {'i1': '30'},
+        )).valueOrNull!;
+        expect(
+          (await f.reverse(p.id, reason: 'x')).failureOrNull,
+          isA<ValidationFailure>(),
+        );
+        expect((await f.reverse(refund.id, reason: 'undo')).isSuccess, isTrue);
+        expect((await f.reverse(p.id, reason: 'x')).isSuccess, isTrue);
+      },
+    );
 
-    test('a refund cannot be reversed once the invoice was paid again',
-        () async {
-      f.addSale('i1', '100');
-      final p = (await f.pay('100', to: {'i1': '100'})).valueOrNull!;
-      final refund = (await f.doRefund(p.id, '40', from: {'i1': '40'}))
-          .valueOrNull!;
-      await f.pay('40', to: {'i1': '40'});
-      expect((await f.reverse(refund.id, reason: 'undo')).failureOrNull,
-          isA<ValidationFailure>());
-    });
+    test(
+      'a refund cannot be reversed once the invoice was paid again',
+      () async {
+        f.addSale('i1', '100');
+        final p = (await f.pay('100', to: {'i1': '100'})).valueOrNull!;
+        final refund = (await f.doRefund(
+          p.id,
+          '40',
+          from: {'i1': '40'},
+        )).valueOrNull!;
+        await f.pay('40', to: {'i1': '40'});
+        expect(
+          (await f.reverse(refund.id, reason: 'undo')).failureOrNull,
+          isA<ValidationFailure>(),
+        );
+      },
+    );
 
     test('unknown payment is not found', () async {
-      expect((await f.reverse('zzz', reason: 'x')).failureOrNull,
-          isA<NotFoundFailure>());
+      expect(
+        (await f.reverse('zzz', reason: 'x')).failureOrNull,
+        isA<NotFoundFailure>(),
+      );
     });
   });
 
@@ -294,8 +331,10 @@ void main() {
       expect(r.kind, PaymentKind.refund);
       expect(r.isMoneyIn, isFalse);
       expect(r.allocations.single.amount, f.money('40').negate());
-      final view = (await f.open.settlementOf(InvoiceKind.sales, 'i1'))
-          .valueOrNull!;
+      final view = (await f.open.settlementOf(
+        InvoiceKind.sales,
+        'i1',
+      )).valueOrNull!;
       expect(view.invoice.netPaid, f.money('60'));
       expect(view.invoice.refunded, f.money('40'));
       expect(view.status, PaymentStatus.partiallyRefunded);
@@ -313,24 +352,34 @@ void main() {
       final p = (await f.pay('130', to: {'i1': '100'})).valueOrNull!;
       expect((await f.doRefund(p.id, '30')).isSuccess, isTrue);
       expect(await statusOf('i1'), PaymentStatus.paid);
-      expect((await f.doRefund(p.id, '1')).failureOrNull,
-          isA<ValidationFailure>());
+      expect(
+        (await f.doRefund(p.id, '1')).failureOrNull,
+        isA<ValidationFailure>(),
+      );
     });
 
     test('cannot refund more than was paid or more than settled', () async {
       f.addSale('i1', '100');
       final p = (await f.pay('100', to: {'i1': '100'})).valueOrNull!;
-      expect((await f.doRefund(p.id, '100.01', from: {'i1': '100'})).isFailure,
-          isTrue);
-      expect((await f.doRefund(p.id, '50', from: {'i1': '60'})).isFailure,
-          isTrue);
+      expect(
+        (await f.doRefund(p.id, '100.01', from: {'i1': '100'})).isFailure,
+        isTrue,
+      );
+      expect(
+        (await f.doRefund(p.id, '50', from: {'i1': '60'})).isFailure,
+        isTrue,
+      );
       expect((await f.doRefund(p.id, '50')).isFailure, isTrue);
       expect((await f.doRefund(p.id, '0', from: {})).isFailure, isTrue);
       await f.doRefund(p.id, '70', from: {'i1': '70'});
-      expect((await f.doRefund(p.id, '40', from: {'i1': '40'})).isFailure,
-          isTrue);
-      expect((await f.doRefund(p.id, '30', from: {'i1': '30'})).isSuccess,
-          isTrue);
+      expect(
+        (await f.doRefund(p.id, '40', from: {'i1': '40'})).isFailure,
+        isTrue,
+      );
+      expect(
+        (await f.doRefund(p.id, '30', from: {'i1': '30'})).isSuccess,
+        isTrue,
+      );
     });
 
     test('requires a reason and is idempotent', () async {
@@ -362,20 +411,22 @@ void main() {
   });
 
   group('Balances', () {
-    test('customer balance = opening + invoices - payments + refunds',
-        () async {
-      f.addCustomer('c1', 'Acme Traders', opening: '25');
-      f.addSale('i1', '100');
-      f.addSale('i2', '50');
-      f.addSale('draft', '999', status: DocumentStatus.draft);
-      final p = (await f.pay('100', to: {'i1': '100'})).valueOrNull!;
-      var b = (await f.balances(PartyType.customer, 'c1')).valueOrNull!;
-      expect(b.invoiced, f.money('150'));
-      expect(b.balance, f.money('75'));
-      await f.doRefund(p.id, '20', from: {'i1': '20'});
-      b = (await f.balances(PartyType.customer, 'c1')).valueOrNull!;
-      expect(b.balance, f.money('95'));
-    });
+    test(
+      'customer balance = opening + invoices - payments + refunds',
+      () async {
+        f.addCustomer('c1', 'Acme Traders', opening: '25');
+        f.addSale('i1', '100');
+        f.addSale('i2', '50');
+        f.addSale('draft', '999', status: DocumentStatus.draft);
+        final p = (await f.pay('100', to: {'i1': '100'})).valueOrNull!;
+        var b = (await f.balances(PartyType.customer, 'c1')).valueOrNull!;
+        expect(b.invoiced, f.money('150'));
+        expect(b.balance, f.money('75'));
+        await f.doRefund(p.id, '20', from: {'i1': '20'});
+        b = (await f.balances(PartyType.customer, 'c1')).valueOrNull!;
+        expect(b.balance, f.money('95'));
+      },
+    );
 
     test('an advance payment shows as credit', () async {
       await f.pay('40');
@@ -410,7 +461,10 @@ void main() {
       f.addSale('i2', '50');
       f.addSale('walk', '70', customerId: null);
       await f.pay('50', to: {'i2': '50'});
-      final open = (await f.open.forParty(PartyType.customer, 'c1')).valueOrNull!;
+      final open = (await f.open.forParty(
+        PartyType.customer,
+        'c1',
+      )).valueOrNull!;
       expect(open.map((i) => i.id).toList(), ['i1']);
     });
   });
@@ -419,20 +473,26 @@ void main() {
     test('the guard sees payment activity until it is reversed', () async {
       f.addSale('i1', '100');
       expect(
-        (await f.payments.hasActivePayments(InvoiceKind.sales, 'i1'))
-            .valueOrNull,
+        (await f.payments.hasActivePayments(
+          InvoiceKind.sales,
+          'i1',
+        )).valueOrNull,
         isFalse,
       );
       final p = (await f.pay('10', to: {'i1': '10'})).valueOrNull!;
       expect(
-        (await f.payments.hasActivePayments(InvoiceKind.sales, 'i1'))
-            .valueOrNull,
+        (await f.payments.hasActivePayments(
+          InvoiceKind.sales,
+          'i1',
+        )).valueOrNull,
         isTrue,
       );
       await f.reverse(p.id, reason: 'x');
       expect(
-        (await f.payments.hasActivePayments(InvoiceKind.sales, 'i1'))
-            .valueOrNull,
+        (await f.payments.hasActivePayments(
+          InvoiceKind.sales,
+          'i1',
+        )).valueOrNull,
         isFalse,
       );
     });
@@ -442,10 +502,14 @@ void main() {
     test('create, reject duplicates, archive and restore', () async {
       final a = await f.createMethod('Bank transfer');
       expect(a.isSuccess, isTrue);
-      expect((await f.createMethod('bank TRANSFER')).failureOrNull,
-          isA<ValidationFailure>());
-      expect((await f.createMethod('  ')).failureOrNull,
-          isA<ValidationFailure>());
+      expect(
+        (await f.createMethod('bank TRANSFER')).failureOrNull,
+        isA<ValidationFailure>(),
+      );
+      expect(
+        (await f.createMethod('  ')).failureOrNull,
+        isA<ValidationFailure>(),
+      );
       await f.archiveMethod(a.valueOrNull!.id, archived: true);
       expect((await f.methods.list()).valueOrNull!.length, 1);
       expect((await f.createMethod('Bank transfer')).isSuccess, isTrue);

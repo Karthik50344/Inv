@@ -1,5 +1,6 @@
 import 'fakes.dart';
 import 'inventory_fakes.dart';
+
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/features/payments/domain/entities/party_type.dart';
@@ -33,6 +34,7 @@ import 'package:inventrix/features/suppliers/domain/entities/supplier.dart';
 import 'package:inventrix/shared/domain/enums/invoice_kind.dart';
 import 'package:inventrix/shared/domain/services/invoice_return_lookup.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
+
 import 'payment_fakes.dart';
 import 'purchase_fakes.dart';
 import 'sales_fakes.dart';
@@ -86,19 +88,20 @@ class FakeReturnRepository
   @override
   Future<Result<List<ReturnSummary>>> search(ReturnFilter filter) async {
     final q = filter.query.toLowerCase();
-    final list = items.values.where((d) {
-      if (filter.kind != null && d.kind != filter.kind) return false;
-      if (filter.invoiceId != null && d.invoiceId != filter.invoiceId) {
-        return false;
-      }
-      return q.isEmpty ||
-          d.number.toLowerCase().contains(q) ||
-          d.invoiceNumber.toLowerCase().contains(q) ||
-          d.partyName.toLowerCase().contains(q);
-    }).toList()..sort((a, b) {
-      final byDate = b.returnDate.compareTo(a.returnDate);
-      return byDate != 0 ? byDate : b.createdAt.compareTo(a.createdAt);
-    });
+    final list =
+        items.values.where((d) {
+          if (filter.kind != null && d.kind != filter.kind) return false;
+          if (filter.invoiceId != null && d.invoiceId != filter.invoiceId) {
+            return false;
+          }
+          return q.isEmpty ||
+              d.number.toLowerCase().contains(q) ||
+              d.invoiceNumber.toLowerCase().contains(q) ||
+              d.partyName.toLowerCase().contains(q);
+        }).toList()..sort((a, b) {
+          final byDate = b.returnDate.compareTo(a.returnDate);
+          return byDate != 0 ? byDate : b.createdAt.compareTo(a.createdAt);
+        });
     return Result.success([
       for (final d in list)
         ReturnSummary(

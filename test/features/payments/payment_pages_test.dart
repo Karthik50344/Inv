@@ -39,7 +39,13 @@ void main() {
       status: DocumentStatus.posted,
       invoiceDate: DateTime.utc(2026, 1, 5),
       lines: const [],
-      totals: SalesTotals(gross: t, discount: zero, net: t, tax: zero, total: t),
+      totals: SalesTotals(
+        gross: t,
+        discount: zero,
+        net: t,
+        tax: zero,
+        total: t,
+      ),
       createdAt: now,
       updatedAt: now,
       postedAt: now,
@@ -119,9 +125,7 @@ void main() {
         amount: inr('100'),
         paymentDate: DateTime.utc(2026, 1, 6),
         idempotencyKey: 'k1',
-        allocations: [
-          AllocationRequest(invoiceId: 'i1', amount: inr('100')),
-        ],
+        allocations: [AllocationRequest(invoiceId: 'i1', amount: inr('100'))],
       ),
     )).valueOrNull!;
     await pumpInventrix(
@@ -141,11 +145,7 @@ void main() {
 
   testWidgets('outstanding balances list who owes money', (tester) async {
     addPostedSale('i1', '100');
-    await pumpInventrix(
-      tester,
-      wiring,
-      location: '/more/payments/outstanding',
-    );
+    await pumpInventrix(tester, wiring, location: '/more/payments/outstanding');
     expect(find.byType(OutstandingPage), findsOneWidget);
     expect(find.byKey(Key('balance_$customerId')), findsOneWidget);
     expect(find.byKey(const Key('outstanding_total')), findsOneWidget);

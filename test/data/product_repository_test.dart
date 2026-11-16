@@ -105,21 +105,24 @@ void main() {
     final all = (await h.products.search(const ProductFilter())).valueOrNull!;
     expect(all.map((p) => p.name).toList(), ['Alpha', 'Zed']);
     expect(
-      (await h.products.search(
-        const ProductFilter(query: 'alp'),
-      )).valueOrNull!.single.id,
+      (await h.products.search(const ProductFilter(query: 'alp')))
+          .valueOrNull!
+          .single
+          .id,
       'b',
     );
     expect(
-      (await h.products.search(
-        const ProductFilter(query: 'a-1'),
-      )).valueOrNull!.single.id,
+      (await h.products.search(const ProductFilter(query: 'a-1')))
+          .valueOrNull!
+          .single
+          .id,
       'a',
     );
     expect(
-      (await h.products.search(
-        const ProductFilter(query: '777'),
-      )).valueOrNull!.single.id,
+      (await h.products.search(const ProductFilter(query: '777')))
+          .valueOrNull!
+          .single
+          .id,
       'b',
     );
   });

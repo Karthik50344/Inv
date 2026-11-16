@@ -21,6 +21,9 @@ import 'package:inventrix/features/customers/presentation/pages/customers_page.d
 import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_event.dart';
 import 'package:inventrix/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
+import 'package:inventrix/features/backup/presentation/bloc/backup_event.dart';
+import 'package:inventrix/features/backup/presentation/pages/backup_page.dart';
 import 'package:inventrix/features/reports/domain/entities/report_kind.dart';
 import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
 import 'package:inventrix/features/reports/presentation/bloc/report_event.dart';
@@ -107,6 +110,7 @@ abstract final class AppRouter {
     RouteNames.returns,
     RouteNames.expenses,
     RouteNames.reports,
+    RouteNames.backup,
   };
 
   /// Creates a router. There is no login: the dashboard opens directly.
@@ -353,6 +357,15 @@ abstract final class AppRouter {
                             phase: destination.phase,
                           ),
                         ),
+                    GoRoute(
+                      path: 'backup',
+                      name: RouteNames.backup,
+                      builder: (context, state) => BlocProvider(
+                        create: (_) =>
+                            di<BackupBloc>()..add(const BackupStarted()),
+                        child: const BackupPage(),
+                      ),
+                    ),
                     GoRoute(
                       path: 'purchases',
                       name: RouteNames.purchases,

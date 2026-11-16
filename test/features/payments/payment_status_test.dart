@@ -7,8 +7,7 @@ import 'package:inventrix/shared/domain/enums/document_status.dart';
 import 'package:inventrix/shared/domain/enums/invoice_kind.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
 
-Money m(String t) =>
-    Money.tryParse(t, currencyCode: 'INR', decimalPlaces: 2)!;
+Money m(String t) => Money.tryParse(t, currencyCode: 'INR', decimalPlaces: 2)!;
 
 PaymentStatus? status({
   String total = '100',
@@ -89,15 +88,12 @@ void main() {
 
     test('written off is never derived', () {
       expect(PaymentStatus.writtenOff.isSettled, isTrue);
-      expect(
-        [
-          status(),
-          status(paid: '40'),
-          status(paid: '100'),
-          status(refunded: '100'),
-        ],
-        isNot(contains(PaymentStatus.writtenOff)),
-      );
+      expect([
+        status(),
+        status(paid: '40'),
+        status(paid: '100'),
+        status(refunded: '100'),
+      ], isNot(contains(PaymentStatus.writtenOff)));
     });
   });
 

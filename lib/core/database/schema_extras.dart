@@ -398,3 +398,10 @@ const List<String> kSchemaExtraStatementsV8 = [
       "BEGIN SELECT RAISE(ABORT, 'attachments of posted expenses are kept'); "
       'END',
 ];
+
+/// Extra SQL introduced by schema version 9 (backup history). Runs on fresh
+/// installs and as part of the 8 -> 9 upgrade.
+const List<String> kSchemaExtraStatementsV9 = [
+  'CREATE INDEX IF NOT EXISTS idx_backup_history_created '
+      'ON backup_history (created_at)',
+];

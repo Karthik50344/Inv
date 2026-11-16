@@ -242,7 +242,8 @@ void main() {
     test('loads, filters and searches', () async {
       await f.pay('10');
       await f.pay('20', type: PartyType.supplier);
-      final bloc = PaymentsBloc(payments: f.payments)..add(const PaymentsStarted());
+      final bloc = PaymentsBloc(payments: f.payments)
+        ..add(const PaymentsStarted());
       await Future<void>.delayed(const Duration(milliseconds: 20));
       expect(bloc.state.items.length, 2);
       bloc.add(const PaymentsPartyTypeChanged(PartyType.supplier));

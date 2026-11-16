@@ -276,12 +276,10 @@ void main() {
 
     test('weighted average cost across purchases', () async {
       final p = await product();
-      (await f.post(
-        (await f.draft([line(p, '10', price: '10')])).id,
-      )).valueOrNull!;
-      (await f.post(
-        (await f.draft([line(p, '10', price: '20')])).id,
-      )).valueOrNull!;
+      (await f.post((await f.draft([line(p, '10', price: '10')])).id))
+          .valueOrNull!;
+      (await f.post((await f.draft([line(p, '10', price: '20')])).id))
+          .valueOrNull!;
       final b = await balance(p);
       expect(b.quantityOnHand, Quantity.fromUnits(20));
       expect(b.inventoryValue, inr(30000));
@@ -417,9 +415,8 @@ void main() {
       final a = await product(name: 'A');
       final b = await product(name: 'B', price: '3');
       for (final qty in ['1', '4', '7']) {
-        (await f.post(
-          (await f.draft([line(a, qty), line(b, qty)])).id,
-        )).valueOrNull!;
+        (await f.post((await f.draft([line(a, qty), line(b, qty)])).id))
+            .valueOrNull!;
       }
       final report = (await f.reconcile()).valueOrNull!;
       expect(report.isConsistent, isTrue);
@@ -512,8 +509,10 @@ void main() {
       expect(f.purchases.items[d.id]!.status, DocumentStatus.posted);
       expect((await balance(p)).quantityOnHand, Quantity.fromUnits(10));
       f.guard.active = false;
-      expect((await f.voidPurchase(d.id, reason: 'Wrong supplier')).isSuccess,
-          isTrue);
+      expect(
+        (await f.voidPurchase(d.id, reason: 'Wrong supplier')).isSuccess,
+        isTrue,
+      );
     });
 
     test('reverses the stock and keeps the document', () async {
@@ -544,9 +543,8 @@ void main() {
       final p = await product();
       final first = await f.draft([line(p, '10', price: '10')]);
       (await f.post(first.id)).valueOrNull!;
-      (await f.post(
-        (await f.draft([line(p, '10', price: '20')])).id,
-      )).valueOrNull!;
+      (await f.post((await f.draft([line(p, '10', price: '20')])).id))
+          .valueOrNull!;
       (await f.voidPurchase(first.id, reason: 'Duplicate entry')).valueOrNull!;
       final b = await balance(p);
       expect(b.quantityOnHand, Quantity.fromUnits(10));
