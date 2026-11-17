@@ -34,7 +34,7 @@ flowchart LR
 
 ## Known limitations
 - Walk-in sales (no customer) are not tracked by payments; the sale screen says so.
-- Payments are recorded in the configured currency; invoices in an older currency cannot be settled until Phase 11 defines currency-change handling.
+- Payments are recorded in the configured currency. Since Phase 11 the currency cannot change while posted invoices exist, so an invoice can never be stranded in an older currency (see `settings.md`).
 - Credit allocation has no idempotency key; repeats are bounded by remaining credit and outstanding amounts and cannot over-allocate.
 - `PartyBalance` for the outstanding list is computed per party (N small queries), fine for thousands of parties; revisit with a SQL aggregate if needed.
 

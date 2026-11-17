@@ -20,6 +20,8 @@ final class ProductFormState extends Equatable {
     this.units = const [],
     this.taxRates = const [],
     this.currency,
+    this.defaultTaxRateId,
+    this.defaultPriceIncludesTax = false,
     this.imagePath,
     this.fieldErrors = const {},
     this.message,
@@ -47,6 +49,12 @@ final class ProductFormState extends Equatable {
   /// Active currency (for labels and hints).
   final CurrencyConfig? currency;
 
+  /// Tax rate preselected for a new product (from the settings).
+  final String? defaultTaxRateId;
+
+  /// Whether a new product starts with tax-inclusive prices.
+  final bool defaultPriceIncludesTax;
+
   /// Stored (relative) image path.
   final String? imagePath;
 
@@ -72,6 +80,8 @@ final class ProductFormState extends Equatable {
     List<UnitOfMeasure>? units,
     List<TaxRate>? taxRates,
     CurrencyConfig? currency,
+    String? defaultTaxRateId,
+    bool? defaultPriceIncludesTax,
     String? imagePath,
     bool clearImage = false,
     Map<String, String>? fieldErrors,
@@ -85,6 +95,9 @@ final class ProductFormState extends Equatable {
     units: units ?? this.units,
     taxRates: taxRates ?? this.taxRates,
     currency: currency ?? this.currency,
+    defaultTaxRateId: defaultTaxRateId ?? this.defaultTaxRateId,
+    defaultPriceIncludesTax:
+        defaultPriceIncludesTax ?? this.defaultPriceIncludesTax,
     imagePath: clearImage ? null : (imagePath ?? this.imagePath),
     fieldErrors: fieldErrors ?? const {},
     message: message,
@@ -100,6 +113,8 @@ final class ProductFormState extends Equatable {
     units,
     taxRates,
     currency,
+    defaultTaxRateId,
+    defaultPriceIncludesTax,
     imagePath,
     fieldErrors,
     message,

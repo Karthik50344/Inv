@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
 import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/core/formatters/date_formatter.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_movement.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/stock_detail_cubit.dart';
@@ -12,7 +13,6 @@ import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
 import 'package:inventrix/shared/presentation/widgets/error_state.dart';
 import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:intl/intl.dart';
 
 /// Stock position, valuation and movement history for one product.
 class StockDetailPage extends StatelessWidget {
@@ -173,9 +173,7 @@ class _MovementTile extends StatelessWidget {
     const formatter = MoneyFormatter();
     final inbound = movement.isInbound;
     final sign = inbound ? '+' : '';
-    final when = DateFormat(
-      'd MMM y, h:mm a',
-    ).format(movement.occurredAt.toLocal());
+    final when = DateFormatter.dateTime(movement.occurredAt);
     return ListTile(
       key: Key('movement_${movement.id}'),
       contentPadding: EdgeInsets.zero,

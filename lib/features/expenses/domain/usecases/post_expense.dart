@@ -11,7 +11,7 @@ import 'package:inventrix/features/payments/domain/repositories/payment_method_r
 import 'package:inventrix/shared/domain/audit/audit_entry.dart';
 import 'package:inventrix/shared/domain/audit/audit_log_repository.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
-import 'package:inventrix/shared/domain/services/document_number.dart';
+import 'package:inventrix/shared/domain/services/document_kind.dart';
 import 'package:inventrix/shared/domain/services/document_sequence_repository.dart';
 
 /// Posts an expense: re-validates it, assigns its gap-free number and marks
@@ -94,9 +94,8 @@ final class PostExpense {
 
     // 3. Number, status and audit: all inside this transaction.
     final now = _clock.now();
-    final sequence = (await _sequences.next(ExpenseNumbering.sequenceKey))
+    final number = (await _sequences.nextNumber(DocumentKind.expense))
         .getOrThrow();
-    final number = DocumentNumber.format(ExpenseNumbering.prefix, sequence);
     (await _expenses.markPosted(
       id,
       number: number,

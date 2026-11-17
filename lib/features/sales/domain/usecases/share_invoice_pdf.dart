@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/features/sales/domain/repositories/sales_repository.dart';
 import 'package:inventrix/features/sales/domain/services/invoice_layout.dart';
 import 'package:inventrix/features/sales/domain/services/invoice_pdf.dart';
+import 'package:inventrix/features/settings/domain/repositories/logo_storage.dart';
 import 'package:inventrix/features/settings/domain/repositories/settings_repository.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
@@ -21,13 +24,16 @@ final class ShareInvoicePdf {
     required InvoiceFileSharer sharer,
     required String Function(Money) formatMoney,
     required String Function(DateTime) formatDate,
-  }) : _sales = sales,
+    LogoStorage? logos,
+  }) : _logos = logos,
+       _sales = sales,
        _settings = settings,
        _renderer = renderer,
        _sharer = sharer,
        _formatMoney = formatMoney,
        _formatDate = formatDate;
 
+  final LogoStorage? _logos;
   final SalesRepository _sales;
   final SettingsRepository _settings;
   final InvoicePdfRenderer _renderer;
@@ -59,7 +65,12 @@ final class ShareInvoicePdf {
       money: _formatMoney,
       date: _formatDate,
     );
-    final pdf = await _renderer.render(layout);
+    final logoPath = business.logoPath;
+    final logoBytes = logoPath == null ? null : await _logos?.read(logoPath);
+    final pdf = await _renderer.render(
+      layout,
+      logo: logoBytes == null ? null : Uint8List.fromList(logoBytes),
+    );
     final bytes = pdf.valueOrNull;
     if (bytes == null) {
       return Result.failure(pdf.failureOrNull!);

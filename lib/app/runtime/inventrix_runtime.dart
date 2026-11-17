@@ -8,6 +8,7 @@ import 'package:inventrix/features/backup/data/services/file_restore_swapper.dar
 import 'package:inventrix/features/backup/domain/entities/restore_notice.dart';
 import 'package:inventrix/features/backup/domain/repositories/app_runtime.dart';
 import 'package:inventrix/features/backup/domain/usecases/recover_restore.dart';
+import 'package:inventrix/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -49,6 +50,10 @@ final class InventrixRuntime extends ChangeNotifier implements AppRuntime {
   /// Router of the running app.
   GoRouter? get router => _router;
 
+  /// Settings (theme and formats) of the running app; `null` before start.
+  SettingsCubit? get settings =>
+      _phase == RuntimePhase.running ? _locator<SettingsCubit>() : null;
+
   /// Incremented on every start; used as the UI key so state never leaks
   /// from before a restore.
   int get generation => _generation;
@@ -75,6 +80,12 @@ final class InventrixRuntime extends ChangeNotifier implements AppRuntime {
       } on Object catch (error, stackTrace) {
         // The history is informative; never block start-up on it.
         _log.warning('Could not reconcile restore journal', error, stackTrace);
+      }
+      try {
+        // Theme and date/number styles must be known before the first frame.
+        await _locator<SettingsCubit>().load();
+      } on Object catch (error, stackTrace) {
+        _log.warning('Could not load the settings', error, stackTrace);
       }
       _router = _locator<GoRouter>();
       _generation++;

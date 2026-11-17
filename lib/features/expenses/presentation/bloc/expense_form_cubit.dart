@@ -15,6 +15,7 @@ import 'package:inventrix/features/payments/domain/entities/payment_method.dart'
 import 'package:inventrix/features/payments/domain/repositories/payment_method_repository.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_state.dart';
 import 'package:inventrix/features/settings/domain/entities/tax_rate.dart';
+import 'package:inventrix/features/settings/domain/repositories/preferences_repository.dart';
 import 'package:inventrix/features/settings/domain/repositories/settings_repository.dart';
 import 'package:inventrix/features/settings/domain/repositories/tax_rate_repository.dart';
 import 'package:inventrix/shared/domain/value_objects/currency_config.dart';
@@ -215,7 +216,9 @@ class ExpenseFormCubit extends Cubit<ExpenseFormState> {
     required SaveExpenseDraft saveDraft,
     required PostExpense postExpense,
     required Clock clock,
-  }) : _expenses = expenses,
+    PreferencesRepository? preferences,
+  }) : _preferences = preferences,
+       _expenses = expenses,
        _categories = categories,
        _methods = methods,
        _taxRates = taxRates,
@@ -225,6 +228,7 @@ class ExpenseFormCubit extends Cubit<ExpenseFormState> {
        _clock = clock,
        super(const ExpenseFormState());
 
+  final PreferencesRepository? _preferences;
   final ExpenseRepository _expenses;
   final ExpenseCategoryRepository _categories;
   final PaymentMethodRepository _methods;
@@ -265,11 +269,16 @@ class ExpenseFormCubit extends Cubit<ExpenseFormState> {
     final today = dateOnlyUtc(_clock.now().toLocal());
 
     if (expenseId == null) {
+      final defaultMethodId =
+          (await _preferences?.load())?.valueOrNull?.defaultPaymentMethodId;
       emit(
         ExpenseFormState(
           loadStatus: FormLoadStatus.ready,
           categories: activeCategories,
           methods: activeMethods,
+          methodId: activeMethods.any((m) => m.id == defaultMethodId)
+              ? defaultMethodId
+              : null,
           taxRates: activeRates,
           currency: config,
           expenseDate: today,

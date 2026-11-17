@@ -1,13 +1,25 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:inventrix/app/di/injection.dart';
+import 'package:inventrix/app/runtime/unavailable_app_runtime.dart';
+import 'package:inventrix/core/database/app_database.dart';
+import 'package:inventrix/core/database/drift_transaction_runner.dart';
+import 'package:inventrix/core/services/clock.dart';
+import 'package:inventrix/core/services/id_generator.dart';
+import 'package:inventrix/core/services/transaction_runner.dart';
+import 'package:inventrix/features/backup/data/repositories/drift_backup_history_repository.dart';
+import 'package:inventrix/features/backup/domain/repositories/app_runtime.dart';
+import 'package:inventrix/features/backup/domain/repositories/backup_history_repository.dart';
+import 'package:inventrix/features/backup/domain/usecases/restore_backup.dart';
+import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
+import 'package:inventrix/features/categories/data/repositories/drift_category_repository.dart';
+import 'package:inventrix/features/categories/domain/repositories/category_repository.dart';
+import 'package:inventrix/features/categories/presentation/bloc/category_cubit.dart';
+import 'package:inventrix/features/customers/domain/usecases/create_customer.dart';
 import 'package:inventrix/features/dashboard/domain/usecases/get_dashboard.dart';
 import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_bloc.dart';
-import 'package:inventrix/features/reports/data/repositories/drift_report_repository.dart';
-import 'package:inventrix/features/reports/data/repositories/share_plus_report_exporter.dart';
-import 'package:inventrix/features/reports/domain/repositories/report_exporter.dart';
-import 'package:inventrix/features/reports/domain/repositories/report_repository.dart';
-import 'package:inventrix/features/reports/domain/usecases/build_report.dart';
-import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
 import 'package:inventrix/features/expenses/data/repositories/drift_expense_repository.dart';
 import 'package:inventrix/features/expenses/domain/repositories/attachment_storage.dart';
 import 'package:inventrix/features/expenses/domain/repositories/expense_repository.dart';
@@ -23,26 +35,6 @@ import 'package:inventrix/features/payments/presentation/bloc/balance_cubits.dar
 import 'package:inventrix/features/payments/presentation/bloc/payment_detail_cubit.dart';
 import 'package:inventrix/features/payments/presentation/bloc/payment_form_cubit.dart';
 import 'package:inventrix/features/payments/presentation/bloc/payments_bloc.dart';
-import 'package:inventrix/features/sales/domain/usecases/void_sale.dart';
-import 'package:inventrix/shared/domain/services/invoice_payment_guard.dart';
-import 'package:inventrix/app/runtime/unavailable_app_runtime.dart';
-import 'package:inventrix/features/backup/data/repositories/drift_backup_history_repository.dart';
-import 'package:inventrix/features/backup/domain/repositories/app_runtime.dart';
-import 'package:inventrix/features/backup/domain/repositories/backup_history_repository.dart';
-import 'package:inventrix/features/backup/domain/usecases/restore_backup.dart';
-import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
-import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
-import 'package:inventrix/app/di/injection.dart';
-import 'package:inventrix/core/database/app_database.dart';
-import 'package:inventrix/core/database/drift_transaction_runner.dart';
-import 'package:inventrix/core/services/clock.dart';
-import 'package:inventrix/core/services/id_generator.dart';
-import 'package:inventrix/core/services/transaction_runner.dart';
-import 'package:inventrix/features/categories/data/repositories/drift_category_repository.dart';
-import 'package:inventrix/features/categories/domain/repositories/category_repository.dart';
-import 'package:inventrix/features/categories/presentation/bloc/category_cubit.dart';
-import 'package:inventrix/features/customers/domain/usecases/create_customer.dart';
 import 'package:inventrix/features/products/data/repositories/drift_product_repository.dart';
 import 'package:inventrix/features/products/domain/repositories/product_repository.dart';
 import 'package:inventrix/features/products/domain/usecases/create_product.dart';
@@ -50,7 +42,23 @@ import 'package:inventrix/features/products/presentation/bloc/product_bloc.dart'
 import 'package:inventrix/features/purchases/domain/repositories/purchase_repository.dart';
 import 'package:inventrix/features/purchases/domain/usecases/post_purchase.dart';
 import 'package:inventrix/features/purchases/presentation/bloc/purchase_bloc.dart';
+import 'package:inventrix/features/reports/data/repositories/drift_report_repository.dart';
+import 'package:inventrix/features/reports/data/repositories/share_plus_report_exporter.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_exporter.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_repository.dart';
+import 'package:inventrix/features/reports/domain/usecases/build_report.dart';
+import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
+import 'package:inventrix/features/sales/domain/usecases/void_sale.dart';
+import 'package:inventrix/features/settings/data/repositories/drift_preferences_repository.dart';
+import 'package:inventrix/features/settings/domain/repositories/numbering_repository.dart';
+import 'package:inventrix/features/settings/domain/repositories/preferences_repository.dart';
+import 'package:inventrix/features/settings/domain/usecases/change_currency.dart';
+import 'package:inventrix/features/settings/domain/usecases/save_business_profile.dart';
+import 'package:inventrix/features/settings/domain/usecases/save_numbering.dart';
+import 'package:inventrix/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:inventrix/features/settings/presentation/bloc/tax_rates_cubit.dart';
 import 'package:inventrix/features/suppliers/presentation/bloc/supplier_bloc.dart';
+import 'package:inventrix/shared/domain/services/invoice_payment_guard.dart';
 
 void main() {
   late GetIt locator;
@@ -131,6 +139,23 @@ void main() {
     await b.close();
   });
 
+  test('resolves the settings feature; the settings cubit is shared', () async {
+    await configureDependencies(
+      locator: locator,
+      database: AppDatabase(NativeDatabase.memory()),
+    );
+    expect(locator<PreferencesRepository>(), isA<DriftPreferencesRepository>());
+    expect(locator<NumberingRepository>(), isA<NumberingRepository>());
+    expect(locator<SaveBusinessProfile>(), isA<SaveBusinessProfile>());
+    expect(locator<ChangeCurrency>(), isA<ChangeCurrency>());
+    expect(locator<SaveNumbering>(), isA<SaveNumbering>());
+    expect(
+      identical(locator<SettingsCubit>(), locator<SettingsCubit>()),
+      isTrue,
+    );
+    await locator<TaxRatesCubit>().close();
+  });
+
   test('database and router are singletons', () async {
     await configureDependencies(
       locator: locator,
@@ -155,20 +180,22 @@ void main() {
     expect(locator.isRegistered<AppDatabase>(), isTrue);
   });
 
-  test('resolves the backup feature; restore is unavailable without a runtime',
-      () async {
-    await configureDependencies(
-      locator: locator,
-      database: AppDatabase(NativeDatabase.memory()),
-    );
-    expect(
-      locator<BackupHistoryRepository>(),
-      isA<DriftBackupHistoryRepository>(),
-    );
-    expect(locator<AppRuntime>(), isA<UnavailableAppRuntime>());
-    expect(locator<RestoreBackup>(), isA<RestoreBackup>());
-    final bloc = locator<BackupBloc>();
-    expect(bloc, isA<BackupBloc>());
-    await bloc.close();
-  });
+  test(
+    'resolves the backup feature; restore is unavailable without a runtime',
+    () async {
+      await configureDependencies(
+        locator: locator,
+        database: AppDatabase(NativeDatabase.memory()),
+      );
+      expect(
+        locator<BackupHistoryRepository>(),
+        isA<DriftBackupHistoryRepository>(),
+      );
+      expect(locator<AppRuntime>(), isA<UnavailableAppRuntime>());
+      expect(locator<RestoreBackup>(), isA<RestoreBackup>());
+      final bloc = locator<BackupBloc>();
+      expect(bloc, isA<BackupBloc>());
+      await bloc.close();
+    },
+  );
 }

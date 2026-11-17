@@ -1,10 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:inventrix/features/dashboard/domain/usecases/get_dashboard.dart';
-import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_bloc.dart';
-import 'package:inventrix/features/reports/domain/services/report_filter_options.dart';
-import 'package:inventrix/features/reports/domain/usecases/build_report.dart';
-import 'package:inventrix/features/reports/domain/usecases/export_report.dart';
-import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
 import 'package:inventrix/core/services/clock.dart';
 import 'package:inventrix/core/services/id_generator.dart';
 import 'package:inventrix/features/categories/domain/repositories/category_repository.dart';
@@ -21,16 +15,8 @@ import 'package:inventrix/features/customers/domain/usecases/update_customer.dar
 import 'package:inventrix/features/customers/presentation/bloc/customer_bloc.dart';
 import 'package:inventrix/features/customers/presentation/bloc/customer_detail_cubit.dart';
 import 'package:inventrix/features/customers/presentation/bloc/customer_form_cubit.dart';
-import 'package:inventrix/features/inventory/domain/entities/stock_filter.dart';
-import 'package:inventrix/features/inventory/domain/repositories/inventory_repository.dart';
-import 'package:inventrix/features/inventory/domain/usecases/adjust_stock.dart';
-import 'package:inventrix/features/inventory/domain/usecases/reconcile_inventory.dart';
-import 'package:inventrix/features/inventory/domain/usecases/record_opening_stock.dart';
-import 'package:inventrix/features/inventory/domain/usecases/repair_inventory_balances.dart';
-import 'package:inventrix/features/inventory/presentation/bloc/inventory_bloc.dart';
-import 'package:inventrix/features/inventory/presentation/bloc/reconciliation_cubit.dart';
-import 'package:inventrix/features/inventory/presentation/bloc/stock_detail_cubit.dart';
-import 'package:inventrix/features/inventory/presentation/bloc/stock_operation_cubit.dart';
+import 'package:inventrix/features/dashboard/domain/usecases/get_dashboard.dart';
+import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:inventrix/features/expenses/domain/repositories/expense_category_repository.dart';
 import 'package:inventrix/features/expenses/domain/repositories/expense_repository.dart';
 import 'package:inventrix/features/expenses/domain/usecases/cancel_expense.dart';
@@ -44,6 +30,16 @@ import 'package:inventrix/features/expenses/presentation/bloc/expense_detail_cub
 import 'package:inventrix/features/expenses/presentation/bloc/expense_form_cubit.dart';
 import 'package:inventrix/features/expenses/presentation/bloc/expense_report_cubit.dart';
 import 'package:inventrix/features/expenses/presentation/bloc/expenses_bloc.dart';
+import 'package:inventrix/features/inventory/domain/entities/stock_filter.dart';
+import 'package:inventrix/features/inventory/domain/repositories/inventory_repository.dart';
+import 'package:inventrix/features/inventory/domain/usecases/adjust_stock.dart';
+import 'package:inventrix/features/inventory/domain/usecases/reconcile_inventory.dart';
+import 'package:inventrix/features/inventory/domain/usecases/record_opening_stock.dart';
+import 'package:inventrix/features/inventory/domain/usecases/repair_inventory_balances.dart';
+import 'package:inventrix/features/inventory/presentation/bloc/inventory_bloc.dart';
+import 'package:inventrix/features/inventory/presentation/bloc/reconciliation_cubit.dart';
+import 'package:inventrix/features/inventory/presentation/bloc/stock_detail_cubit.dart';
+import 'package:inventrix/features/inventory/presentation/bloc/stock_operation_cubit.dart';
 import 'package:inventrix/features/payments/domain/repositories/payment_method_repository.dart';
 import 'package:inventrix/features/payments/domain/repositories/payment_repository.dart';
 import 'package:inventrix/features/payments/domain/services/party_directory.dart';
@@ -85,6 +81,10 @@ import 'package:inventrix/features/purchases/domain/usecases/void_purchase.dart'
 import 'package:inventrix/features/purchases/presentation/bloc/purchase_bloc.dart';
 import 'package:inventrix/features/purchases/presentation/bloc/purchase_detail_cubit.dart';
 import 'package:inventrix/features/purchases/presentation/bloc/purchase_form_cubit.dart';
+import 'package:inventrix/features/reports/domain/services/report_filter_options.dart';
+import 'package:inventrix/features/reports/domain/usecases/build_report.dart';
+import 'package:inventrix/features/reports/domain/usecases/export_report.dart';
+import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
 import 'package:inventrix/features/returns/domain/repositories/return_repository.dart';
 import 'package:inventrix/features/returns/domain/services/returnable_invoice_loader.dart';
 import 'package:inventrix/features/returns/domain/usecases/post_return.dart';
@@ -103,9 +103,21 @@ import 'package:inventrix/features/sales/domain/usecases/void_sale.dart';
 import 'package:inventrix/features/sales/presentation/bloc/sales_bloc.dart';
 import 'package:inventrix/features/sales/presentation/bloc/sales_detail_cubit.dart';
 import 'package:inventrix/features/sales/presentation/bloc/sales_form_cubit.dart';
+import 'package:inventrix/features/settings/domain/repositories/business_profile_repository.dart';
+import 'package:inventrix/features/settings/domain/repositories/currency_repository.dart';
+import 'package:inventrix/features/settings/domain/repositories/logo_storage.dart';
+import 'package:inventrix/features/settings/domain/repositories/numbering_repository.dart';
+import 'package:inventrix/features/settings/domain/repositories/preferences_repository.dart';
 import 'package:inventrix/features/settings/domain/repositories/settings_repository.dart';
 import 'package:inventrix/features/settings/domain/repositories/tax_rate_repository.dart';
+import 'package:inventrix/features/settings/domain/usecases/change_currency.dart';
 import 'package:inventrix/features/settings/domain/usecases/create_tax_rate.dart';
+import 'package:inventrix/features/settings/domain/usecases/manage_tax_rates.dart';
+import 'package:inventrix/features/settings/domain/usecases/save_business_profile.dart';
+import 'package:inventrix/features/settings/domain/usecases/save_numbering.dart';
+import 'package:inventrix/features/settings/domain/usecases/update_preferences.dart';
+import 'package:inventrix/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:inventrix/features/settings/presentation/bloc/tax_rates_cubit.dart';
 import 'package:inventrix/features/suppliers/domain/repositories/supplier_repository.dart';
 import 'package:inventrix/features/suppliers/domain/usecases/archive_supplier.dart';
 import 'package:inventrix/features/suppliers/domain/usecases/create_supplier.dart';
@@ -158,6 +170,7 @@ void registerBlocs(GetIt g) {
         updateProduct: g<UpdateProduct>(),
         createTaxRate: g<CreateTaxRate>(),
         imageStorage: g<ImageStorage>(),
+        preferences: g<PreferencesRepository>(),
       ),
     )
     ..registerFactory(
@@ -320,6 +333,7 @@ void registerBlocs(GetIt g) {
         settings: g<SettingsRepository>(),
         ids: g<IdGenerator>(),
         clock: g<Clock>(),
+        preferences: g<PreferencesRepository>(),
       ),
     )
     ..registerFactory(
@@ -344,6 +358,8 @@ void registerBlocs(GetIt g) {
         methods: g<PaymentMethodRepository>(),
         createMethod: g<CreatePaymentMethod>(),
         setArchived: g<SetPaymentMethodArchived>(),
+        preferences: g<PreferencesRepository>(),
+        updatePreferences: g<UpdatePreferences>(),
       ),
     )
     ..registerFactory(
@@ -363,6 +379,7 @@ void registerBlocs(GetIt g) {
         saveDraft: g<SaveExpenseDraft>(),
         postExpense: g<PostExpense>(),
         clock: g<Clock>(),
+        preferences: g<PreferencesRepository>(),
       ),
     )
     ..registerFactory(
@@ -399,6 +416,33 @@ void registerBlocs(GetIt g) {
         exportReport: g<ExportReportCsv>(),
         options: g<ReportFilterOptions>(),
         clock: g<Clock>(),
+      ),
+    )
+    ..registerLazySingleton<SettingsCubit>(
+      () => SettingsCubit(
+        preferences: g<PreferencesRepository>(),
+        business: g<BusinessProfileRepository>(),
+        currencies: g<CurrencyRepository>(),
+        settings: g<SettingsRepository>(),
+        numbering: g<NumberingRepository>(),
+        logos: g<LogoStorage>(),
+        saveBusinessProfile: g<SaveBusinessProfile>(),
+        changeCurrency: g<ChangeCurrency>(),
+        updatePreferences: g<UpdatePreferences>(),
+        saveNumbering: g<SaveNumbering>(),
+        setNextDocumentNumber: g<SetNextDocumentNumber>(),
+      ),
+      dispose: (cubit) => cubit.close(),
+    )
+    ..registerFactory(
+      () => TaxRatesCubit(
+        taxRates: g<TaxRateRepository>(),
+        preferences: g<PreferencesRepository>(),
+        createTaxRate: g<CreateTaxRate>(),
+        updateTaxRate: g<UpdateTaxRate>(),
+        setArchived: g<SetTaxRateArchived>(),
+        setDefault: g<SetDefaultTaxRate>(),
+        updatePreferences: g<UpdatePreferences>(),
       ),
     );
 }

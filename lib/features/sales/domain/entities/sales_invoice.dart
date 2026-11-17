@@ -3,14 +3,9 @@ import 'package:inventrix/features/sales/domain/entities/sales_line.dart';
 import 'package:inventrix/features/sales/domain/entities/sales_totals.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
 
-/// Where sales invoice numbers come from.
+/// Audit and stock-ledger names of sales invoices. Their numbers come from
+/// `DocumentKind.salesInvoice`.
 abstract final class SalesNumbering {
-  /// Key of the document sequence.
-  static const String sequenceKey = 'sales_invoice';
-
-  /// Prefix of the formatted number (configurable in Phase 11).
-  static const String prefix = 'INV-';
-
   /// Audit/stock-ledger source type for sales invoices.
   static const String sourceType = 'sales_invoice';
 }

@@ -108,14 +108,34 @@ class FakeTaxRateRepository implements TaxRateRepository {
       items[id] == null ? _notFound('TaxRate', id) : Result.success(items[id]!);
 
   @override
-  Future<Result<bool>> nameExists(String name) async => Result.success(
-    items.values.any(
-      (t) => !t.isArchived && t.name.toLowerCase() == name.toLowerCase(),
-    ),
-  );
+  Future<Result<bool>> nameExists(String name, {String? excludingId}) async =>
+      Result.success(
+        items.values.any(
+          (t) =>
+              !t.isArchived &&
+              t.id != excludingId &&
+              t.name.toLowerCase() == name.toLowerCase(),
+        ),
+      );
+
+  /// Ids of rates that products or expenses use.
+  final Set<String> inUse = {};
+
+  @override
+  Future<Result<bool>> isInUse(String id) async =>
+      Result.success(inUse.contains(id));
 
   @override
   Future<Result<void>> create(TaxRate taxRate) async {
+    items[taxRate.id] = taxRate;
+    return const Result.success(null);
+  }
+
+  @override
+  Future<Result<void>> update(TaxRate taxRate) async {
+    if (!items.containsKey(taxRate.id)) {
+      return _notFound('TaxRate', taxRate.id);
+    }
     items[taxRate.id] = taxRate;
     return const Result.success(null);
   }

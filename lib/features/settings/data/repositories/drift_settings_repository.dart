@@ -6,6 +6,7 @@ import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/core/utils/epoch.dart';
 import 'package:inventrix/features/settings/domain/entities/business_profile.dart';
+import 'package:inventrix/features/settings/domain/entities/setting_keys.dart';
 import 'package:inventrix/features/settings/domain/repositories/settings_repository.dart';
 import 'package:inventrix/shared/domain/value_objects/currency_config.dart';
 
@@ -22,14 +23,18 @@ final class DriftSettingsRepository implements SettingsRepository {
   Future<Result<CurrencyConfig>> getCurrencyConfig() => guardDatabase(() async {
     final rows =
         await (_db.select(_db.appSettings)..where(
-              (t) => t.key.isIn(['currency_code', 'currency_decimal_places']),
+              (t) => t.key.isIn([
+                SettingKeys.currencyCode,
+                SettingKeys.currencyDecimalPlaces,
+              ]),
             ))
             .get();
     final values = {for (final row in rows) row.key: row.value};
-    final code = values['currency_code'] ?? AppConstants.defaultCurrencyCode;
-    final places = values['currency_decimal_places'] == null
+    final code =
+        values[SettingKeys.currencyCode] ?? AppConstants.defaultCurrencyCode;
+    final places = values[SettingKeys.currencyDecimalPlaces] == null
         ? AppConstants.defaultCurrencyDecimalPlaces
-        : int.tryParse(values['currency_decimal_places']!);
+        : int.tryParse(values[SettingKeys.currencyDecimalPlaces]!);
     if (!_currencyCode.hasMatch(code) ||
         places == null ||
         places < 0 ||
@@ -41,7 +46,7 @@ final class DriftSettingsRepository implements SettingsRepository {
     return CurrencyConfig(currencyCode: code, decimalPlaces: places);
   });
 
-  static const String _purchaseApprovalKey = 'purchase_approval_required';
+  static const String _purchaseApprovalKey = SettingKeys.purchaseApproval;
 
   @override
   Future<Result<bool>> isPurchaseApprovalRequired() => guardDatabase(() async {
@@ -65,7 +70,7 @@ final class DriftSettingsRepository implements SettingsRepository {
             );
       });
 
-  static const String _salesApprovalKey = 'sales_approval_required';
+  static const String _salesApprovalKey = SettingKeys.salesApproval;
 
   @override
   Future<Result<bool>> isSalesApprovalRequired() => guardDatabase(() async {

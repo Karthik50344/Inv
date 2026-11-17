@@ -18,7 +18,10 @@ final class PdfInvoiceRenderer implements InvoicePdfRenderer {
   const PdfInvoiceRenderer();
 
   @override
-  Future<Result<Uint8List>> render(InvoiceLayout layout) async {
+  Future<Result<Uint8List>> render(
+    InvoiceLayout layout, {
+    Uint8List? logo,
+  }) async {
     try {
       final document = pw.Document(title: layout.fileName);
       document.addPage(
@@ -26,7 +29,7 @@ final class PdfInvoiceRenderer implements InvoicePdfRenderer {
           pageFormat: PdfPageFormat.a4,
           margin: const pw.EdgeInsets.all(32),
           build: (context) => [
-            _header(layout),
+            _header(layout, _decodeLogo(logo)),
             pw.SizedBox(height: 16),
             _meta(layout),
             pw.SizedBox(height: 16),
@@ -67,10 +70,28 @@ final class PdfInvoiceRenderer implements InvoicePdfRenderer {
     }
   }
 
-  pw.Widget _header(InvoiceLayout layout) => pw.Row(
+  /// The logo as a PDF image, or `null` if there is none or it is damaged:
+  /// an invoice is still worth printing without it.
+  pw.MemoryImage? _decodeLogo(Uint8List? bytes) {
+    if (bytes == null || bytes.isEmpty) {
+      return null;
+    }
+    try {
+      return pw.MemoryImage(bytes);
+    } on Object {
+      return null;
+    }
+  }
+
+  pw.Widget _header(InvoiceLayout layout, pw.MemoryImage? logo) => pw.Row(
     crossAxisAlignment: pw.CrossAxisAlignment.start,
     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
     children: [
+      if (logo != null)
+        pw.Padding(
+          padding: const pw.EdgeInsets.only(right: 12),
+          child: pw.Image(logo, height: 56, fit: pw.BoxFit.contain),
+        ),
       pw.Expanded(
         child: pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -115,10 +136,7 @@ final class PdfInvoiceRenderer implements InvoicePdfRenderer {
   pw.Widget _items(InvoiceLayout layout) => pw.TableHelper.fromTextArray(
     headers: layout.columns,
     data: layout.rows,
-    headerStyle: pw.TextStyle(
-      fontWeight: pw.FontWeight.bold,
-      fontSize: 9,
-    ),
+    headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 9),
     cellStyle: const pw.TextStyle(fontSize: 9),
     headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
     columnWidths: {

@@ -38,20 +38,49 @@ final class DriftTaxRateRepository implements TaxRateRepository {
   });
 
   @override
-  Future<Result<bool>> nameExists(String name) => guardDatabase(() async {
-    final count = _db.taxRates.id.count();
-    final query = _db.selectOnly(_db.taxRates)
-      ..addColumns([count])
-      ..where(
-        _db.taxRates.archivedAt.isNull() &
-            _db.taxRates.name.lower().equalsExp(Variable<String>(name).lower()),
-      );
-    final row = await query.getSingle();
-    return (row.read(count) ?? 0) > 0;
+  Future<Result<bool>> nameExists(String name, {String? excludingId}) =>
+      guardDatabase(() async {
+        final count = _db.taxRates.id.count();
+        final query = _db.selectOnly(_db.taxRates)
+          ..addColumns([count])
+          ..where(
+            _db.taxRates.archivedAt.isNull() &
+                _db.taxRates.name.lower().equalsExp(
+                  Variable<String>(name).lower(),
+                ) &
+                (excludingId == null
+                    ? const Constant(true)
+                    : _db.taxRates.id.equals(excludingId).not()),
+          );
+        final row = await query.getSingle();
+        return (row.read(count) ?? 0) > 0;
+      });
+
+  @override
+  Future<Result<bool>> isInUse(String id) => guardDatabase(() async {
+    final row = await _db
+        .customSelect(
+          'SELECT (SELECT COUNT(*) FROM products WHERE tax_rate_id = ?) + '
+          '(SELECT COUNT(*) FROM expenses WHERE tax_rate_id = ?) AS uses',
+          variables: [Variable.withString(id), Variable.withString(id)],
+          readsFrom: {_db.products, _db.expenses},
+        )
+        .getSingle();
+    return row.read<int>('uses') > 0;
   });
 
   @override
   Future<Result<void>> create(TaxRate taxRate) => guardDatabase(
     () => _db.into(_db.taxRates).insert(taxRateToCompanion(taxRate)),
   );
+
+  @override
+  Future<Result<void>> update(TaxRate taxRate) => guardDatabase(() async {
+    final changed =
+        await (_db.update(_db.taxRates)..where((t) => t.id.equals(taxRate.id)))
+            .write(taxRateToCompanion(taxRate));
+    if (changed == 0) {
+      throw const FailureException(NotFoundFailure('Tax rate not found.'));
+    }
+  });
 }

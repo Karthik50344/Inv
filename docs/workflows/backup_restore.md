@@ -49,4 +49,4 @@ Crash safety: on every start, before the database opens, `RecoverInterruptedRest
 - Archives are read file by file; the largest single file (the database) is held in memory during verification.
 - "Save to device" passes the archive bytes to the file picker (needed on mobile), so it also loads the file into memory.
 - Backups taken while another backup/restore is running are prevented only by the screen (one operation at a time), not by a global lock.
-- Automatic/scheduled backups are not implemented (Phase 11 "backup preferences").
+- Automatic/scheduled backups are not implemented. Phase 11 adds a *backup reminder* preference (off/7/14/30 days) that shows a banner on the Backup screen when no backup was exported that recently. The business logo lives in `product_images/` and is therefore part of every backup.

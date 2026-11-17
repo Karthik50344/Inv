@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventrix/features/payments/domain/entities/payment_method.dart';
 import 'package:inventrix/features/payments/domain/repositories/payment_method_repository.dart';
 import 'package:inventrix/features/payments/domain/usecases/manage_payment_methods.dart';
+import 'package:inventrix/features/settings/domain/repositories/preferences_repository.dart';
+import 'package:inventrix/features/settings/domain/usecases/update_preferences.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
 
 /// State of the payment-methods screen.
@@ -11,6 +13,7 @@ final class PaymentMethodsState extends Equatable {
   const PaymentMethodsState({
     this.status = ViewStatus.initial,
     this.methods = const [],
+    this.defaultMethodId,
     this.message,
   });
 
@@ -20,11 +23,14 @@ final class PaymentMethodsState extends Equatable {
   /// Methods, archived ones included.
   final List<PaymentMethod> methods;
 
+  /// Method preselected in payment and expense forms.
+  final String? defaultMethodId;
+
   /// Message for the user (error or validation).
   final String? message;
 
   @override
-  List<Object?> get props => [status, methods, message];
+  List<Object?> get props => [status, methods, defaultMethodId, message];
 }
 
 /// Lists, creates and archives payment methods.
@@ -34,19 +40,29 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
     required PaymentMethodRepository methods,
     required CreatePaymentMethod createMethod,
     required SetPaymentMethodArchived setArchived,
-  }) : _methods = methods,
+    PreferencesRepository? preferences,
+    UpdatePreferences? updatePreferences,
+  }) : _preferences = preferences,
+       _updatePreferences = updatePreferences,
+       _methods = methods,
        _create = createMethod,
        _setArchived = setArchived,
        super(const PaymentMethodsState());
 
+  final PreferencesRepository? _preferences;
+  final UpdatePreferences? _updatePreferences;
   final PaymentMethodRepository _methods;
   final CreatePaymentMethod _create;
   final SetPaymentMethodArchived _setArchived;
 
   /// Loads the list.
   Future<void> load({String? message}) async {
-    emit(PaymentMethodsState(status: ViewStatus.loading, methods: state.methods));
+    emit(
+      PaymentMethodsState(status: ViewStatus.loading, methods: state.methods),
+    );
     final result = await _methods.list(includeArchived: true);
+    final defaultId =
+        (await _preferences?.load())?.valueOrNull?.defaultPaymentMethodId;
     if (isClosed) {
       return;
     }
@@ -55,6 +71,7 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
         PaymentMethodsState(
           status: list.isEmpty ? ViewStatus.empty : ViewStatus.loaded,
           methods: list,
+          defaultMethodId: defaultId,
           message: message,
         ),
       ),
@@ -80,6 +97,18 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
   /// Archives or restores a method.
   Future<void> setArchived(String id, {required bool archived}) async {
     final failure = (await _setArchived(id, archived: archived)).failureOrNull;
+    await load(message: failure?.userMessage);
+  }
+
+  /// Makes [id] the method preselected in payment and expense forms.
+  Future<void> setDefault(String id) async {
+    final update = _updatePreferences;
+    if (update == null) {
+      return;
+    }
+    final failure = (await update(
+      (p) => p.copyWith(defaultPaymentMethodId: id),
+    )).failureOrNull;
     await load(message: failure?.userMessage);
   }
 }

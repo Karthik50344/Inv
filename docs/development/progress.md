@@ -399,3 +399,45 @@ Backup creation (consistent `VACUUM INTO` snapshot, integrity gate, ZIP with man
 
 ### Next
 Run `flutter pub get`, `dart run build_runner build --delete-conflicting-outputs`, `dart format .`, `flutter analyze`, `flutter test`, then a manual restore on a device, and send me the output; fixing Phases 1-10 together is the best next step before Phase 11 (Settings).
+
+## Phase 11 — Settings and Business Configuration
+
+> Built on request while Phases 1-10 still await their first real `flutter test` run. Everything that imports Drift, Flutter, `file_picker`, `path_provider`, `intl` or `pdf` is **uncompiled**.
+
+### Scope delivered
+Business profile (name, address, phone, e-mail, tax number, logo; logo printed on invoice PDFs), currency and decimal places with a history-protecting lock, date style and number style applied app-wide, light/dark/system theme, tax rate management (add, edit, archive/restore, default rate and default "price includes tax" for new products), configurable document prefixes and digit padding with "set next number", sales/purchase approval switches, default payment method, backup reminder banner. No schema change. Details and rules: `docs/workflows/settings.md`.
+
+### Files
+- New domain: `features/settings/domain/entities/{app_preferences,business_profile_input,currency_option,money_lock,numbering_settings,setting_keys}.dart`, repositories `{preferences,business_profile,currency,numbering}_repository.dart` + `logo_storage.dart`, use cases `{save_business_profile,change_currency,update_preferences,save_numbering,manage_tax_rates}.dart`; shared `document_kind.dart`, `value_objects/display_formats.dart`; `features/backup/domain/services/backup_reminder.dart`.
+- New data: `drift_{preferences,business_profile,currency,numbering}_repository.dart`, `file_logo_storage.dart`.
+- New presentation: `SettingsCubit`/`SettingsState`, `TaxRatesCubit`, pages `settings`, `business_profile`, `regional_settings`, `numbering`, `tax_rates`; `TaxRateFormDialog` moved here from products and extended for editing.
+- New core: `core/formatters/{display_formats,date_formatter,number_grouping}.dart`.
+- Modified: `MoneyFormatter` (own digit grouping, styles), date helpers (sales/purchases/expenses/reports/stock detail/backup) now use `DateFormatter`; `DocumentSequenceRepository.nextNumber(kind)` (Drift + fake) replaces `prefix + sequence` in `PostSale`, `PostPurchase`, `PostExpense`, `PostReturn`, `RecordPayment`, `RecordRefund` (obsolete `*Numbering.prefix/sequenceKey` constants removed); `TaxRateRepository` (+`update`, `isInUse`, `nameExists(excludingId)`); product/payment/expense form cubits and `PaymentMethodsCubit` read defaults; `InvoicePdfRenderer.render(..., logo:)`; `ShareInvoicePdf` (+`LogoStorage`); `InventrixApp` (theme + `FormatRefresher`), runtime/host (settings loaded before the first frame); router (`/more/settings/...`), DI; Backup page (reminder).
+
+### Tests
+- **Executed in the sandbox (Dart 3.14.0, stand-ins for `equatable`, `flutter_test`, `bloc`, `intl`), 63 new tests, 0 failed:** `document_number_test` (6), `display_formats_test` (9), `backup_reminder_test` (3), `settings_use_cases_test` (26), `numbering_posting_test` (4, through the real `PostPurchase`), `settings_cubits_test` (15). All previously runnable tests (29 files) still pass; the original project had 24 runnable files, the extra ones are `money_formatter_test` (needs the `intl` stand-in) and the new ones.
+- SQL (money-lock query, counter upsert with `MAX`, in-use query) executed against real SQLite via Python, not through Drift.
+- The tests found and I fixed one bug: saving an unchanged tax rate still wrote and audited because `updatedAt` made the objects differ.
+- **Written, not run (need Flutter/Drift):** `test/data/settings_repositories_test.dart`, `test/data/file_logo_storage_test.dart`, `test/features/settings/settings_pages_test.dart`, the new settings case in `test/app/di/injection_test.dart`.
+
+### NOT verified (needs Flutter SDK + pub.dev)
+- `flutter pub get`, `dart run build_runner build --delete-conflicting-outputs` (no table changes, so the existing `app_database.g.dart` should still be right), `dart format .`, `flutter analyze`, `flutter test`.
+- Uncompiled: all Drift repositories above, `FileLogoStorage` (`path_provider`, `logging`), pages, `FormatRefresher` (marks the element tree dirty; never run), `pw.MemoryImage` logo decoding, `FilePicker.pickFiles` for the logo (same call as the product photo).
+- Never seen on a device: theme switching, live format refresh on open screens, logo on a real invoice PDF.
+
+### Known issues / decisions to review
+- The currency is effectively fixed once you add prices, stock or post an invoice; there is no "start over" tool. This is deliberate (see `settings.md`) but may feel strict.
+- `FormatRefresher` redraws the tree after a style change; screens that cache formatted text in state (not in `build`) would still show the old style until reloaded.
+- Prefix rule "must not end in a digit" rejects values like `INV2`.
+- A logo picked and then abandoned (form closed without saving) stays as an orphan file in `product_images/`.
+- No scheduled backups, only a reminder. The legacy `locale` setting row is no longer used.
+- I ran `dart format` with Dart 3.14 on the files I edited; they may differ in style from your formatter. Files I did not edit were left untouched.
+- Dependency rule check (`tool/check_imports.dart`): OK.
+
+### Acceptance criteria (Phase 11)
+- Document numbers stay unique and prefix changes never alter issued numbers; counters move forward only; currency change is refused when history would break; tax-rate edits protected: **verified by executed tests** on fakes (+ SQL on real SQLite).
+- Settings persist across restarts, theme/format application, currency formatting consistency, logo on PDF: **unverified until the Flutter run / device test**.
+- Phase 11 is **not** marked complete.
+
+### Next
+Run `flutter pub get`, `dart format .`, `flutter analyze`, `flutter test` and send me the output; fixing Phases 1-11 together is the best next step before Phase 12 (QA and release).

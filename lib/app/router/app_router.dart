@@ -9,6 +9,9 @@ import 'package:inventrix/app/shell/app_shell.dart';
 import 'package:inventrix/app/shell/coming_soon_page.dart';
 import 'package:inventrix/app/shell/more_page.dart';
 import 'package:inventrix/app/shell/not_found_page.dart';
+import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
+import 'package:inventrix/features/backup/presentation/bloc/backup_event.dart';
+import 'package:inventrix/features/backup/presentation/pages/backup_page.dart';
 import 'package:inventrix/features/categories/presentation/bloc/category_cubit.dart';
 import 'package:inventrix/features/categories/presentation/pages/categories_page.dart';
 import 'package:inventrix/features/customers/presentation/bloc/customer_bloc.dart';
@@ -21,14 +24,17 @@ import 'package:inventrix/features/customers/presentation/pages/customers_page.d
 import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:inventrix/features/dashboard/presentation/bloc/dashboard_event.dart';
 import 'package:inventrix/features/dashboard/presentation/pages/dashboard_page.dart';
-import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
-import 'package:inventrix/features/backup/presentation/bloc/backup_event.dart';
-import 'package:inventrix/features/backup/presentation/pages/backup_page.dart';
-import 'package:inventrix/features/reports/domain/entities/report_kind.dart';
-import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
-import 'package:inventrix/features/reports/presentation/bloc/report_event.dart';
-import 'package:inventrix/features/reports/presentation/pages/report_page.dart';
-import 'package:inventrix/features/reports/presentation/pages/reports_page.dart';
+import 'package:inventrix/features/expenses/presentation/bloc/expense_categories_cubit.dart';
+import 'package:inventrix/features/expenses/presentation/bloc/expense_detail_cubit.dart';
+import 'package:inventrix/features/expenses/presentation/bloc/expense_form_cubit.dart';
+import 'package:inventrix/features/expenses/presentation/bloc/expense_report_cubit.dart';
+import 'package:inventrix/features/expenses/presentation/bloc/expenses_bloc.dart';
+import 'package:inventrix/features/expenses/presentation/bloc/expenses_event.dart';
+import 'package:inventrix/features/expenses/presentation/pages/expense_categories_page.dart';
+import 'package:inventrix/features/expenses/presentation/pages/expense_detail_page.dart';
+import 'package:inventrix/features/expenses/presentation/pages/expense_form_page.dart';
+import 'package:inventrix/features/expenses/presentation/pages/expense_report_page.dart';
+import 'package:inventrix/features/expenses/presentation/pages/expenses_page.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_filter.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_status.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/inventory_bloc.dart';
@@ -67,17 +73,11 @@ import 'package:inventrix/features/purchases/presentation/bloc/purchase_form_cub
 import 'package:inventrix/features/purchases/presentation/pages/purchase_detail_page.dart';
 import 'package:inventrix/features/purchases/presentation/pages/purchase_form_page.dart';
 import 'package:inventrix/features/purchases/presentation/pages/purchases_page.dart';
-import 'package:inventrix/features/expenses/presentation/bloc/expense_categories_cubit.dart';
-import 'package:inventrix/features/expenses/presentation/bloc/expense_detail_cubit.dart';
-import 'package:inventrix/features/expenses/presentation/bloc/expense_form_cubit.dart';
-import 'package:inventrix/features/expenses/presentation/bloc/expense_report_cubit.dart';
-import 'package:inventrix/features/expenses/presentation/bloc/expenses_bloc.dart';
-import 'package:inventrix/features/expenses/presentation/bloc/expenses_event.dart';
-import 'package:inventrix/features/expenses/presentation/pages/expense_categories_page.dart';
-import 'package:inventrix/features/expenses/presentation/pages/expense_detail_page.dart';
-import 'package:inventrix/features/expenses/presentation/pages/expense_form_page.dart';
-import 'package:inventrix/features/expenses/presentation/pages/expense_report_page.dart';
-import 'package:inventrix/features/expenses/presentation/pages/expenses_page.dart';
+import 'package:inventrix/features/reports/domain/entities/report_kind.dart';
+import 'package:inventrix/features/reports/presentation/bloc/report_bloc.dart';
+import 'package:inventrix/features/reports/presentation/bloc/report_event.dart';
+import 'package:inventrix/features/reports/presentation/pages/report_page.dart';
+import 'package:inventrix/features/reports/presentation/pages/reports_page.dart';
 import 'package:inventrix/features/returns/presentation/bloc/return_detail_cubit.dart';
 import 'package:inventrix/features/returns/presentation/bloc/return_form_cubit.dart';
 import 'package:inventrix/features/returns/presentation/bloc/returns_bloc.dart';
@@ -91,6 +91,14 @@ import 'package:inventrix/features/sales/presentation/bloc/sales_form_cubit.dart
 import 'package:inventrix/features/sales/presentation/pages/sales_detail_page.dart';
 import 'package:inventrix/features/sales/presentation/pages/sales_form_page.dart';
 import 'package:inventrix/features/sales/presentation/pages/sales_page.dart';
+import 'package:inventrix/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:inventrix/features/settings/presentation/bloc/settings_state.dart';
+import 'package:inventrix/features/settings/presentation/bloc/tax_rates_cubit.dart';
+import 'package:inventrix/features/settings/presentation/pages/business_profile_page.dart';
+import 'package:inventrix/features/settings/presentation/pages/numbering_page.dart';
+import 'package:inventrix/features/settings/presentation/pages/regional_settings_page.dart';
+import 'package:inventrix/features/settings/presentation/pages/settings_page.dart';
+import 'package:inventrix/features/settings/presentation/pages/tax_rates_page.dart';
 import 'package:inventrix/features/suppliers/presentation/bloc/supplier_bloc.dart';
 import 'package:inventrix/features/suppliers/presentation/bloc/supplier_detail_cubit.dart';
 import 'package:inventrix/features/suppliers/presentation/bloc/supplier_event.dart';
@@ -111,6 +119,7 @@ abstract final class AppRouter {
     RouteNames.expenses,
     RouteNames.reports,
     RouteNames.backup,
+    RouteNames.settings,
   };
 
   /// Creates a router. There is no login: the dashboard opens directly.
@@ -358,12 +367,52 @@ abstract final class AppRouter {
                           ),
                         ),
                     GoRoute(
+                      path: 'settings',
+                      name: RouteNames.settings,
+                      builder: (context, state) => const SettingsPage(),
+                      routes: [
+                        GoRoute(
+                          path: 'business',
+                          name: RouteNames.settingsBusiness,
+                          builder: (context, state) =>
+                              const BusinessProfilePage(),
+                        ),
+                        GoRoute(
+                          path: 'regional',
+                          name: RouteNames.settingsRegional,
+                          builder: (context, state) =>
+                              const RegionalSettingsPage(),
+                        ),
+                        GoRoute(
+                          path: 'numbering',
+                          name: RouteNames.settingsNumbering,
+                          builder: (context, state) => const NumberingPage(),
+                        ),
+                        GoRoute(
+                          path: 'tax-rates',
+                          name: RouteNames.taxRates,
+                          builder: (context, state) => BlocProvider(
+                            create: (_) => di<TaxRatesCubit>()..load(),
+                            child: const TaxRatesPage(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    GoRoute(
                       path: 'backup',
                       name: RouteNames.backup,
                       builder: (context, state) => BlocProvider(
                         create: (_) =>
                             di<BackupBloc>()..add(const BackupStarted()),
-                        child: const BackupPage(),
+                        child: BlocBuilder<SettingsCubit, SettingsState>(
+                          buildWhen: (a, b) =>
+                              a.preferences.backupReminderDays !=
+                              b.preferences.backupReminderDays,
+                          builder: (context, settings) => BackupPage(
+                            reminderDays:
+                                settings.preferences.backupReminderDays,
+                          ),
+                        ),
                       ),
                     ),
                     GoRoute(

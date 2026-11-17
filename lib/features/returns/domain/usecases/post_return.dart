@@ -20,7 +20,7 @@ import 'package:inventrix/features/returns/domain/services/returnable_invoice_lo
 import 'package:inventrix/shared/domain/audit/audit_entry.dart';
 import 'package:inventrix/shared/domain/audit/audit_log_repository.dart';
 import 'package:inventrix/shared/domain/enums/invoice_kind.dart';
-import 'package:inventrix/shared/domain/services/document_number.dart';
+import 'package:inventrix/shared/domain/services/document_kind.dart';
 import 'package:inventrix/shared/domain/services/document_sequence_repository.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
 import 'package:inventrix/shared/domain/value_objects/quantity.dart';
@@ -143,9 +143,7 @@ final class PostReturn {
         throw const FailureException(
           ValidationFailure(
             'The return date cannot be before the invoice date.',
-            fieldErrors: {
-              'returnDate': 'Cannot be before the invoice date.',
-            },
+            fieldErrors: {'returnDate': 'Cannot be before the invoice date.'},
           ),
         );
       }
@@ -183,13 +181,9 @@ final class PostReturn {
       final refund = await _planRefund(invoice, plan.total, input);
 
       final now = _clock.now();
-      final sequence = (await _sequences.next(
-        ReturnNumbering.sequenceKey(input.kind),
+      final number = (await _sequences.nextNumber(
+        ReturnNumbering.documentKind(input.kind),
       )).getOrThrow();
-      final number = DocumentNumber.format(
-        ReturnNumbering.prefix(input.kind),
-        sequence,
-      );
       final returnId = _ids.newId();
 
       final lines = <ReturnLine>[];
@@ -387,7 +381,9 @@ final class PostReturn {
         );
         final posting = result.valueOrNull;
         if (posting == null) {
-          throw FailureException(_describeShortage(result.failureOrNull!, line));
+          throw FailureException(
+            _describeShortage(result.failureOrNull!, line),
+          );
         }
         final cost = posting.costDelta.abs();
         (await _inventory.applyMovement(

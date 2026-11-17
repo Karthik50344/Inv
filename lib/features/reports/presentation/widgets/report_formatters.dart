@@ -1,13 +1,13 @@
+import 'package:inventrix/core/formatters/date_formatter.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/reports/domain/entities/report_document.dart';
-import 'package:intl/intl.dart';
 
 /// Formats [ReportCell]s and dates for the screen.
 abstract final class ReportFormatters {
   static const MoneyFormatter _money = MoneyFormatter();
 
-  /// `15 Nov 2026`.
-  static String day(DateTime date) => DateFormat('d MMM y').format(date);
+  /// A date in the style chosen in the settings (`15 Nov 2026` by default).
+  static String day(DateTime date) => DateFormatter.date(date);
 
   /// `1 Nov 2026 – 15 Nov 2026`.
   static String range(DateTime from, DateTime to) =>

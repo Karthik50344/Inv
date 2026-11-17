@@ -14,7 +14,7 @@ import 'package:inventrix/features/payments/domain/services/party_directory.dart
 import 'package:inventrix/features/settings/domain/repositories/settings_repository.dart';
 import 'package:inventrix/shared/domain/audit/audit_entry.dart';
 import 'package:inventrix/shared/domain/audit/audit_log_repository.dart';
-import 'package:inventrix/shared/domain/services/document_number.dart';
+import 'package:inventrix/shared/domain/services/document_kind.dart';
 import 'package:inventrix/shared/domain/services/document_sequence_repository.dart';
 
 /// Records money received from a customer or paid to a supplier, optionally
@@ -67,9 +67,8 @@ final class RecordPayment {
             ValidationFailure('A payment needs an idempotency key.'),
           );
         }
-        final existing = (await _payments.findByIdempotencyKey(
-          key,
-        )).getOrThrow();
+        final existing = (await _payments.findByIdempotencyKey(key))
+            .getOrThrow();
         if (existing != null) {
           final same =
               existing.kind == PaymentKind.payment &&
@@ -125,13 +124,8 @@ final class RecordPayment {
         );
 
         final now = _clock.now();
-        final sequence = (await _sequences.next(
-          PaymentNumbering.paymentSequenceKey,
-        )).getOrThrow();
-        final number = DocumentNumber.format(
-          PaymentNumbering.paymentPrefix,
-          sequence,
-        );
+        final number = (await _sequences.nextNumber(DocumentKind.payment))
+            .getOrThrow();
         final id = _ids.newId();
         final payment = Payment(
           id: id,

@@ -3,14 +3,9 @@ import 'package:inventrix/features/expenses/domain/entities/expense_amounts.dart
 import 'package:inventrix/features/expenses/domain/entities/expense_attachment.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
 
-/// Where expense numbers and audit records come from.
+/// Audit names of expenses. Their numbers come from
+/// `DocumentKind.expense`.
 abstract final class ExpenseNumbering {
-  /// Key of the document sequence.
-  static const String sequenceKey = 'expense';
-
-  /// Prefix of the formatted number (configurable in Phase 11).
-  static const String prefix = 'EXP-';
-
   /// Audit source type for expenses.
   static const String sourceType = 'expense';
 }

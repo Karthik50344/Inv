@@ -5,20 +5,9 @@ import 'package:inventrix/features/payments/domain/entities/payment_kind.dart';
 import 'package:inventrix/features/payments/domain/entities/payment_reversal.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
 
-/// Gap-free numbering for payments and refunds.
+/// Audit names of payments and refunds. Their numbers come from
+/// `DocumentKind.payment` and `DocumentKind.refund`.
 abstract final class PaymentNumbering {
-  /// Sequence key and audit entity type for payments.
-  static const String paymentSequenceKey = 'payment';
-
-  /// Prefix of payment numbers.
-  static const String paymentPrefix = 'PAY-';
-
-  /// Sequence key for refunds.
-  static const String refundSequenceKey = 'refund';
-
-  /// Prefix of refund numbers.
-  static const String refundPrefix = 'RFD-';
-
   /// Audit entity type.
   static const String auditType = 'payment';
 }

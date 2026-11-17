@@ -13,7 +13,7 @@ import 'package:inventrix/features/payments/domain/repositories/payment_method_r
 import 'package:inventrix/features/payments/domain/repositories/payment_repository.dart';
 import 'package:inventrix/shared/domain/audit/audit_entry.dart';
 import 'package:inventrix/shared/domain/audit/audit_log_repository.dart';
-import 'package:inventrix/shared/domain/services/document_number.dart';
+import 'package:inventrix/shared/domain/services/document_kind.dart';
 import 'package:inventrix/shared/domain/services/document_sequence_repository.dart';
 
 /// Hands money back against an earlier payment.
@@ -110,9 +110,8 @@ final class RecordRefund {
           ValidationFailure('Refund currency does not match the payment.'),
         );
       }
-      final refunds = (await _payments.activeRefundsOf(
-        input.paymentId,
-      )).getOrThrow();
+      final refunds = (await _payments.activeRefundsOf(input.paymentId))
+          .getOrThrow();
       final position = PaymentPosition.of(payment, refunds);
       if (amount > position.refundable) {
         throw FailureException(
@@ -124,9 +123,7 @@ final class RecordRefund {
         );
       }
 
-      final byInvoice = {
-        for (final a in payment.allocations) a.invoiceId: a,
-      };
+      final byInvoice = {for (final a in payment.allocations) a.invoiceId: a};
       final seen = <String>{};
       var reduced = amount - amount;
       final allocations = <PaymentAllocation>[];
@@ -141,13 +138,10 @@ final class RecordRefund {
         final original = byInvoice[reduction.invoiceId];
         if (original == null) {
           throw const FailureException(
-            ValidationFailure(
-              'That invoice was not settled by this payment.',
-            ),
+            ValidationFailure('That invoice was not settled by this payment.'),
           );
         }
-        final available =
-            position.allocatedByInvoice[reduction.invoiceId] ?? 0;
+        final available = position.allocatedByInvoice[reduction.invoiceId] ?? 0;
         if (!reduction.amount.isPositive ||
             reduction.amount.minorUnits > available ||
             reduction.amount.currencyCode != amount.currencyCode) {
@@ -191,13 +185,8 @@ final class RecordRefund {
       final method = (await _methods.getById(
         input.methodId ?? payment.methodId,
       )).getOrThrow();
-      final sequence = (await _sequences.next(
-        PaymentNumbering.refundSequenceKey,
-      )).getOrThrow();
-      final number = DocumentNumber.format(
-        PaymentNumbering.refundPrefix,
-        sequence,
-      );
+      final number = (await _sequences.nextNumber(DocumentKind.refund))
+          .getOrThrow();
       final reference = input.reference?.trim();
       final refund = Payment(
         id: refundId,
@@ -224,7 +213,8 @@ final class RecordRefund {
           entityType: PaymentNumbering.auditType,
           entityId: refundId,
           action: 'refunded',
-          summary: 'Refunded ${amount.toString()} of ${payment.number}: $reason',
+          summary:
+              'Refunded ${amount.toString()} of ${payment.number}: $reason',
           occurredAt: now,
         ),
       )).getOrThrow();

@@ -3,14 +3,9 @@ import 'package:inventrix/features/purchases/domain/entities/purchase_line.dart'
 import 'package:inventrix/features/purchases/domain/entities/purchase_totals.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
 
-/// Where purchase invoice numbers come from.
+/// Audit and stock-ledger names of purchase invoices. Their numbers come
+/// from `DocumentKind.purchaseInvoice`.
 abstract final class PurchaseNumbering {
-  /// Key of the document sequence.
-  static const String sequenceKey = 'purchase_invoice';
-
-  /// Prefix of the formatted number (configurable in Phase 11).
-  static const String prefix = 'PUR-';
-
   /// Audit/stock-ledger source type for purchase invoices.
   static const String sourceType = 'purchase_invoice';
 }

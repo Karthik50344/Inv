@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
+import 'package:inventrix/features/customers/domain/entities/customer.dart';
 import 'package:inventrix/features/inventory/domain/usecases/adjust_stock.dart';
 import 'package:inventrix/features/products/domain/entities/product.dart';
 import 'package:inventrix/features/products/domain/entities/product_draft.dart';
@@ -16,24 +17,23 @@ import 'package:inventrix/features/sales/domain/entities/sales_totals.dart';
 import 'package:inventrix/features/sales/domain/repositories/sales_repository.dart';
 import 'package:inventrix/features/sales/domain/services/invoice_layout.dart';
 import 'package:inventrix/features/sales/domain/services/invoice_pdf.dart';
-import 'package:inventrix/features/sales/domain/services/sales_stock_check.dart';
-import 'package:inventrix/features/sales/domain/usecases/share_invoice_pdf.dart';
 import 'package:inventrix/features/sales/domain/services/sales_line_builder.dart';
+import 'package:inventrix/features/sales/domain/services/sales_stock_check.dart';
 import 'package:inventrix/features/sales/domain/usecases/get_customer_receivable.dart';
 import 'package:inventrix/features/sales/domain/usecases/post_sale.dart';
 import 'package:inventrix/features/sales/domain/usecases/save_sales_draft.dart';
+import 'package:inventrix/features/sales/domain/usecases/share_invoice_pdf.dart';
 import 'package:inventrix/features/sales/domain/usecases/transition_sale.dart';
 import 'package:inventrix/features/sales/domain/usecases/void_sale.dart';
 import 'package:inventrix/features/settings/domain/entities/tax_rate.dart';
-import 'package:inventrix/features/customers/domain/entities/customer.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
 
 import 'fakes.dart';
-import 'return_fakes.dart' show NoReturns;
 import 'inventory_fakes.dart';
-import 'purchase_fakes.dart' show FakeDocumentSequenceRepository;
 import 'inventory_fixture.dart';
+import 'purchase_fakes.dart' show FakeDocumentSequenceRepository;
+import 'return_fakes.dart' show NoReturns;
 
 /// In-memory sale repository that emulates the guarded SQL updates.
 class FakeSalesRepository implements SalesRepository, Rollbackable {
@@ -215,11 +215,16 @@ class FakeSalesRepository implements SalesRepository, Rollbackable {
 /// Renderer that records the layout it was given.
 class FakeInvoicePdfRenderer implements InvoicePdfRenderer {
   InvoiceLayout? lastLayout;
+  Uint8List? lastLogo;
   Failure? failure;
 
   @override
-  Future<Result<Uint8List>> render(InvoiceLayout layout) async {
+  Future<Result<Uint8List>> render(
+    InvoiceLayout layout, {
+    Uint8List? logo,
+  }) async {
     lastLayout = layout;
+    lastLogo = logo;
     return failure == null
         ? Result.success(Uint8List.fromList([37, 80, 68, 70]))
         : Result.failure(failure!);

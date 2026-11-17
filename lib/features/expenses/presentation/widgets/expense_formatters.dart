@@ -1,8 +1,8 @@
-import 'package:intl/intl.dart';
+import 'package:inventrix/core/formatters/date_formatter.dart';
 
-/// Formats a stored (UTC, date-only) expense date for display.
-String formatExpenseDate(DateTime date) =>
-    DateFormat('d MMM yyyy').format(date);
+/// Formats a stored (UTC, date-only) expense date for display in the style
+/// chosen in the settings.
+String formatExpenseDate(DateTime date) => DateFormatter.date(date);
 
 /// Formats a file size such as `842 KB` or `1.4 MB` (display only).
 String formatFileSize(int bytes) {

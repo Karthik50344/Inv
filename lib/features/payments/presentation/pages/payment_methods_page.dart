@@ -72,7 +72,8 @@ class PaymentMethodsPage extends StatelessWidget {
             label: const Text('Add method'),
           ),
           body: switch (state.status) {
-            ViewStatus.initial || ViewStatus.loading => const LoadingIndicator(),
+            ViewStatus.initial ||
+            ViewStatus.loading => const LoadingIndicator(),
             ViewStatus.failure => ErrorState(
               message: state.message ?? 'Could not load methods.',
               onRetry: cubit.load,
@@ -83,12 +84,31 @@ class PaymentMethodsPage extends StatelessWidget {
                 for (final m in state.methods)
                   ListTile(
                     key: Key('method_${m.id}'),
+                    leading: m.id == state.defaultMethodId
+                        ? const Icon(Icons.star, key: Key('default_method'))
+                        : const Icon(Icons.payments_outlined),
                     title: Text(m.name),
-                    subtitle: m.isArchived ? const Text('Archived') : null,
-                    trailing: TextButton(
-                      onPressed: () =>
-                          cubit.setArchived(m.id, archived: !m.isArchived),
-                      child: Text(m.isArchived ? 'Restore' : 'Archive'),
+                    subtitle: Text(
+                      [
+                        if (m.id == state.defaultMethodId) 'Default',
+                        if (m.isArchived) 'Archived',
+                      ].join(' · '),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (!m.isArchived && m.id != state.defaultMethodId)
+                          TextButton(
+                            key: Key('make_default_${m.id}'),
+                            onPressed: () => cubit.setDefault(m.id),
+                            child: const Text('Make default'),
+                          ),
+                        TextButton(
+                          onPressed: () =>
+                              cubit.setArchived(m.id, archived: !m.isArchived),
+                          child: Text(m.isArchived ? 'Restore' : 'Archive'),
+                        ),
+                      ],
                     ),
                   ),
               ],

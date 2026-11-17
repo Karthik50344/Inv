@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:inventrix/core/formatters/date_formatter.dart';
 import 'package:inventrix/features/backup/domain/entities/staged_backup.dart';
 
 /// Shows what a backup contains and asks for explicit confirmation before
@@ -43,9 +43,7 @@ class _RestoreDialogState extends State<_RestoreDialog> {
     final theme = Theme.of(context);
     final manifest = widget.preview.staged.manifest;
     final counts = widget.preview.inspection.recordCounts;
-    final created = DateFormat.yMMMd().add_Hm().format(
-      manifest.createdAt.toLocal(),
-    );
+    final created = DateFormatter.dateTime(manifest.createdAt);
     return AlertDialog(
       title: const Text('Replace your data?'),
       content: SingleChildScrollView(

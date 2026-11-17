@@ -39,6 +39,10 @@ abstract final class RouteNames {
   static const String paymentDetail = 'paymentDetail';
   static const String paymentOutstanding = 'paymentOutstanding';
   static const String paymentMethods = 'paymentMethods';
+  static const String settingsBusiness = 'settingsBusiness';
+  static const String settingsRegional = 'settingsRegional';
+  static const String settingsNumbering = 'settingsNumbering';
+  static const String taxRates = 'taxRates';
   static const String saleNew = 'saleNew';
   static const String saleDetail = 'saleDetail';
   static const String saleEdit = 'saleEdit';

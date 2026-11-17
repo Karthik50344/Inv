@@ -16,7 +16,7 @@ import 'package:inventrix/features/suppliers/domain/repositories/supplier_reposi
 import 'package:inventrix/shared/domain/audit/audit_entry.dart';
 import 'package:inventrix/shared/domain/audit/audit_log_repository.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
-import 'package:inventrix/shared/domain/services/document_number.dart';
+import 'package:inventrix/shared/domain/services/document_kind.dart';
 import 'package:inventrix/shared/domain/services/document_sequence_repository.dart';
 
 /// Posts a purchase: assigns its number, marks it posted and adds every line
@@ -76,9 +76,8 @@ final class PostPurchase {
     }
 
     // 2. Validate the supplier and every product.
-    final supplier = (await _suppliers.getById(
-      invoice.supplierId,
-    )).getOrThrow();
+    final supplier = (await _suppliers.getById(invoice.supplierId))
+        .getOrThrow();
     if (supplier.isArchived) {
       throw FailureException(
         ValidationFailure(
@@ -99,17 +98,14 @@ final class PostPurchase {
 
     // 3. Number, status, stock, audit: all inside this transaction.
     final now = _clock.now();
-    final sequence = (await _sequences.next(
-      PurchaseNumbering.sequenceKey,
-    )).getOrThrow();
-    final number = DocumentNumber.format(PurchaseNumbering.prefix, sequence);
+    final number = (await _sequences.nextNumber(DocumentKind.purchaseInvoice))
+        .getOrThrow();
     (await _purchases.markPosted(id, number: number, at: now)).getOrThrow();
 
     for (final line in invoice.lines) {
       // Re-read per line: several lines may share a product.
-      final balance = (await _inventory.getBalance(
-        line.productId,
-      )).getOrThrow();
+      final balance = (await _inventory.getBalance(line.productId))
+          .getOrThrow();
       final posting = StockCalculator.stockIn(
         balance.position,
         line.quantity,

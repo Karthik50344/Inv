@@ -20,7 +20,7 @@ stateDiagram-v2
   posted --> voided: void (reversal)
 ```
 
-Approval is a setting (`app_settings.purchase_approval_required`, default off). With it on, `post` requires `approved`. A pending or approved purchase cannot be edited (return it to draft first). The toggle is in the Purchases screen menu until the Phase 11 settings screen exists.
+Approval is a setting (`app_settings.purchase_approval_required`, default off). With it on, `post` requires `approved`. A pending or approved purchase cannot be edited (return it to draft first). The toggle is in Settings.
 
 ## Saving a draft (`SavePurchaseDraft`)
 
@@ -72,5 +72,5 @@ Requires a reason. In one transaction: `markVoided` (guarded to `posted`), then 
 
 - Item-level discounts only (no invoice-level discount); the spec lists item discounts for purchases.
 - Tax comes from the product's tax rate and price-includes-tax flag; it is not editable per line.
-- Purchase number prefix is fixed (`PUR-`) until Phase 11 makes it configurable.
+- Purchase number prefix defaults to `PUR-` and is configurable in Settings -> Document numbering (see `settings.md`).
 - Single currency per invoice, snapshotted from settings when the draft is created.

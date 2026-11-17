@@ -1,14 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:inventrix/features/dashboard/domain/usecases/get_dashboard.dart';
-import 'package:inventrix/features/inventory/domain/repositories/inventory_repository.dart';
-import 'package:inventrix/features/products/domain/repositories/product_repository.dart';
-import 'package:inventrix/features/products/domain/repositories/unit_repository.dart';
-import 'package:inventrix/features/reports/domain/repositories/report_exporter.dart';
-import 'package:inventrix/features/reports/domain/repositories/report_repository.dart';
-import 'package:inventrix/features/reports/domain/services/report_filter_options.dart';
-import 'package:inventrix/features/reports/domain/usecases/build_report.dart';
-import 'package:inventrix/features/reports/domain/usecases/export_report.dart';
-import 'package:inventrix/features/reports/domain/usecases/get_profit_figures.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/core/services/clock.dart';
 import 'package:inventrix/core/services/id_generator.dart';
@@ -23,11 +13,7 @@ import 'package:inventrix/features/customers/domain/usecases/archive_customer.da
 import 'package:inventrix/features/customers/domain/usecases/create_customer.dart';
 import 'package:inventrix/features/customers/domain/usecases/restore_customer.dart';
 import 'package:inventrix/features/customers/domain/usecases/update_customer.dart';
-import 'package:inventrix/features/inventory/domain/services/stock_operation_support.dart';
-import 'package:inventrix/features/inventory/domain/usecases/adjust_stock.dart';
-import 'package:inventrix/features/inventory/domain/usecases/reconcile_inventory.dart';
-import 'package:inventrix/features/inventory/domain/usecases/record_opening_stock.dart';
-import 'package:inventrix/features/inventory/domain/usecases/repair_inventory_balances.dart';
+import 'package:inventrix/features/dashboard/domain/usecases/get_dashboard.dart';
 import 'package:inventrix/features/expenses/domain/repositories/attachment_storage.dart';
 import 'package:inventrix/features/expenses/domain/repositories/expense_category_repository.dart';
 import 'package:inventrix/features/expenses/domain/repositories/expense_repository.dart';
@@ -37,6 +23,12 @@ import 'package:inventrix/features/expenses/domain/usecases/manage_expense_categ
 import 'package:inventrix/features/expenses/domain/usecases/post_expense.dart';
 import 'package:inventrix/features/expenses/domain/usecases/save_expense_draft.dart';
 import 'package:inventrix/features/expenses/domain/usecases/void_expense.dart';
+import 'package:inventrix/features/inventory/domain/repositories/inventory_repository.dart';
+import 'package:inventrix/features/inventory/domain/services/stock_operation_support.dart';
+import 'package:inventrix/features/inventory/domain/usecases/adjust_stock.dart';
+import 'package:inventrix/features/inventory/domain/usecases/reconcile_inventory.dart';
+import 'package:inventrix/features/inventory/domain/usecases/record_opening_stock.dart';
+import 'package:inventrix/features/inventory/domain/usecases/repair_inventory_balances.dart';
 import 'package:inventrix/features/payments/domain/repositories/payment_method_repository.dart';
 import 'package:inventrix/features/payments/domain/repositories/payment_repository.dart';
 import 'package:inventrix/features/payments/domain/services/allocation_checker.dart';
@@ -49,6 +41,8 @@ import 'package:inventrix/features/payments/domain/usecases/manage_payment_metho
 import 'package:inventrix/features/payments/domain/usecases/record_payment.dart';
 import 'package:inventrix/features/payments/domain/usecases/record_refund.dart';
 import 'package:inventrix/features/payments/domain/usecases/reverse_payment.dart';
+import 'package:inventrix/features/products/domain/repositories/product_repository.dart';
+import 'package:inventrix/features/products/domain/repositories/unit_repository.dart';
 import 'package:inventrix/features/products/domain/services/product_validator.dart';
 import 'package:inventrix/features/products/domain/usecases/add_common_units.dart';
 import 'package:inventrix/features/products/domain/usecases/archive_product.dart';
@@ -66,6 +60,12 @@ import 'package:inventrix/features/purchases/domain/usecases/post_purchase.dart'
 import 'package:inventrix/features/purchases/domain/usecases/save_purchase_draft.dart';
 import 'package:inventrix/features/purchases/domain/usecases/transition_purchase.dart';
 import 'package:inventrix/features/purchases/domain/usecases/void_purchase.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_exporter.dart';
+import 'package:inventrix/features/reports/domain/repositories/report_repository.dart';
+import 'package:inventrix/features/reports/domain/services/report_filter_options.dart';
+import 'package:inventrix/features/reports/domain/usecases/build_report.dart';
+import 'package:inventrix/features/reports/domain/usecases/export_report.dart';
+import 'package:inventrix/features/reports/domain/usecases/get_profit_figures.dart';
 import 'package:inventrix/features/returns/domain/repositories/return_repository.dart';
 import 'package:inventrix/features/returns/domain/services/returnable_invoice_loader.dart';
 import 'package:inventrix/features/returns/domain/usecases/post_return.dart';
@@ -80,9 +80,19 @@ import 'package:inventrix/features/sales/domain/usecases/share_invoice_pdf.dart'
 import 'package:inventrix/features/sales/domain/usecases/transition_sale.dart';
 import 'package:inventrix/features/sales/domain/usecases/void_sale.dart';
 import 'package:inventrix/features/sales/presentation/widgets/date_text.dart';
+import 'package:inventrix/features/settings/domain/repositories/business_profile_repository.dart';
+import 'package:inventrix/features/settings/domain/repositories/currency_repository.dart';
+import 'package:inventrix/features/settings/domain/repositories/logo_storage.dart';
+import 'package:inventrix/features/settings/domain/repositories/numbering_repository.dart';
+import 'package:inventrix/features/settings/domain/repositories/preferences_repository.dart';
 import 'package:inventrix/features/settings/domain/repositories/settings_repository.dart';
 import 'package:inventrix/features/settings/domain/repositories/tax_rate_repository.dart';
+import 'package:inventrix/features/settings/domain/usecases/change_currency.dart';
 import 'package:inventrix/features/settings/domain/usecases/create_tax_rate.dart';
+import 'package:inventrix/features/settings/domain/usecases/manage_tax_rates.dart';
+import 'package:inventrix/features/settings/domain/usecases/save_business_profile.dart';
+import 'package:inventrix/features/settings/domain/usecases/save_numbering.dart';
+import 'package:inventrix/features/settings/domain/usecases/update_preferences.dart';
 import 'package:inventrix/features/suppliers/domain/repositories/supplier_repository.dart';
 import 'package:inventrix/features/suppliers/domain/usecases/archive_supplier.dart';
 import 'package:inventrix/features/suppliers/domain/usecases/create_supplier.dart';
@@ -99,6 +109,79 @@ void registerUseCases(GetIt g) {
     ..registerLazySingleton(
       () => CreateTaxRate(
         repository: g<TaxRateRepository>(),
+        ids: g<IdGenerator>(),
+        clock: g<Clock>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => UpdateTaxRate(
+        repository: g<TaxRateRepository>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+        ids: g<IdGenerator>(),
+        clock: g<Clock>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => SetTaxRateArchived(
+        repository: g<TaxRateRepository>(),
+        preferences: g<PreferencesRepository>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+        ids: g<IdGenerator>(),
+        clock: g<Clock>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => SetDefaultTaxRate(
+        taxRates: g<TaxRateRepository>(),
+        preferences: g<PreferencesRepository>(),
+        transactions: g<TransactionRunner>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => SaveBusinessProfile(
+        repository: g<BusinessProfileRepository>(),
+        logos: g<LogoStorage>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+        ids: g<IdGenerator>(),
+        clock: g<Clock>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => ChangeCurrency(
+        currencies: g<CurrencyRepository>(),
+        settings: g<SettingsRepository>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+        ids: g<IdGenerator>(),
+        clock: g<Clock>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => UpdatePreferences(
+        repository: g<PreferencesRepository>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+        ids: g<IdGenerator>(),
+        clock: g<Clock>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => SaveNumbering(
+        repository: g<NumberingRepository>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+        ids: g<IdGenerator>(),
+        clock: g<Clock>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => SetNextDocumentNumber(
+        repository: g<NumberingRepository>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
         ids: g<IdGenerator>(),
         clock: g<Clock>(),
       ),
@@ -420,6 +503,7 @@ void registerUseCases(GetIt g) {
             '${money.currencyCode} '
             '${const MoneyFormatter().format(money, withSymbol: false)}',
         formatDate: formatDocumentDate,
+        logos: g<LogoStorage>(),
       ),
     )
     ..registerLazySingleton(

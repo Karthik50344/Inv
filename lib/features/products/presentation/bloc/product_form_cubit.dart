@@ -11,6 +11,7 @@ import 'package:inventrix/features/products/domain/usecases/create_product.dart'
 import 'package:inventrix/features/products/domain/usecases/update_product.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_state.dart';
 import 'package:inventrix/features/settings/domain/entities/tax_rate.dart';
+import 'package:inventrix/features/settings/domain/repositories/preferences_repository.dart';
 import 'package:inventrix/features/settings/domain/repositories/settings_repository.dart';
 import 'package:inventrix/features/settings/domain/repositories/tax_rate_repository.dart';
 import 'package:inventrix/features/settings/domain/usecases/create_tax_rate.dart';
@@ -29,7 +30,9 @@ class ProductFormCubit extends Cubit<ProductFormState> {
     required UpdateProduct updateProduct,
     required CreateTaxRate createTaxRate,
     required ImageStorage imageStorage,
-  }) : _products = products,
+    PreferencesRepository? preferences,
+  }) : _preferences = preferences,
+       _products = products,
        _categories = categories,
        _units = units,
        _taxRates = taxRates,
@@ -49,6 +52,7 @@ class ProductFormCubit extends Cubit<ProductFormState> {
   final UpdateProduct _update;
   final CreateTaxRate _createTaxRate;
   final ImageStorage _images;
+  final PreferencesRepository? _preferences;
 
   /// Loads reference data and, when [productId] is given, the product.
   Future<void> load({String? productId}) async {
@@ -74,6 +78,8 @@ class ProductFormCubit extends Cubit<ProductFormState> {
     final units = await _units.search(includeArchived: true);
     final taxRates = await _taxRates.list(includeArchived: true);
     final currency = await _settings.getCurrencyConfig();
+    // Defaults are a convenience: if they cannot be read, the form still opens.
+    final defaults = await _preferences?.load();
     final failure =
         categories.failureOrNull ??
         units.failureOrNull ??
@@ -103,6 +109,9 @@ class ProductFormCubit extends Cubit<ProductFormState> {
             .where((t) => !t.isArchived || t.id == product?.taxRateId)
             .toList(),
         currency: currency.valueOrNull,
+        defaultTaxRateId: defaults?.valueOrNull?.defaultTaxRateId,
+        defaultPriceIncludesTax:
+            defaults?.valueOrNull?.defaultPriceIncludesTax ?? false,
         imagePath: product?.imagePath,
       ),
     );

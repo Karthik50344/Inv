@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:inventrix/core/database/app_database.dart';
 import 'package:inventrix/core/database/database_failure_mapper.dart';
 import 'package:inventrix/core/result/result.dart';
+import 'package:inventrix/shared/domain/services/document_kind.dart';
+import 'package:inventrix/shared/domain/services/document_number.dart';
 import 'package:inventrix/shared/domain/services/document_sequence_repository.dart';
 
 /// Drift implementation of [DocumentSequenceRepository].
@@ -31,4 +33,34 @@ final class DriftDocumentSequenceRepository
         .getSingle();
     return row.read<int>('last_value');
   });
+
+  @override
+  Future<Result<String>> nextNumber(DocumentKind kind) =>
+      guardDatabase(() async {
+        final sequence = (await next(kind.sequenceKey)).getOrThrow();
+        final rows =
+            await (_db.select(_db.appSettings)..where(
+                  (t) => t.key.isIn([
+                    kind.prefixSettingKey,
+                    NumberingSettingKeys.padding,
+                  ]),
+                ))
+                .get();
+        final values = {for (final row in rows) row.key: row.value};
+        final storedPrefix = values[kind.prefixSettingKey];
+        final prefix =
+            storedPrefix != null &&
+                DocumentNumber.validatePrefix(storedPrefix) == null
+            ? storedPrefix
+            : kind.defaultPrefix;
+        final storedPadding = int.tryParse(
+          values[NumberingSettingKeys.padding] ?? '',
+        );
+        final padding =
+            storedPadding != null &&
+                DocumentNumber.validatePadding(storedPadding) == null
+            ? storedPadding
+            : DocumentNumber.width;
+        return DocumentNumber.format(prefix, sequence, padding: padding);
+      });
 }

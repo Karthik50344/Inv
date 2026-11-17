@@ -1,11 +1,12 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/core/formatters/date_formatter.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_kind.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_record.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_exporter.dart';
+import 'package:inventrix/features/backup/domain/services/backup_reminder.dart';
 import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
 import 'package:inventrix/features/backup/presentation/bloc/backup_event.dart';
 import 'package:inventrix/features/backup/presentation/widgets/restore_confirmation_dialog.dart';
@@ -18,7 +19,10 @@ import 'package:inventrix/shared/presentation/widgets/local_data_warning_banner.
 /// Backup, export and restore.
 class BackupPage extends StatelessWidget {
   /// Creates the page.
-  const BackupPage({super.key});
+  const BackupPage({this.reminderDays = 0, super.key});
+
+  /// Days between backup reminders from the settings (`0` = off).
+  final int reminderDays;
 
   Future<void> _pickFile(BuildContext context) async {
     final bloc = context.read<BackupBloc>();
@@ -75,7 +79,11 @@ class BackupPage extends StatelessWidget {
             }
             return Stack(
               children: [
-                _Content(state: state, onPickFile: () => _pickFile(context)),
+                _Content(
+                  state: state,
+                  reminderDays: reminderDays,
+                  onPickFile: () => _pickFile(context),
+                ),
                 if (state.busy) _BusyOverlay(activity: state.activity),
               ],
             );
@@ -87,9 +95,14 @@ class BackupPage extends StatelessWidget {
 }
 
 class _Content extends StatelessWidget {
-  const _Content({required this.state, required this.onPickFile});
+  const _Content({
+    required this.state,
+    required this.reminderDays,
+    required this.onPickFile,
+  });
 
   final BackupState state;
+  final int reminderDays;
   final VoidCallback onPickFile;
 
   @override
@@ -103,6 +116,26 @@ class _Content extends StatelessWidget {
       children: [
         const LocalDataWarningBanner(),
         const SizedBox(height: AppDimensions.spaceMd),
+        if (state.status == ViewStatus.loaded &&
+            BackupReminder.isDue(
+              reminderDays: reminderDays,
+              lastExportedAt: state.lastExportedAt,
+              now: DateTime.now(),
+            ))
+          Card(
+            key: const Key('backup-reminder'),
+            color: theme.colorScheme.tertiaryContainer,
+            child: ListTile(
+              leading: const Icon(Icons.notifications_active_outlined),
+              title: const Text('Time to export a backup'),
+              subtitle: Text(
+                state.lastExportedAt == null
+                    ? 'No backup has been exported yet.'
+                    : 'The last export was on '
+                          '${DateFormatter.dateTime(state.lastExportedAt!)}.',
+              ),
+            ),
+          ),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(AppDimensions.spaceMd),
@@ -114,7 +147,7 @@ class _Content extends StatelessWidget {
                 Text(
                   last == null
                       ? 'No backup has been made yet.'
-                      : DateFormat.yMMMd().add_Hm().format(last.toLocal()),
+                      : DateFormatter.dateTime(last),
                   key: const Key('backup-last'),
                   style: theme.textTheme.titleMedium,
                 ),
@@ -178,7 +211,7 @@ class _RecordTile extends StatelessWidget {
     final theme = Theme.of(context);
     final bloc = context.read<BackupBloc>();
     final failed = record.outcome == BackupOutcome.failed;
-    final when = DateFormat.yMMMd().add_Hm().format(record.createdAt.toLocal());
+    final when = DateFormatter.dateTime(record.createdAt);
     final details = [
       record.kind.label,
       when,

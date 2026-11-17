@@ -49,6 +49,7 @@ class _InventrixHostState extends State<InventrixHost> {
             return InventrixApp(
               key: ValueKey(runtime.generation),
               router: runtime.router!,
+              settings: runtime.settings,
               scaffoldMessengerKey: _messenger,
             );
           case RuntimePhase.failed:

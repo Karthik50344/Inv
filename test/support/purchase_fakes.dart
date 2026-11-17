@@ -20,13 +20,15 @@ import 'package:inventrix/features/purchases/domain/usecases/void_purchase.dart'
 import 'package:inventrix/features/settings/domain/entities/tax_rate.dart';
 import 'package:inventrix/features/suppliers/domain/entities/supplier.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
+import 'package:inventrix/shared/domain/services/document_kind.dart';
+import 'package:inventrix/shared/domain/services/document_number.dart';
 import 'package:inventrix/shared/domain/services/document_sequence_repository.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
 
 import 'fakes.dart';
-import 'return_fakes.dart' show NoReturns;
 import 'inventory_fakes.dart';
 import 'inventory_fixture.dart';
+import 'return_fakes.dart' show NoReturns;
 
 /// In-memory purchase repository that emulates the guarded SQL updates.
 class FakePurchaseRepository implements PurchaseRepository, Rollbackable {
@@ -221,6 +223,22 @@ class FakeDocumentSequenceRepository
   Future<Result<int>> next(String key) async {
     counters[key] = (counters[key] ?? 0) + 1;
     return Result.success(counters[key]!);
+  }
+
+  /// Prefix per kind and padding, like the settings would provide.
+  Map<DocumentKind, String> prefixes = {};
+  int padding = DocumentNumber.width;
+
+  @override
+  Future<Result<String>> nextNumber(DocumentKind kind) async {
+    final sequence = (await next(kind.sequenceKey)).getOrThrow();
+    return Result.success(
+      DocumentNumber.format(
+        prefixes[kind] ?? kind.defaultPrefix,
+        sequence,
+        padding: padding,
+      ),
+    );
   }
 }
 

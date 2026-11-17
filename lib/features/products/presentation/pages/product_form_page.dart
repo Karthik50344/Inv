@@ -6,14 +6,14 @@ import 'package:inventrix/app/theme/app_dimensions.dart';
 import 'package:inventrix/features/products/domain/entities/product_draft.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_cubit.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_state.dart';
-import 'package:inventrix/features/products/presentation/widgets/tax_rate_form_dialog.dart';
 import 'package:inventrix/features/settings/domain/entities/tax_rate.dart';
+import 'package:inventrix/features/settings/presentation/widgets/tax_rate_form_dialog.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
+import 'package:inventrix/shared/presentation/view_status.dart';
 import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
 import 'package:inventrix/shared/presentation/widgets/error_state.dart';
 import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
 import 'package:inventrix/shared/presentation/widgets/stored_image.dart';
-import 'package:inventrix/shared/presentation/view_status.dart';
 
 /// Create/edit product form. Pops with `true` after a successful save.
 class ProductFormPage extends StatefulWidget {
@@ -66,6 +66,12 @@ class _ProductFormPageState extends State<ProductFormPage> {
     _populated = true;
     final product = state.product;
     if (product == null) {
+      // A new product starts with the defaults chosen in the settings.
+      final rateId = state.defaultTaxRateId;
+      if (rateId != null && state.taxRates.any((t) => t.id == rateId)) {
+        _taxRateId = rateId;
+      }
+      _includesTax = state.defaultPriceIncludesTax;
       return;
     }
     _name.text = product.name;

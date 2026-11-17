@@ -3,10 +3,10 @@ import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/core/services/clock.dart';
 import 'package:inventrix/core/services/id_generator.dart';
 import 'package:inventrix/core/services/transaction_runner.dart';
+import 'package:inventrix/features/customers/domain/repositories/customer_repository.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_movement.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_movement_type.dart';
 import 'package:inventrix/features/inventory/domain/repositories/inventory_repository.dart';
-import 'package:inventrix/features/customers/domain/repositories/customer_repository.dart';
 import 'package:inventrix/features/inventory/domain/services/stock_calculator.dart';
 import 'package:inventrix/features/products/domain/repositories/product_repository.dart';
 import 'package:inventrix/features/sales/domain/entities/sales_invoice.dart';
@@ -17,7 +17,7 @@ import 'package:inventrix/features/settings/domain/repositories/settings_reposit
 import 'package:inventrix/shared/domain/audit/audit_entry.dart';
 import 'package:inventrix/shared/domain/audit/audit_log_repository.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
-import 'package:inventrix/shared/domain/services/document_number.dart';
+import 'package:inventrix/shared/domain/services/document_kind.dart';
 import 'package:inventrix/shared/domain/services/document_sequence_repository.dart';
 import 'package:inventrix/shared/domain/value_objects/quantity.dart';
 
@@ -106,17 +106,14 @@ final class PostSale {
 
     // 3. Number, status, stock, audit: all inside this transaction.
     final now = _clock.now();
-    final sequence = (await _sequences.next(
-      SalesNumbering.sequenceKey,
-    )).getOrThrow();
-    final number = DocumentNumber.format(SalesNumbering.prefix, sequence);
+    final number = (await _sequences.nextNumber(DocumentKind.salesInvoice))
+        .getOrThrow();
     (await _sales.markPosted(id, number: number, at: now)).getOrThrow();
 
     for (final line in invoice.lines) {
       // Re-read per line: several lines may share a product.
-      final balance = (await _inventory.getBalance(
-        line.productId,
-      )).getOrThrow();
+      final balance = (await _inventory.getBalance(line.productId))
+          .getOrThrow();
       final result = StockCalculator.stockOut(
         productId: line.productId,
         position: balance.position,

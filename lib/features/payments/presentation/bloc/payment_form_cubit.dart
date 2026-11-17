@@ -13,6 +13,7 @@ import 'package:inventrix/features/payments/domain/services/allocation_planner.d
 import 'package:inventrix/features/payments/domain/services/party_directory.dart';
 import 'package:inventrix/features/payments/domain/usecases/get_open_invoices.dart';
 import 'package:inventrix/features/payments/domain/usecases/record_payment.dart';
+import 'package:inventrix/features/settings/domain/repositories/preferences_repository.dart';
 import 'package:inventrix/features/settings/domain/repositories/settings_repository.dart';
 import 'package:inventrix/shared/domain/value_objects/currency_config.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
@@ -213,7 +214,9 @@ class PaymentFormCubit extends Cubit<PaymentFormState> {
     required SettingsRepository settings,
     required IdGenerator ids,
     required Clock clock,
-  }) : _parties = parties,
+    PreferencesRepository? preferences,
+  }) : _preferences = preferences,
+       _parties = parties,
        _methods = methods,
        _open = openInvoices,
        _record = recordPayment,
@@ -221,12 +224,10 @@ class PaymentFormCubit extends Cubit<PaymentFormState> {
        _ids = ids,
        _clock = clock,
        super(
-         PaymentFormState(
-           partyType: PartyType.customer,
-           date: _today(clock),
-         ),
+         PaymentFormState(partyType: PartyType.customer, date: _today(clock)),
        );
 
+  final PreferencesRepository? _preferences;
   final PartyDirectory _parties;
   final PaymentMethodRepository _methods;
   final GetOpenInvoices _open;
@@ -254,6 +255,8 @@ class PaymentFormCubit extends Cubit<PaymentFormState> {
     final currencyResult = await _settings.getCurrencyConfig();
     final methodsResult = await _methods.list();
     final partiesResult = await _parties.all(type);
+    final defaultMethodId =
+        (await _preferences?.load())?.valueOrNull?.defaultPaymentMethodId;
     final failure =
         currencyResult.failureOrNull ??
         methodsResult.failureOrNull ??
@@ -287,7 +290,11 @@ class PaymentFormCubit extends Cubit<PaymentFormState> {
         partyId: partyId,
         partyLocked: partyId != null,
         methods: methods,
-        methodId: methods.isEmpty ? null : methods.first.id,
+        methodId: methods.isEmpty
+            ? null
+            : (methods.any((m) => m.id == defaultMethodId)
+                  ? defaultMethodId
+                  : methods.first.id),
       ),
     );
     if (partyId != null) {
@@ -322,7 +329,8 @@ class PaymentFormCubit extends Cubit<PaymentFormState> {
       emit(_keepErrors(state.copyWith(reference: value)));
 
   /// Sets the notes text.
-  void setNotes(String value) => emit(_keepErrors(state.copyWith(notes: value)));
+  void setNotes(String value) =>
+      emit(_keepErrors(state.copyWith(notes: value)));
 
   /// Sets the amount; with auto-allocation on, spreads it over the oldest
   /// invoices.
@@ -408,9 +416,8 @@ class PaymentFormCubit extends Cubit<PaymentFormState> {
       return;
     }
     result.when(
-      success: (payment) => emit(
-        state.copyWith(status: PaymentFormStatus.saved, saved: payment),
-      ),
+      success: (payment) =>
+          emit(state.copyWith(status: PaymentFormStatus.saved, saved: payment)),
       failure: (failure) => emit(
         state.copyWith(
           status: PaymentFormStatus.ready,

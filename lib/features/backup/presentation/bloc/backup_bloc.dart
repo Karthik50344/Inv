@@ -76,6 +76,18 @@ final class BackupState extends Equatable {
     return null;
   }
 
+  /// Time of the latest backup that was exported outside the app.
+  DateTime? get lastExportedAt {
+    DateTime? latest;
+    for (final record in records) {
+      final exported = record.exportedAt;
+      if (exported != null && (latest == null || exported.isAfter(latest))) {
+        latest = exported;
+      }
+    }
+    return latest;
+  }
+
   /// Copy; [message] and [error] are cleared unless given. Pass
   /// [clearPreview] to drop the preview.
   BackupState copyWith({
