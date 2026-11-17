@@ -75,6 +75,10 @@ dev_dependencies:
   build_runner: ^2.15.1
   drift_dev: ^2.31.0
   very_good_analysis: ^10.0.0
+  # Branding (redesign Phase 2). Both only generate platform files; they are
+  # not linked into the app. Commands are in docs/redesign/branding.md.
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -86,6 +90,14 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # In-app logos (About / More / settings header). Launcher and splash
+  # artwork stays out of the bundle; those files are only generator input.
+  assets:
+    - assets/branding/inventrix_logo_light.png
+    - assets/branding/inventrix_logo_dark.png
+    - assets/branding/inventrix_symbol.png
+    - assets/branding/inventrix_symbol_dark.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -117,3 +129,46 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# ---------------------------------------------------------------------------
+# Launcher icons: dart run flutter_launcher_icons
+# ---------------------------------------------------------------------------
+flutter_launcher_icons:
+  # `true` keeps the default `ic_launcher` name, so AndroidManifest.xml
+  # (android:icon="@mipmap/ic_launcher") needs no change.
+  android: true
+  ios: true
+  # Full-bleed 1024 px tile: used for iOS and for pre-Android-8 launchers.
+  image_path: "assets/branding/inventrix_icon.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  # Android 8+ adaptive icon: indigo background + white/mint mark kept inside
+  # the 66 % safe zone, so round, squircle and teardrop masks never crop it.
+  adaptive_icon_background: "#4F46E5"
+  adaptive_icon_foreground: "assets/branding/inventrix_icon_foreground.png"
+  # Android 13+ themed icon (tinted by the wallpaper).
+  adaptive_icon_monochrome: "assets/branding/inventrix_icon_monochrome.png"
+
+# ---------------------------------------------------------------------------
+# Native splash: dart run flutter_native_splash:create
+# ---------------------------------------------------------------------------
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+  # Light
+  color: "#F4F6FB"
+  image: assets/branding/inventrix_splash.png
+  branding: assets/branding/inventrix_wordmark.png
+  branding_mode: bottom
+  # Dark
+  color_dark: "#0B1220"
+  image_dark: assets/branding/inventrix_splash_dark.png
+  branding_dark: assets/branding/inventrix_wordmark_dark.png
+  # Android 12+ draws the app icon from `image` inside a circle and ignores
+  # the branding image, so it gets its own 960 px artwork.
+  android_12:
+    color: "#F4F6FB"
+    image: assets/branding/inventrix_splash_android12.png
+    color_dark: "#0B1220"
+    image_dark: assets/branding/inventrix_splash_android12_dark.png
