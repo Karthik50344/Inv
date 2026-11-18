@@ -24,6 +24,7 @@ void showAppMessage(
   String? actionLabel,
   VoidCallback? onAction,
 }) {
+  final theme = Theme.of(context);
   final colors = context.appColors;
   final tone = switch (type) {
     AppMessageType.success => colors.success,
@@ -35,18 +36,36 @@ void showAppMessage(
     AppMessageType.error => Icons.error_outline,
     AppMessageType.info => null,
   };
-  final style = Theme.of(
-    context,
-  ).textTheme.bodyMedium?.copyWith(color: tone?.onContainer);
+  // Background and text always come as a pair. Plain messages use the
+  // snackbar theme's own pair (inverse surface); using the normal text color
+  // on it made the text unreadable (dark on dark in light mode, light on
+  // light in dark mode).
+  final background =
+      tone?.container ??
+      theme.snackBarTheme.backgroundColor ??
+      theme.colorScheme.inverseSurface;
+  final foreground =
+      tone?.onContainer ??
+      theme.snackBarTheme.contentTextStyle?.color ??
+      theme.colorScheme.onInverseSurface;
+  final style = theme.textTheme.bodyMedium?.copyWith(color: foreground);
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        backgroundColor: tone?.container,
+        backgroundColor: background,
+        // Tinted messages get a hairline in the tone color so they stand out
+        // from the page behind them.
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: tone == null
+              ? BorderSide.none
+              : BorderSide(color: tone.solid.withValues(alpha: 0.5)),
+        ),
         content: Row(
           children: [
             if (icon != null) ...[
-              Icon(icon, color: tone?.onContainer, size: 20),
+              Icon(icon, color: foreground, size: 20),
               const SizedBox(width: 12),
             ],
             Expanded(child: Text(message, style: style)),

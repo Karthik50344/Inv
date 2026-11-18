@@ -8,29 +8,34 @@ import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Shows what a backup contains and asks for explicit confirmation before
 /// the current data is replaced. Resolves to `true` only when confirmed.
+///
+/// With [firstSetup] (a new install with nothing to lose) the wording is
+/// calmer and the "I understand" checkbox is not needed.
 Future<bool> showRestoreConfirmationDialog(
   BuildContext context,
-  BackupPreview preview,
-) async {
+  BackupPreview preview, {
+  bool firstSetup = false,
+}) async {
   final confirmed = await showDialog<bool>(
     context: context,
     barrierDismissible: false,
-    builder: (_) => _RestoreDialog(preview: preview),
+    builder: (_) => _RestoreDialog(preview: preview, firstSetup: firstSetup),
   );
   return confirmed ?? false;
 }
 
 class _RestoreDialog extends StatefulWidget {
-  const _RestoreDialog({required this.preview});
+  const _RestoreDialog({required this.preview, required this.firstSetup});
 
   final BackupPreview preview;
+  final bool firstSetup;
 
   @override
   State<_RestoreDialog> createState() => _RestoreDialogState();
 }
 
 class _RestoreDialogState extends State<_RestoreDialog> {
-  bool _understood = false;
+  late bool _understood = widget.firstSetup;
 
   static const Map<String, String> _labels = {
     'products': 'Products',
@@ -46,7 +51,8 @@ class _RestoreDialogState extends State<_RestoreDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = context.appColors;
-    final danger = AppTone.danger.colors(context);
+    final danger = (widget.firstSetup ? AppTone.brand : AppTone.danger)
+        .colors(context);
     final manifest = widget.preview.staged.manifest;
     final counts = widget.preview.inspection.recordCounts;
     final created = DateFormatter.dateTime(manifest.createdAt);
@@ -58,11 +64,19 @@ class _RestoreDialogState extends State<_RestoreDialog> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Icon(Icons.warning_amber_rounded, color: danger.onContainer),
+          child: Icon(
+            widget.firstSetup
+                ? Icons.restore
+                : Icons.warning_amber_rounded,
+            color: danger.onContainer,
+          ),
         ),
       ),
       iconPadding: const EdgeInsets.only(top: AppSpacing.s24),
-      title: const Text('Replace your data?', textAlign: TextAlign.center),
+      title: Text(
+        widget.firstSetup ? 'Restore this backup?' : 'Replace your data?',
+        textAlign: TextAlign.center,
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -107,23 +121,29 @@ class _RestoreDialogState extends State<_RestoreDialog> {
             ),
             AppSpacing.gap12,
             Text(
-              'This replaces ALL current data on this device with the data '
-              'in this backup. A safety copy of the current data is saved '
-              'first so you can go back.',
+              widget.firstSetup
+                  ? 'Your products, invoices, company details and the rest '
+                        'of this backup will be restored on this device. The '
+                        'app reopens when it is done.'
+                  : 'This replaces ALL current data on this device with the '
+                        'data in this backup. A safety copy of the current '
+                        'data is saved first so you can go back.',
               style: theme.textTheme.bodyMedium,
             ),
-            AppSpacing.gap8,
-            CheckboxListTile(
-              key: const Key('backup-confirm-check'),
-              contentPadding: EdgeInsets.zero,
-              controlAffinity: ListTileControlAffinity.leading,
-              value: _understood,
-              onChanged: (value) =>
-                  setState(() => _understood = value ?? false),
-              title: const Text(
-                'I understand my current data will be replaced',
+            if (!widget.firstSetup) ...[
+              AppSpacing.gap8,
+              CheckboxListTile(
+                key: const Key('backup-confirm-check'),
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                value: _understood,
+                onChanged: (value) =>
+                    setState(() => _understood = value ?? false),
+                title: const Text(
+                  'I understand my current data will be replaced',
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

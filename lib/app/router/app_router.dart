@@ -37,6 +37,7 @@ import 'package:inventrix/features/expenses/presentation/pages/expense_report_pa
 import 'package:inventrix/features/expenses/presentation/pages/expenses_page.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_filter.dart';
 import 'package:inventrix/features/onboarding/presentation/pages/intro_page.dart';
+import 'package:inventrix/features/onboarding/presentation/pages/setup_page.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_status.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/inventory_bloc.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/inventory_event.dart';
@@ -108,6 +109,7 @@ import 'package:inventrix/features/suppliers/presentation/pages/supplier_detail_
 import 'package:inventrix/features/suppliers/presentation/pages/supplier_form_page.dart';
 import 'package:inventrix/features/suppliers/presentation/pages/suppliers_page.dart';
 import 'package:inventrix/shared/domain/enums/invoice_kind.dart';
+import 'package:inventrix/shared/presentation/view_status.dart';
 
 /// Builds the application [GoRouter].
 abstract final class AppRouter {
@@ -123,7 +125,36 @@ abstract final class AppRouter {
     RouteNames.settings,
   };
 
-  /// Creates a router. There is no login: the dashboard opens directly.
+  /// Company details are mandatory: until a business profile exists, every
+  /// location except the introduction and the first-time setup is sent to
+  /// the setup (or to the introduction first, if it was never seen). Once the
+  /// profile exists, the setup screens are no longer reachable.
+  static String? _setupRedirect(GetIt di, GoRouterState state) {
+    if (!di.isRegistered<SettingsCubit>()) {
+      return null;
+    }
+    final settings = di<SettingsCubit>().state;
+    // Only act on settings that were really loaded: a failed load must not
+    // lock the owner out.
+    if (settings.status != ViewStatus.loaded) {
+      return null;
+    }
+    final path = state.uri.path;
+    final onSetup =
+        path == RoutePaths.setup || path.startsWith('${RoutePaths.setup}/');
+    if (settings.business != null) {
+      return onSetup ? RoutePaths.dashboard : null;
+    }
+    if (onSetup || path == RoutePaths.intro) {
+      return null;
+    }
+    return settings.preferences.introSeen
+        ? RoutePaths.setup
+        : RoutePaths.intro;
+  }
+
+  /// Creates a router. There is no login: the dashboard opens directly once
+  /// the company details exist (see [_setupRedirect]).
   ///
   /// Screens obtain their BLoCs from [locator] (default: `GetIt.instance`).
   static GoRouter create({
@@ -137,6 +168,7 @@ abstract final class AppRouter {
     return GoRouter(
       initialLocation: initialLocation,
       observers: observers,
+      redirect: (context, state) => _setupRedirect(di, state),
       errorBuilder: (context, state) =>
           NotFoundPage(location: state.uri.toString()),
       routes: [
@@ -145,6 +177,22 @@ abstract final class AppRouter {
           path: RoutePaths.intro,
           name: RouteNames.intro,
           builder: (context, state) => const IntroPage(),
+        ),
+        GoRoute(
+          path: RoutePaths.setup,
+          name: RouteNames.setup,
+          builder: (context, state) => BlocProvider(
+            create: (_) => di<BackupBloc>(),
+            child: const SetupPage(),
+          ),
+          routes: [
+            GoRoute(
+              path: 'company',
+              name: RouteNames.setupCompany,
+              builder: (context, state) =>
+                  const BusinessProfilePage(isSetup: true),
+            ),
+          ],
         ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) =>

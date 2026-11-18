@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inventrix/app/router/route_paths.dart';
 import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/settings/domain/entities/business_profile_input.dart';
@@ -11,9 +12,15 @@ import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/shared/presentation/widgets/stored_image.dart';
 
 /// Name, logo, address and contact details printed on invoices.
+///
+/// With [isSetup] it is the mandatory first-time step: saving continues to
+/// the dashboard instead of going back.
 class BusinessProfilePage extends StatefulWidget {
   /// Creates the page.
-  const BusinessProfilePage({super.key});
+  const BusinessProfilePage({this.isSetup = false, super.key});
+
+  /// Whether this is the first-time company setup.
+  final bool isSetup;
 
   @override
   State<BusinessProfilePage> createState() => _BusinessProfilePageState();
@@ -73,7 +80,11 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
       ),
     );
     if (saved && mounted) {
-      context.pop();
+      if (widget.isSetup) {
+        context.go(RoutePaths.dashboard);
+      } else {
+        context.pop();
+      }
     }
   }
 
@@ -89,7 +100,9 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
         final tokens = context.appColors;
         final theme = Theme.of(context);
         return Scaffold(
-          appBar: const AppAppBar(title: 'Business profile'),
+          appBar: AppAppBar(
+            title: widget.isSetup ? 'Company details' : 'Business profile',
+          ),
           body: AppContentWidth(child: ListView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             padding: AppSpacing.page,
@@ -186,8 +199,12 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
               ),
               AppSpacing.gap12,
               Text(
-                'Printed on new and re-shared invoices. Invoices already '
-                'posted keep their amounts and customers.',
+                widget.isSetup
+                    ? 'The business name is required. These details are '
+                          'printed on your invoices and can be changed later '
+                          'in Settings.'
+                    : 'Printed on new and re-shared invoices. Invoices '
+                          'already posted keep their amounts and customers.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: tokens.textSecondary,
                 ),
@@ -195,7 +212,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
               AppSpacing.gap16,
               AppButton(
                 key: const Key('business_save'),
-                label: 'Save',
+                label: widget.isSetup ? 'Save and continue' : 'Save',
                 icon: Icons.check,
                 expand: true,
                 loading: state.saving,

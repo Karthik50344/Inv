@@ -1,6 +1,8 @@
 /// Absolute route paths.
 abstract final class RoutePaths {
   static const String intro = '/welcome';
+  static const String setup = '/setup';
+  static const String setupCompany = '/setup/company';
   static const String dashboard = '/dashboard';
   static const String products = '/products';
   static const String inventory = '/inventory';
