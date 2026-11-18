@@ -1,18 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/reports/domain/entities/report_document.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
-
-/// Colours used by the dashboard charts, taken from the theme.
-List<Color> chartPalette(ColorScheme scheme) => [
-  scheme.primary,
-  scheme.tertiary,
-  scheme.secondary,
-  scheme.error,
-  scheme.primaryContainer,
-  scheme.outline,
-];
+import 'package:inventrix/shared/presentation/widgets/app_card.dart';
+import 'package:inventrix/shared/presentation/widgets/chart_style.dart';
 
 /// A card with a title, an optional subtitle and a chart body.
 class ChartCard extends StatelessWidget {
@@ -36,17 +31,27 @@ class ChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    final colors = context.appColors;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.s16,
+        0,
+        AppSpacing.s16,
+        AppSpacing.s12,
+      ),
+      child: AppCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title, style: theme.textTheme.titleSmall),
             if (subtitle != null)
-              Text(subtitle!, style: theme.textTheme.bodySmall),
-            const SizedBox(height: 12),
+              Text(
+                subtitle!,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+            AppSpacing.gap16,
             child,
           ],
         ),
@@ -68,8 +73,25 @@ class NoChartData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 12),
-    child: Text(message, style: Theme.of(context).textTheme.bodySmall),
+    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
+    child: Row(
+      children: [
+        Icon(
+          Icons.insights_outlined,
+          size: 18,
+          color: context.appColors.textDisabled,
+        ),
+        AppSpacing.hGap8,
+        Expanded(
+          child: Text(
+            message,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: context.appColors.textSecondary,
+            ),
+          ),
+        ),
+      ],
+    ),
   );
 }
 
@@ -98,9 +120,8 @@ class TrendLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final colors = chartPalette(scheme);
-    final labelStyle = Theme.of(context).textTheme.labelSmall;
+    final tokens = context.appColors;
+    final labelStyle = ChartStyle.axisText(context);
     final step = (chart.labels.length / 6).ceil().clamp(1, 1000);
     return Semantics(
       label: chart.title,
@@ -111,7 +132,7 @@ class TrendLineChart extends StatelessWidget {
             gridData: FlGridData(
               drawVerticalLine: false,
               getDrawingHorizontalLine: (value) =>
-                  FlLine(color: scheme.outlineVariant, strokeWidth: 0.5),
+                  FlLine(color: tokens.divider, strokeWidth: 1),
             ),
             borderData: FlBorderData(show: false),
             titlesData: FlTitlesData(
@@ -138,12 +159,13 @@ class TrendLineChart extends StatelessWidget {
             ),
             lineTouchData: LineTouchData(
               touchTooltipData: LineTouchTooltipData(
+                getTooltipColor: (_) => ChartStyle.tooltipColor(context),
                 getTooltipItems: (spots) => [
                   for (final spot in spots)
                     LineTooltipItem(
                       '${chart.labels[spot.x.toInt()]}\n'
                       '${_money.format(Money.fromMinor(chart.series[spot.barIndex].values[spot.x.toInt()], currencyCode: chart.currencyCode, decimalPlaces: chart.decimalPlaces))}',
-                      TextStyle(color: scheme.onInverseSurface, fontSize: 12),
+                      ChartStyle.tooltipText(context),
                     ),
                 ],
               ),
@@ -157,11 +179,11 @@ class TrendLineChart extends StatelessWidget {
                   ],
                   isCurved: true,
                   barWidth: 3,
-                  color: colors[s % colors.length],
+                  color: tokens.chartColor(s),
                   dotData: const FlDotData(show: false),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: colors[s % colors.length].withValues(alpha: 0.15),
+                    color: tokens.chartColor(s).withValues(alpha: 0.14),
                   ),
                 ),
             ],
@@ -194,6 +216,7 @@ class DonutChart extends StatelessWidget {
     required this.slices,
     this.centerText,
     this.centerLabel,
+    this.colors,
     super.key,
   });
 
@@ -206,18 +229,28 @@ class DonutChart extends StatelessWidget {
   /// Small text under [centerText].
   final String? centerLabel;
 
+  /// Fixed colour per slice position (for example green / amber / red for
+  /// stock health). Defaults to the chart palette.
+  final List<Color>? colors;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = chartPalette(theme.colorScheme);
-    final shown = [
-      for (final s in slices)
-        if (s.value > 0) s,
+    final tokens = context.appColors;
+    // Keep each slice's original position so a hidden zero slice does not
+    // shift the colours of the others.
+    final shown = <MapEntry<int, DonutSlice>>[
+      for (var i = 0; i < slices.length; i++)
+        if (slices[i].value > 0) MapEntry(i, slices[i]),
     ];
-    final total = shown.fold<int>(0, (a, s) => a + s.value);
+    final total = shown.fold<int>(0, (a, e) => a + e.value.value);
     if (shown.isEmpty) {
       return const NoChartData();
     }
+    Color colorAt(int index) =>
+        colors != null && index < colors!.length
+        ? colors![index]
+        : tokens.chartColor(index);
     return Row(
       children: [
         SizedBox(
@@ -228,61 +261,77 @@ class DonutChart extends StatelessWidget {
             children: [
               PieChart(
                 PieChartData(
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 42,
+                  sectionsSpace: 3,
+                  centerSpaceRadius: 46,
                   sections: [
-                    for (var i = 0; i < shown.length; i++)
+                    for (final e in shown)
                       PieChartSectionData(
-                        value: shown[i].value.toDouble(),
-                        color: colors[i % colors.length],
-                        radius: 22,
+                        value: e.value.value.toDouble(),
+                        color: colorAt(e.key),
+                        radius: 20,
                         showTitle: false,
                       ),
                   ],
                 ),
               ),
               if (centerText != null)
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(centerText!, style: theme.textTheme.titleMedium),
-                    if (centerLabel != null)
-                      Text(centerLabel!, style: theme.textTheme.labelSmall),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 36),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          centerText!,
+                          style: context.appText.financialSmall,
+                        ),
+                      ),
+                      if (centerLabel != null)
+                        Text(
+                          centerLabel!,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: tokens.textSecondary,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
             ],
           ),
         ),
-        const SizedBox(width: 16),
+        AppSpacing.hGap16,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (var i = 0; i < shown.length; i++)
+              for (final e in shown)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
                       Container(
                         width: 10,
                         height: 10,
                         decoration: BoxDecoration(
-                          color: colors[i % colors.length],
-                          borderRadius: BorderRadius.circular(2),
+                          color: colorAt(e.key),
+                          borderRadius: BorderRadius.circular(3),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      AppSpacing.hGap8,
                       Expanded(
                         child: Text(
-                          shown[i].label,
+                          e.value.label,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      AppSpacing.hGap8,
                       Text(
-                        '${shown[i].text} · ${(shown[i].value * 100 / total).round()}%',
-                        style: theme.textTheme.labelSmall,
+                        '${e.value.text} · ${(e.value.value * 100 / total).round()}%',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: tokens.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -297,7 +346,7 @@ class DonutChart extends StatelessWidget {
 
 /// One row of [RankedBars].
 class RankedBar {
-  /// Creates a row. [value] may be negative (drawn in the error colour).
+  /// Creates a row. [value] may be negative (drawn in the danger colour).
   const RankedBar(this.label, this.value, this.text);
 
   /// Name.
@@ -321,7 +370,7 @@ class RankedBars extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = chartPalette(theme.colorScheme);
+    final tokens = context.appColors;
     var maxAbs = 0;
     for (final b in bars) {
       if (b.value.abs() > maxAbs) {
@@ -350,24 +399,24 @@ class RankedBars extends StatelessWidget {
                     ),
                     Text(
                       bars[i].text,
-                      style: theme.textTheme.labelMedium?.copyWith(
+                      style: context.appText.financialSmall.copyWith(
                         color: bars[i].value < 0
-                            ? theme.colorScheme.error
+                            ? tokens.danger.solid
                             : null,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 4),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                   child: LinearProgressIndicator(
                     value: bars[i].value.abs() / maxAbs,
                     minHeight: 8,
                     color: bars[i].value < 0
-                        ? theme.colorScheme.error
-                        : colors[i % colors.length],
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                        ? tokens.danger.solid
+                        : tokens.chartColor(i),
+                    backgroundColor: tokens.divider,
                   ),
                 ),
               ],

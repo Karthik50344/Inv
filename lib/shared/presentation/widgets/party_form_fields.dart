@@ -154,7 +154,6 @@ class PartyFormFields extends StatelessWidget {
           helperText: helperText,
           prefixText: prefixText,
           errorText: fieldErrors[key],
-          border: const OutlineInputBorder(),
         ),
         validator: required
             ? (value) => (value == null || value.trim().isEmpty)

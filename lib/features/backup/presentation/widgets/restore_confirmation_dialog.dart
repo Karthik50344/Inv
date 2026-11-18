@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/date_formatter.dart';
 import 'package:inventrix/features/backup/domain/entities/staged_backup.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Shows what a backup contains and asks for explicit confirmation before
 /// the current data is replaced. Resolves to `true` only when confirmed.
@@ -41,11 +45,24 @@ class _RestoreDialogState extends State<_RestoreDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final tokens = context.appColors;
+    final danger = AppTone.danger.colors(context);
     final manifest = widget.preview.staged.manifest;
     final counts = widget.preview.inspection.recordCounts;
     final created = DateFormatter.dateTime(manifest.createdAt);
     return AlertDialog(
-      title: const Text('Replace your data?'),
+      icon: DecoratedBox(
+        decoration: BoxDecoration(
+          color: danger.container,
+          shape: BoxShape.circle,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Icon(Icons.warning_amber_rounded, color: danger.onContainer),
+        ),
+      ),
+      iconPadding: const EdgeInsets.only(top: AppSpacing.s24),
+      title: const Text('Replace your data?', textAlign: TextAlign.center),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -55,20 +72,47 @@ class _RestoreDialogState extends State<_RestoreDialog> {
               widget.preview.staged.sourceName,
               style: theme.textTheme.titleSmall,
             ),
-            const SizedBox(height: 4),
-            Text('Created $created · app ${manifest.appVersion}'),
-            const SizedBox(height: 12),
-            for (final entry in _labels.entries)
-              if (counts.containsKey(entry.key))
-                Text('${entry.value}: ${counts[entry.key]}'),
-            const SizedBox(height: 12),
+            const SizedBox(height: 2),
+            Text(
+              'Created $created · app ${manifest.appVersion}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: tokens.textSecondary,
+              ),
+            ),
+            AppSpacing.gap12,
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: tokens.neutral.container,
+                borderRadius: BorderRadius.circular(AppRadius.small),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                child: Column(
+                  children: [
+                    for (final entry in _labels.entries)
+                      if (counts.containsKey(entry.key))
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(entry.value),
+                              Text('${counts[entry.key]}'),
+                            ],
+                          ),
+                        ),
+                  ],
+                ),
+              ),
+            ),
+            AppSpacing.gap12,
             Text(
               'This replaces ALL current data on this device with the data '
               'in this backup. A safety copy of the current data is saved '
               'first so you can go back.',
               style: theme.textTheme.bodyMedium,
             ),
-            const SizedBox(height: 8),
+            AppSpacing.gap8,
             CheckboxListTile(
               key: const Key('backup-confirm-check'),
               contentPadding: EdgeInsets.zero,
@@ -84,19 +128,17 @@ class _RestoreDialogState extends State<_RestoreDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        AppButton(
           key: const Key('backup-confirm-cancel'),
+          label: 'Cancel',
+          variant: AppButtonVariant.outlined,
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
         ),
-        FilledButton(
+        AppButton(
           key: const Key('backup-confirm-restore'),
-          style: FilledButton.styleFrom(
-            backgroundColor: theme.colorScheme.error,
-            foregroundColor: theme.colorScheme.onError,
-          ),
+          label: 'Restore',
+          variant: AppButtonVariant.destructive,
           onPressed: _understood ? () => Navigator.of(context).pop(true) : null,
-          child: const Text('Restore'),
         ),
       ],
     );

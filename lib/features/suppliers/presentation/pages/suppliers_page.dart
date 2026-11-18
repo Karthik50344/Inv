@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
-import 'package:inventrix/core/formatters/money_formatter.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/suppliers/presentation/bloc/supplier_bloc.dart';
 import 'package:inventrix/features/suppliers/presentation/bloc/supplier_event.dart';
 import 'package:inventrix/features/suppliers/presentation/bloc/supplier_state.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Supplier list with search and archive toggle.
 class SuppliersPage extends StatelessWidget {
@@ -37,7 +35,7 @@ class SuppliersPage extends StatelessWidget {
       builder: (context, state) {
         final bloc = context.read<SupplierBloc>();
         return Scaffold(
-          appBar: AppBar(title: const Text('Suppliers')),
+          appBar: const AppAppBar(title: 'Suppliers'),
           floatingActionButton: FloatingActionButton.extended(
             key: const Key('add_supplier'),
             onPressed: () => _push(context, RouteNames.supplierNew),
@@ -46,7 +44,7 @@ class SuppliersPage extends StatelessWidget {
           ),
           body: Column(
             children: [
-              SearchField(
+              AppSearchField(
                 hintText: 'Search name, phone or email',
                 onChanged: (query) => bloc.add(SuppliersSearchChanged(query)),
               ),
@@ -85,37 +83,99 @@ class SuppliersPage extends StatelessWidget {
           message: filtered
               ? 'Try changing the search or filters.'
               : 'Add your first supplier to get started.',
+          action: filtered
+              ? null
+              : AppButton(
+                  key: const Key('empty_add_supplier'),
+                  label: 'Add supplier',
+                  icon: Icons.add,
+                  onPressed: () => _push(context, RouteNames.supplierNew),
+                ),
         );
       case ViewStatus.loaded:
-        const formatter = MoneyFormatter();
-        return ListView.separated(
-          itemCount: state.suppliers.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final item = state.suppliers[index];
-            final contact = [
-              item.phone,
-              item.email,
-            ].whereType<String>().join(' · ');
-            return ListTile(
-              key: Key('supplier_${item.id}'),
-              leading: CircleAvatar(
-                child: Text(item.name.characters.first.toUpperCase()),
-              ),
-              title: Text(item.name),
-              subtitle: contact.isEmpty ? null : Text(contact),
-              trailing: item.isArchived
-                  ? const Chip(label: Text('Archived'))
-                  : (item.openingBalance.isZero
-                        ? const Icon(Icons.chevron_right)
-                        : Text(formatter.format(item.openingBalance))),
-              onTap: () => _push(
-                context,
-                RouteNames.supplierDetail,
-                params: {'id': item.id},
-              ),
-            );
-          },
+        final tokens = context.appColors;
+        final theme = Theme.of(context);
+        return AppRefreshIndicator(
+          onRefresh: () async => bloc.add(const SuppliersRefreshed()),
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              96,
+            ),
+            itemCount: state.suppliers.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final item = state.suppliers[index];
+              final contact = [
+                item.phone,
+                item.email,
+              ].whereType<String>().join(' · ');
+              return AppCard(
+                key: Key('supplier_${item.id}'),
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                onTap: () => _push(
+                  context,
+                  RouteNames.supplierDetail,
+                  params: {'id': item.id},
+                ),
+                child: Row(
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: tokens.brand.container,
+                        borderRadius: BorderRadius.circular(AppRadius.small),
+                      ),
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Center(
+                          child: Text(
+                            item.name.characters.first.toUpperCase(),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              color: tokens.brand.onContainer,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          if (contact.isNotEmpty)
+                            Text(
+                              contact,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: tokens.textSecondary,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    AppSpacing.hGap8,
+                    if (item.isArchived)
+                      const AppBadge(label: 'Archived')
+                    else if (item.openingBalance.isZero)
+                      Icon(Icons.chevron_right, color: tokens.textDisabled)
+                    else
+                      AppCurrencyText(item.openingBalance),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }

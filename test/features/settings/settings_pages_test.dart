@@ -12,6 +12,7 @@ import 'package:inventrix/features/settings/presentation/pages/regional_settings
 import 'package:inventrix/features/settings/presentation/pages/settings_page.dart';
 import 'package:inventrix/shared/domain/value_objects/display_formats.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
+import 'package:inventrix/shared/presentation/widgets/app_button.dart';
 
 import '../../support/settings_fakes.dart';
 
@@ -92,7 +93,7 @@ void main() {
     f.currencies.lock = const MoneyLock(pricedProducts: 2);
     await pump(tester, const RegionalSettingsPage());
     expect(find.byKey(const Key('currency_locked')), findsOneWidget);
-    final save = tester.widget<FilledButton>(
+    final save = tester.widget<AppButton>(
       find.byKey(const Key('currency_save')),
     );
     expect(save.onPressed, isNull);

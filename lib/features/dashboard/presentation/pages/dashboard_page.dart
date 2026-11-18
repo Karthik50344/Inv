@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/constants/app_constants.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/dashboard/domain/entities/dashboard_snapshot.dart';
@@ -15,12 +17,10 @@ import 'package:inventrix/features/reports/presentation/widgets/period_chips.dar
 import 'package:inventrix/features/reports/presentation/widgets/report_formatters.dart';
 import 'package:inventrix/features/reports/presentation/widgets/trend_bar_chart.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/shared/presentation/widgets/local_data_warning_banner.dart';
 
-/// The dashboard: period figures, stock and balance alerts, a chart and the
+/// The dashboard: period figures, stock and balance alerts, charts and the
 /// latest documents. Provide a [DashboardBloc] above it.
 class DashboardPage extends StatelessWidget {
   /// Creates the page.
@@ -32,13 +32,13 @@ class DashboardPage extends StatelessWidget {
       builder: (context, state) {
         final bloc = context.read<DashboardBloc>();
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Dashboard'),
+          appBar: AppAppBar(
+            title: 'Dashboard',
             actions: [
-              IconButton(
+              AppIconButton(
                 key: const Key('dashboard_refresh'),
                 tooltip: 'Refresh',
-                icon: const Icon(Icons.refresh),
+                icon: Icons.refresh,
                 onPressed: () => bloc.add(const DashboardRefreshed()),
               ),
             ],
@@ -72,29 +72,52 @@ class DashboardPage extends StatelessWidget {
           onRetry: () => bloc.add(const DashboardRefreshed()),
         );
       case ViewStatus.empty:
-        return ListView(
-          padding: const EdgeInsets.all(AppDimensions.spaceMd),
-          children: [
-            Text(
-              'Welcome to ${AppConstants.appName}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: AppDimensions.spaceMd),
-            const LocalDataWarningBanner(),
-            const SizedBox(height: AppDimensions.spaceLg),
-            const EmptyState(
-              icon: Icons.insights_outlined,
-              title: 'No data yet',
-              message:
-                  'Sales, stock and balance summaries will appear here '
-                  'once you start recording business activity.',
-            ),
-          ],
+        return AppRefreshIndicator(
+          onRefresh: () async => bloc.add(const DashboardRefreshed()),
+          child: ListView(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.all(AppSpacing.s16),
+            children: [
+              Text(
+                'Welcome to ${AppConstants.appName}',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              AppSpacing.gap16,
+              const LocalDataWarningBanner(),
+              AppSpacing.gap24,
+              EmptyState(
+                icon: Icons.insights_outlined,
+                title: 'No data yet',
+                message:
+                    'Sales, stock and balance summaries will appear here '
+                    'once you start recording business activity.',
+                action: AppButton(
+                  key: const Key('dashboard_first_product'),
+                  label: 'Add your first product',
+                  icon: Icons.add,
+                  onPressed: () =>
+                      _push(context, bloc, RouteNames.productNew),
+                ),
+              ),
+            ],
+          ),
         );
       case ViewStatus.loaded:
         return _Content(state: state, snapshot: snapshot!, bloc: bloc);
     }
   }
+}
+
+/// Opens a route and reloads the dashboard when the user comes back, so new
+/// documents show up without a manual refresh.
+Future<void> _push(
+  BuildContext context,
+  DashboardBloc bloc,
+  String name, {
+  Map<String, String> params = const {},
+}) async {
+  await context.pushNamed(name, pathParameters: params);
+  bloc.add(const DashboardRefreshed());
 }
 
 class _Content extends StatelessWidget {
@@ -118,23 +141,51 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final tokens = context.appColors;
     final s = snapshot;
-    return RefreshIndicator(
+    final lowStock = s.inventory.lowStockCount;
+    final outOfStock = s.inventory.outOfStockCount;
+    return AppRefreshIndicator(
       onRefresh: () async => bloc.add(const DashboardRefreshed()),
       child: ListView(
-        padding: const EdgeInsets.only(bottom: AppDimensions.spaceLg),
+        physics: AppRefreshIndicator.physics,
+        padding: const EdgeInsets.only(bottom: AppSpacing.s32),
         children: [
           if (state.status == ViewStatus.loading)
-            const LinearProgressIndicator(),
+            const LinearProgressIndicator(minHeight: 2),
           if (error != null)
-            MaterialBanner(
-              content: Text(error!),
-              actions: [
-                TextButton(
-                  onPressed: () => bloc.add(const DashboardRefreshed()),
-                  child: const Text('Retry'),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s16,
+                AppSpacing.s8,
+                AppSpacing.s16,
+                0,
+              ),
+              child: AppCard(
+                tone: AppTone.danger,
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: tokens.danger.onContainer,
+                    ),
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Text(
+                        error!,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: tokens.danger.onContainer,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => bloc.add(const DashboardRefreshed()),
+                      child: const Text('Retry'),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           PeriodChips(
             selected: state.period,
@@ -151,116 +202,168 @@ class _Content extends StatelessWidget {
                 bloc.add(DashboardPeriodChanged(period, range: picked)),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.spaceMd,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
             child: Text(
               ReportFormatters.range(s.range.from, s.range.to),
               key: const Key('dashboard_range'),
-              style: theme.textTheme.bodySmall,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: tokens.textSecondary,
+              ),
             ),
           ),
           const Padding(
-            padding: EdgeInsets.all(AppDimensions.spaceMd),
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s12,
+              AppSpacing.s16,
+              0,
+            ),
             child: LocalDataWarningBanner(),
+          ),
+          _QuickActions(bloc: bloc),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s16,
+              AppSpacing.s16,
+              0,
+            ),
+            child: _HeroCard(snapshot: s),
           ),
           _Section(
             title: 'This period',
             children: [
-              _Tile(
-                'Net sales',
-                _money.format(s.sales.netAfterReturns),
-                hint: '${s.sales.count} invoice(s), excl. tax',
+              AppStatCard(
+                label: 'Net purchases',
+                value: _money.format(s.purchases.netAfterReturns),
+                subtitle: '${s.purchases.count} invoice(s), excl. tax',
+                icon: Icons.shopping_cart_checkout_outlined,
+                tone: AppTone.info,
               ),
-              _Tile(
-                'Net purchases',
-                _money.format(s.purchases.netAfterReturns),
-                hint: '${s.purchases.count} invoice(s), excl. tax',
+              AppStatCard(
+                label: 'Expenses',
+                value: _money.format(s.profit.expenses),
+                subtitle: '${s.expenses.count} posted, excl. tax',
+                icon: Icons.receipt_long_outlined,
+                tone: AppTone.warning,
               ),
-              _Tile(
-                'Expenses',
-                _money.format(s.profit.expenses),
-                hint: '${s.expenses.count} posted, excl. tax',
+              AppStatCard(
+                label: 'Gross profit',
+                value: _money.format(s.profit.grossProfit),
+                subtitle: 'Estimate',
+                icon: Icons.trending_up,
+                tone: s.profit.grossProfit.isNegative
+                    ? AppTone.danger
+                    : AppTone.success,
+                valueTone: s.profit.grossProfit.isNegative
+                    ? AppTone.danger
+                    : null,
               ),
-              _Tile(
-                'Gross profit',
-                _money.format(s.profit.grossProfit),
-                hint: 'Estimate',
-                negative: s.profit.grossProfit.isNegative,
+              AppStatCard(
+                label: 'Operating result',
+                value: _money.format(s.profit.operatingResult),
+                subtitle: 'Estimate',
+                icon: Icons.account_balance_outlined,
+                tone: s.profit.operatingResult.isNegative
+                    ? AppTone.danger
+                    : AppTone.success,
+                valueTone: s.profit.operatingResult.isNegative
+                    ? AppTone.danger
+                    : null,
               ),
-              _Tile(
-                'Operating result',
-                _money.format(s.profit.operatingResult),
-                hint: 'Estimate',
-                negative: s.profit.operatingResult.isNegative,
-              ),
-              _Tile(
-                'Net cash',
-                _money.format(s.cash.net),
-                hint:
+              AppStatCard(
+                label: 'Net cash',
+                value: _money.format(s.cash.net),
+                subtitle:
                     'In ${_money.format(s.cash.cashIn)} · '
                     'out ${_money.format(s.cash.cashOut)}',
-                negative: s.cash.net.isNegative,
+                icon: Icons.payments_outlined,
+                tone: s.cash.net.isNegative ? AppTone.danger : AppTone.brand,
+                valueTone: s.cash.net.isNegative ? AppTone.danger : null,
               ),
-              _Tile(
-                'Gross margin',
-                s.profit.grossMarginBasisPoints == null
+              AppStatCard(
+                label: 'Gross margin',
+                value: s.profit.grossMarginBasisPoints == null
                     ? '–'
                     : ReportFormatters.percent(
                         s.profit.grossMarginBasisPoints!,
                       ),
-                hint: 'Of net sales',
-                negative: (s.profit.grossMarginBasisPoints ?? 0) < 0,
+                subtitle: 'Of net sales',
+                icon: Icons.percent,
+                tone: (s.profit.grossMarginBasisPoints ?? 0) < 0
+                    ? AppTone.danger
+                    : AppTone.brand,
+                valueTone: (s.profit.grossMarginBasisPoints ?? 0) < 0
+                    ? AppTone.danger
+                    : null,
               ),
-              _Tile(
-                'Average sale',
-                s.averageSale == null ? '–' : _money.format(s.averageSale!),
-                hint: 'Per invoice, excl. tax',
+              AppStatCard(
+                label: 'Average sale',
+                value: s.averageSale == null ? '–' : _money.format(s.averageSale!),
+                subtitle: 'Per invoice, excl. tax',
+                icon: Icons.receipt_outlined,
+                tone: AppTone.neutral,
               ),
-              _Tile(
-                'Sales returns',
-                _money.format(s.sales.returnsNet),
-                hint: '${s.sales.returnsCount} return(s), excl. tax',
+              AppStatCard(
+                label: 'Sales returns',
+                value: _money.format(s.sales.returnsNet),
+                subtitle: '${s.sales.returnsCount} return(s), excl. tax',
+                icon: Icons.assignment_return_outlined,
+                tone: AppTone.neutral,
               ),
-              _Tile(
-                'Tax collected',
-                _money.format(s.taxCollected),
-                hint: 'On sales, after returns',
+              AppStatCard(
+                label: 'Tax collected',
+                value: _money.format(s.taxCollected),
+                subtitle: 'On sales, after returns',
+                icon: Icons.account_balance_wallet_outlined,
+                tone: AppTone.neutral,
               ),
             ],
           ),
           _Section(
             title: 'Right now',
             children: [
-              _Tile(
-                'Inventory value',
-                _money.format(s.inventory.totalValue),
+              AppStatCard(
+                label: 'Inventory value',
+                value: _money.format(s.inventory.totalValue),
+                icon: Icons.inventory_2_outlined,
                 onTap: () => _openReport(context, 'inventory'),
               ),
-              _Tile(
-                'Low stock',
-                '${s.inventory.lowStockCount}',
-                hint: 'products',
+              AppStatCard(
+                label: 'Low stock',
+                value: '$lowStock',
+                subtitle: 'products',
+                icon: Icons.warning_amber_rounded,
+                tone: lowStock > 0 ? AppTone.warning : AppTone.success,
+                valueTone: lowStock > 0 ? AppTone.warning : null,
                 onTap: () => _openReport(context, 'low-stock'),
               ),
-              _Tile(
-                'Out of stock',
-                '${s.inventory.outOfStockCount}',
-                hint: 'products',
+              AppStatCard(
+                label: 'Out of stock',
+                value: '$outOfStock',
+                subtitle: 'products',
+                icon: Icons.remove_shopping_cart_outlined,
+                tone: outOfStock > 0 ? AppTone.danger : AppTone.success,
+                valueTone: outOfStock > 0 ? AppTone.danger : null,
                 onTap: () => _openReport(context, 'low-stock'),
               ),
-              _Tile(
-                'Customers owe',
-                _money.format(s.receivable),
+              AppStatCard(
+                label: 'Customers owe',
+                value: _money.format(s.receivable),
+                icon: Icons.south_west,
+                tone: AppTone.success,
                 onTap: () => _openReport(context, 'customer-outstanding'),
               ),
-              _Tile(
-                'You owe suppliers',
-                _money.format(s.payable),
+              AppStatCard(
+                label: 'You owe suppliers',
+                value: _money.format(s.payable),
+                icon: Icons.north_east,
+                tone: AppTone.warning,
                 onTap: () => _openReport(context, 'supplier-outstanding'),
               ),
             ],
           ),
+          const AppSectionHeader(title: 'Insights'),
           ChartCard(
             title: s.chart.title,
             child: s.chart.isFlat
@@ -269,10 +372,11 @@ class _Content extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Wrap(
-                        spacing: AppDimensions.spaceMd,
+                        spacing: AppSpacing.s16,
+                        runSpacing: AppSpacing.s4,
                         children: TrendBarChart.legend(context, s.chart),
                       ),
-                      const SizedBox(height: AppDimensions.spaceSm),
+                      AppSpacing.gap12,
                       TrendBarChart(chart: s.chart),
                     ],
                   ),
@@ -347,24 +451,21 @@ class _Content extends StatelessWidget {
             subtitle: 'Products as of now',
             child: DonutChart(
               centerText:
-                  '${s.healthyStockCount + s.inventory.lowStockCount + s.inventory.outOfStockCount}',
+                  '${s.healthyStockCount + lowStock + outOfStock}',
               centerLabel: 'products',
+              colors: [
+                tokens.success.solid,
+                tokens.warning.solid,
+                tokens.danger.solid,
+              ],
               slices: [
                 DonutSlice(
                   'Healthy',
                   s.healthyStockCount,
                   '${s.healthyStockCount}',
                 ),
-                DonutSlice(
-                  'Low',
-                  s.inventory.lowStockCount,
-                  '${s.inventory.lowStockCount}',
-                ),
-                DonutSlice(
-                  'Out of stock',
-                  s.inventory.outOfStockCount,
-                  '${s.inventory.outOfStockCount}',
-                ),
+                DonutSlice('Low', lowStock, '$lowStock'),
+                DonutSlice('Out of stock', outOfStock, '$outOfStock'),
               ],
             ),
           ),
@@ -396,18 +497,205 @@ class _Content extends StatelessWidget {
               ],
             ),
           ),
-          _Recent(title: 'Recent sales', rows: s.recentSales),
-          _Recent(title: 'Recent purchases', rows: s.recentPurchases),
+          _Recent(
+            title: 'Recent sales',
+            icon: Icons.point_of_sale_outlined,
+            rows: s.recentSales,
+            onViewAll: () => context.goNamed(RouteNames.sales),
+          ),
+          _Recent(
+            title: 'Recent purchases',
+            icon: Icons.shopping_bag_outlined,
+            rows: s.recentPurchases,
+            onViewAll: () => context.pushNamed(RouteNames.purchases),
+          ),
           Padding(
-            padding: const EdgeInsets.all(AppDimensions.spaceMd),
-            child: OutlinedButton.icon(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s24,
+              AppSpacing.s16,
+              0,
+            ),
+            child: AppButton(
               key: const Key('dashboard_reports'),
+              label: 'All reports',
+              icon: Icons.bar_chart_outlined,
+              variant: AppButtonVariant.outlined,
+              expand: true,
               onPressed: () => context.pushNamed(RouteNames.reports),
-              icon: const Icon(Icons.bar_chart_outlined),
-              label: const Text('All reports'),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The headline figure of the period: net sales.
+class _HeroCard extends StatelessWidget {
+  const _HeroCard({required this.snapshot});
+
+  final DashboardSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final tokens = context.appColors;
+    final s = snapshot;
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.s20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: tokens.brand.container,
+                  borderRadius: BorderRadius.circular(AppRadius.small),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: Icon(
+                    Icons.point_of_sale_outlined,
+                    size: 18,
+                    color: tokens.brand.onContainer,
+                  ),
+                ),
+              ),
+              AppSpacing.hGap12,
+              Text(
+                'Net sales',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: tokens.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          AppSpacing.gap12,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: AppCurrencyText(
+              s.sales.netAfterReturns,
+              size: AppCurrencySize.large,
+            ),
+          ),
+          AppSpacing.gap4,
+          Text(
+            '${s.sales.count} invoice(s), excl. tax',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: tokens.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A horizontally scrolling row of shortcuts to the most common tasks.
+class _QuickActions extends StatelessWidget {
+  const _QuickActions({required this.bloc});
+
+  final DashboardBloc bloc;
+
+  @override
+  Widget build(BuildContext context) {
+    final actions = <_QuickAction>[
+      _QuickAction(
+        key: const Key('quick_new_sale'),
+        label: 'New sale',
+        icon: Icons.point_of_sale_outlined,
+        tone: AppTone.brand,
+        onTap: () => _push(context, bloc, RouteNames.saleNew),
+      ),
+      _QuickAction(
+        key: const Key('quick_new_purchase'),
+        label: 'New purchase',
+        icon: Icons.shopping_bag_outlined,
+        tone: AppTone.info,
+        onTap: () => _push(context, bloc, RouteNames.purchaseNew),
+      ),
+      _QuickAction(
+        key: const Key('quick_new_product'),
+        label: 'Add product',
+        icon: Icons.add_box_outlined,
+        tone: AppTone.success,
+        onTap: () => _push(context, bloc, RouteNames.productNew),
+      ),
+      _QuickAction(
+        key: const Key('quick_new_expense'),
+        label: 'Add expense',
+        icon: Icons.receipt_long_outlined,
+        tone: AppTone.warning,
+        onTap: () => _push(context, bloc, RouteNames.expenseNew),
+      ),
+    ];
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.s16),
+      child: SizedBox(
+        height: 88,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
+          itemCount: actions.length,
+          separatorBuilder: (_, _) => AppSpacing.hGap12,
+          itemBuilder: (_, i) => actions[i],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickAction extends StatelessWidget {
+  const _QuickAction({
+    required this.label,
+    required this.icon,
+    required this.tone,
+    required this.onTap,
+    super.key,
+  });
+
+  final String label;
+  final IconData icon;
+  final AppTone tone;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = tone.colors(context);
+    return SizedBox(
+      width: 104,
+      child: AppCard(
+        onTap: onTap,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s8,
+          vertical: AppSpacing.s12,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: colors.container,
+                borderRadius: BorderRadius.circular(AppRadius.small),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: Icon(icon, size: 20, color: colors.onContainer),
+              ),
+            ),
+            AppSpacing.gap8,
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -421,22 +709,16 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppDimensions.spaceMd,
-        0,
-        AppDimensions.spaceMd,
-        AppDimensions.spaceSm,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: AppDimensions.spaceSm),
-          LayoutBuilder(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSectionHeader(title: title),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
+          child: LayoutBuilder(
             builder: (context, constraints) {
               final columns = constraints.maxWidth >= 600 ? 3 : 2;
-              const gap = AppDimensions.spaceSm;
+              const gap = AppSpacing.s12;
               final width =
                   (constraints.maxWidth - gap * (columns - 1)) / columns;
               return Wrap(
@@ -448,105 +730,114 @@ class _Section extends StatelessWidget {
               );
             },
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Tile extends StatelessWidget {
-  const _Tile(
-    this.label,
-    this.value, {
-    this.hint,
-    this.negative = false,
-    this.onTap,
-  });
-
-  final String label;
-  final String value;
-  final String? hint;
-  final bool negative;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: EdgeInsets.zero,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-        child: Padding(
-          padding: const EdgeInsets.all(AppDimensions.spaceMd),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: theme.textTheme.labelMedium),
-              const SizedBox(height: 4),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  value,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: negative ? theme.colorScheme.error : null,
-                  ),
-                ),
-              ),
-              if (hint != null)
-                Text(
-                  hint!,
-                  style: theme.textTheme.bodySmall,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-            ],
-          ),
         ),
-      ),
+      ],
     );
   }
 }
 
 class _Recent extends StatelessWidget {
-  const _Recent({required this.title, required this.rows});
+  const _Recent({
+    required this.title,
+    required this.icon,
+    required this.rows,
+    required this.onViewAll,
+  });
 
   final String title;
+  final IconData icon;
   final List<DocumentRow> rows;
+  final VoidCallback onViewAll;
 
   @override
   Widget build(BuildContext context) {
-    const money = MoneyFormatter();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppDimensions.spaceMd,
-        AppDimensions.spaceMd,
-        AppDimensions.spaceMd,
-        0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
-          if (rows.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                'None yet.',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            )
-          else
-            for (final r in rows)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text('${r.number} · ${r.partyName}'),
-                subtitle: Text(ReportFormatters.day(r.date)),
-                trailing: Text(money.format(r.total)),
-              ),
-        ],
-      ),
+    final theme = Theme.of(context);
+    final tokens = context.appColors;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSectionHeader(
+          title: title,
+          actionLabel: rows.isEmpty ? null : 'View all',
+          onAction: rows.isEmpty ? null : onViewAll,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
+          child: AppCard(
+            padding: EdgeInsets.zero,
+            child: rows.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.all(AppSpacing.s16),
+                    child: Text(
+                      'None yet.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: tokens.textSecondary,
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      for (var i = 0; i < rows.length; i++) ...[
+                        if (i > 0) Divider(height: 1, color: tokens.divider),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.s16,
+                            vertical: AppSpacing.s12,
+                          ),
+                          child: Row(
+                            children: [
+                              DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: tokens.neutral.container,
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.small,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Icon(
+                                    icon,
+                                    size: 18,
+                                    color: tokens.textSecondary,
+                                  ),
+                                ),
+                              ),
+                              AppSpacing.hGap12,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${rows[i].number} · ${rows[i].partyName}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    Text(
+                                      ReportFormatters.day(rows[i].date),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: tokens.textSecondary,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              AppSpacing.hGap12,
+                              AppCurrencyText(rows[i].total),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+          ),
+        ),
+      ],
     );
   }
 }

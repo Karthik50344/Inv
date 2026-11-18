@@ -14,6 +14,8 @@ import 'package:inventrix/shared/domain/enums/document_status.dart';
 import 'package:inventrix/shared/domain/services/party_validation.dart';
 import 'package:inventrix/shared/domain/value_objects/quantity.dart';
 
+import 'package:inventrix/shared/presentation/widgets/app_button.dart';
+
 import '../../support/test_locator.dart';
 import '../../support/widget_helpers.dart';
 
@@ -211,7 +213,7 @@ void main() {
     (await wiring.locator<PostSale>()(id)).valueOrNull!;
     await pumpInventrix(tester, wiring, location: '$base/$id/edit');
     expect(find.byKey(const Key('sales_blocked')), findsOneWidget);
-    final save = tester.widget<FilledButton>(
+    final save = tester.widget<AppButton>(
       find.byKey(const Key('save_sale')),
     );
     expect(save.onPressed, isNull);

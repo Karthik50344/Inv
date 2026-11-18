@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/features/reports/domain/entities/report_period.dart';
 import 'package:inventrix/shared/domain/value_objects/date_range.dart';
+import 'package:inventrix/shared/presentation/widgets/app_chip.dart';
+import 'package:inventrix/shared/presentation/widgets/app_date_picker.dart';
 
 /// A row of period choices with a custom-range picker.
 class PeriodChips extends StatelessWidget {
@@ -29,11 +32,11 @@ class PeriodChips extends StatelessWidget {
   Future<void> _pickRange(BuildContext context) async {
     final now = DateTime.now();
     final range = current;
-    final picked = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(now.year + 1, 12, 31),
-      initialDateRange: range == null
+    final picked = await showAppDateRangePicker(
+      context,
+      first: DateTime(2000),
+      last: DateTime(now.year + 1, 12, 31),
+      initial: range == null
           ? null
           : DateTimeRange(start: range.from, end: range.to),
     );
@@ -48,17 +51,23 @@ class PeriodChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 52,
+      height: 56,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s16,
+          vertical: AppSpacing.s8,
+        ),
         children: [
           for (final period in periods)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: ChoiceChip(
+              padding: const EdgeInsets.only(right: AppSpacing.s8),
+              child: AppChip(
                 key: Key('period_${period.name}'),
-                label: Text(period.label),
+                label: period.label,
+                icon: period == ReportPeriod.custom
+                    ? Icons.date_range_outlined
+                    : null,
                 selected: selected == period,
                 onSelected: (_) => period == ReportPeriod.custom
                     ? _pickRange(context)

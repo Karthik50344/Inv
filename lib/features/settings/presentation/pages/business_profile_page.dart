@@ -2,11 +2,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/settings/domain/entities/business_profile_input.dart';
 import 'package:inventrix/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:inventrix/features/settings/presentation/bloc/settings_state.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/shared/presentation/widgets/stored_image.dart';
 
 /// Name, logo, address and contact details printed on invoices.
@@ -85,92 +86,123 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
       listener: (context, state) => showAppMessage(context, state.message!),
       builder: (context, state) {
         final errors = state.fieldErrors;
+        final tokens = context.appColors;
+        final theme = Theme.of(context);
         return Scaffold(
-          appBar: AppBar(title: const Text('Business profile')),
-          body: ListView(
-            padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          appBar: const AppAppBar(title: 'Business profile'),
+          body: AppContentWidth(child: ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: AppSpacing.page,
             children: [
-              Row(
-                children: [
-                  StoredImage(
-                    relativePath: _logoPath,
-                    resolvePath: cubit.resolveLogoPath,
-                    size: 72,
-                    placeholder: const Icon(Icons.storefront_outlined),
-                  ),
-                  const SizedBox(width: AppDimensions.spaceMd),
-                  OutlinedButton.icon(
-                    key: const Key('business_pick_logo'),
-                    onPressed: () => _pickLogo(cubit),
-                    icon: const Icon(Icons.image_outlined),
-                    label: Text(_logoPath == null ? 'Add logo' : 'Change logo'),
-                  ),
-                  if (_logoPath != null)
-                    TextButton(
-                      key: const Key('business_remove_logo'),
-                      onPressed: () => setState(() => _logoPath = null),
-                      child: const Text('Remove'),
+              AppCard(
+                child: Row(
+                  children: [
+                    StoredImage(
+                      relativePath: _logoPath,
+                      resolvePath: cubit.resolveLogoPath,
+                      size: 72,
+                      placeholder: const Icon(Icons.storefront_outlined),
                     ),
-                ],
+                    AppSpacing.hGap16,
+                    Expanded(
+                      child: Wrap(
+                        spacing: AppSpacing.s8,
+                        runSpacing: AppSpacing.s8,
+                        children: [
+                          AppButton(
+                            key: const Key('business_pick_logo'),
+                            label: _logoPath == null
+                                ? 'Add logo'
+                                : 'Change logo',
+                            icon: Icons.image_outlined,
+                            variant: AppButtonVariant.outlined,
+                            size: AppButtonSize.small,
+                            onPressed: () => _pickLogo(cubit),
+                          ),
+                          if (_logoPath != null)
+                            AppButton(
+                              key: const Key('business_remove_logo'),
+                              label: 'Remove',
+                              variant: AppButtonVariant.text,
+                              size: AppButtonSize.small,
+                              onPressed: () =>
+                                  setState(() => _logoPath = null),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: AppDimensions.spaceMd),
-              TextField(
+              const AppSectionHeader(
+                title: 'Details',
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.s4,
+                  AppSpacing.s20,
+                  AppSpacing.s4,
+                  AppSpacing.s8,
+                ),
+              ),
+              AppTextField(
                 key: const Key('business_name'),
                 controller: _name,
-                decoration: InputDecoration(
-                  labelText: 'Business name *',
-                  errorText: errors['name'],
-                ),
+                label: 'Business name *',
+                errorText: errors['name'],
+                textCapitalization: TextCapitalization.words,
               ),
-              TextField(
+              AppSpacing.gap12,
+              AppTextField(
                 key: const Key('business_address'),
                 controller: _address,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  labelText: 'Address',
-                  errorText: errors['address'],
-                ),
+                minLines: 2,
+                maxLines: 4,
+                label: 'Address',
+                errorText: errors['address'],
+                textCapitalization: TextCapitalization.sentences,
               ),
-              TextField(
+              AppSpacing.gap12,
+              AppTextField(
                 key: const Key('business_phone'),
                 controller: _phone,
                 keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: 'Phone',
-                  errorText: errors['phone'],
-                ),
+                label: 'Phone',
+                errorText: errors['phone'],
               ),
-              TextField(
+              AppSpacing.gap12,
+              AppTextField(
                 key: const Key('business_email'),
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  errorText: errors['email'],
-                ),
+                label: 'Email',
+                errorText: errors['email'],
               ),
-              TextField(
+              AppSpacing.gap12,
+              AppTextField(
                 key: const Key('business_tax_id'),
                 controller: _taxId,
-                decoration: InputDecoration(
-                  labelText: 'Tax registration number',
-                  errorText: errors['taxId'],
-                ),
+                label: 'Tax registration number',
+                errorText: errors['taxId'],
+                textCapitalization: TextCapitalization.characters,
               ),
-              const SizedBox(height: AppDimensions.spaceSm),
+              AppSpacing.gap12,
               Text(
                 'Printed on new and re-shared invoices. Invoices already '
                 'posted keep their amounts and customers.',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: tokens.textSecondary,
+                ),
               ),
-              const SizedBox(height: AppDimensions.spaceMd),
-              FilledButton(
+              AppSpacing.gap16,
+              AppButton(
                 key: const Key('business_save'),
+                label: 'Save',
+                icon: Icons.check,
+                expand: true,
+                loading: state.saving,
                 onPressed: state.saving ? null : () => _save(cubit),
-                child: const Text('Save'),
               ),
             ],
-          ),
+          )),
         );
       },
     );

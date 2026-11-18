@@ -8,6 +8,7 @@ import 'package:inventrix/features/inventory/presentation/pages/stock_detail_pag
 import 'package:inventrix/features/inventory/presentation/pages/stock_operation_page.dart';
 import 'package:inventrix/features/products/domain/entities/product_draft.dart';
 import 'package:inventrix/features/products/domain/usecases/create_product.dart';
+import 'package:inventrix/shared/presentation/widgets/app_button.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
 import 'package:inventrix/shared/domain/value_objects/quantity.dart';
 
@@ -148,7 +149,7 @@ void main() {
     final id = await addProduct('Hammer', 'H-1');
     await pumpInventrix(tester, wiring, location: '/inventory/$id/out');
     expect(find.byKey(const Key('operation_blocked')), findsOneWidget);
-    final button = tester.widget<FilledButton>(
+    final button = tester.widget<AppButton>(
       find.byKey(const Key('save_stock_operation')),
     );
     expect(button.onPressed, isNull);

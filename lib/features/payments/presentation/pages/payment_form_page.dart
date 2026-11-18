@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/payments/domain/entities/party_type.dart';
 import 'package:inventrix/features/payments/presentation/bloc/payment_form_cubit.dart';
 import 'package:inventrix/features/purchases/presentation/widgets/date_text.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Record a payment received from a customer or made to a supplier, with
 /// optional allocation to invoices.
@@ -62,13 +62,13 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
         final title = isCustomer ? 'Receive payment' : 'Pay supplier';
         if (state.status == PaymentFormStatus.loading) {
           return Scaffold(
-            appBar: AppBar(title: Text(title)),
+            appBar: AppAppBar(title: title),
             body: const LoadingIndicator(),
           );
         }
         if (state.status == PaymentFormStatus.failure) {
           return Scaffold(
-            appBar: AppBar(title: Text(title)),
+            appBar: AppAppBar(title: title),
             body: ErrorState(
               message: state.message ?? 'Could not open the form.',
               onRetry: () => cubit.load(type: widget.type),
@@ -79,10 +79,14 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
         final saving = state.status == PaymentFormStatus.saving;
         final unallocated = state.unallocated;
         return Scaffold(
-          appBar: AppBar(title: Text(title)),
+          appBar: AppAppBar(title: title),
           body: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: AppSpacing.page,
             children: [
+              AppSectionHeader(
+                title: isCustomer ? 'Who paid' : 'Who is being paid',
+                padding: const EdgeInsets.only(bottom: AppSpacing.s12),
+              ),
               DropdownButtonFormField<String>(
                 key: ValueKey('party_${state.partyId}_${state.parties.length}'),
                 initialValue: state.partyId,
@@ -102,7 +106,13 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
                         }
                       },
               ),
-              const SizedBox(height: 12),
+              const AppSectionHeader(
+                title: 'Payment',
+                padding: EdgeInsets.only(
+                  top: AppSpacing.s20,
+                  bottom: AppSpacing.s12,
+                ),
+              ),
               TextField(
                 key: const Key('payment_amount'),
                 controller: _amount,
@@ -140,7 +150,10 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Date'),
                 subtitle: Text(formatDocumentDate(state.date)),
-                trailing: const Icon(Icons.calendar_today_outlined),
+                trailing: Icon(
+                  Icons.calendar_today_outlined,
+                  color: context.appColors.textSecondary,
+                ),
                 onTap: saving
                     ? null
                     : () async {
@@ -172,7 +185,7 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
                 decoration: const InputDecoration(labelText: 'Notes (optional)'),
                 onChanged: cubit.setNotes,
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gap16,
               Row(
                 children: [
                   Expanded(
@@ -181,7 +194,12 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                  const Text('Oldest first'),
+                  Text(
+                    'Oldest first',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: context.appColors.textSecondary,
+                    ),
+                  ),
                   Switch(
                     key: const Key('auto_allocate'),
                     value: state.autoAllocate,
@@ -222,16 +240,19 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
                     key: const Key('unallocated_text'),
                     style: TextStyle(
                       color: unallocated.isNegative
-                          ? Theme.of(context).colorScheme.error
-                          : null,
+                          ? context.appColors.danger.solid
+                          : context.appColors.textSecondary,
                     ),
                   ),
                 ),
-              const SizedBox(height: 16),
-              FilledButton(
+              AppSpacing.gap16,
+              AppButton(
                 key: const Key('save_payment'),
-                onPressed: saving ? null : cubit.submit,
-                child: Text(saving ? 'Saving…' : 'Save payment'),
+                label: 'Save payment',
+                icon: Icons.check,
+                expand: true,
+                loading: saving,
+                onPressed: cubit.submit,
               ),
             ],
           ),

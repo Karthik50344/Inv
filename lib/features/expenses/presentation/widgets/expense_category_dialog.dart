@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/features/expenses/domain/entities/expense_category.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Create/edit dialog for an expense category.
 ///
@@ -79,53 +80,30 @@ class _ExpenseCategoryDialogState extends State<ExpenseCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        widget.category == null
-            ? 'New expense category'
-            : 'Edit expense category',
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              key: const Key('expense_category_name'),
-              controller: _name,
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: 'Name *',
-                errorText: _errors['name'],
-              ),
-            ),
-            TextField(
-              key: const Key('expense_category_description'),
-              controller: _description,
-              decoration: InputDecoration(
-                labelText: 'Description',
-                errorText: _errors['description'],
-              ),
-            ),
-            if (_message != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Text(
-                  _message!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ),
-          ],
+    return AppFormDialog(
+      title: widget.category == null
+          ? 'New expense category'
+          : 'Edit expense category',
+      saveKey: const Key('expense_category_save'),
+      saving: _saving,
+      message: _message,
+      cancelResult: false,
+      onSave: _save,
+      children: [
+        AppTextField(
+          key: const Key('expense_category_name'),
+          controller: _name,
+          autofocus: true,
+          label: 'Name *',
+          errorText: _errors['name'],
+          textCapitalization: TextCapitalization.sentences,
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: _saving ? null : () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          key: const Key('expense_category_save'),
-          onPressed: _saving ? null : _save,
-          child: const Text('Save'),
+        AppTextField(
+          key: const Key('expense_category_description'),
+          controller: _description,
+          label: 'Description',
+          errorText: _errors['description'],
+          textCapitalization: TextCapitalization.sentences,
         ),
       ],
     );

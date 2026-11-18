@@ -1,8 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/reports/domain/entities/report_document.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
+import 'package:inventrix/shared/presentation/widgets/chart_style.dart';
 
 /// A grouped bar chart of amounts over time.
 ///
@@ -38,9 +40,8 @@ class TrendBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final colors = [scheme.primary, scheme.tertiary, scheme.secondary];
-    final labelStyle = Theme.of(context).textTheme.labelSmall;
+    final tokens = context.appColors;
+    final labelStyle = ChartStyle.axisText(context);
     final step = (chart.labels.length / 6).ceil().clamp(1, 1000);
     final barWidth = chart.labels.length > 16 ? 5.0 : 9.0;
 
@@ -50,7 +51,11 @@ class TrendBarChart extends StatelessWidget {
         height: height,
         child: BarChart(
           BarChartData(
-            gridData: const FlGridData(show: false),
+            gridData: FlGridData(
+              drawVerticalLine: false,
+              getDrawingHorizontalLine: (value) =>
+                  FlLine(color: tokens.divider, strokeWidth: 1),
+            ),
             borderData: FlBorderData(show: false),
             titlesData: FlTitlesData(
               topTitles: const AxisTitles(),
@@ -76,12 +81,13 @@ class TrendBarChart extends StatelessWidget {
             ),
             barTouchData: BarTouchData(
               touchTooltipData: BarTouchTooltipData(
+                getTooltipColor: (_) => ChartStyle.tooltipColor(context),
                 getTooltipItem: (group, groupIndex, rod, rodIndex) {
                   final series = chart.series[rodIndex];
                   return BarTooltipItem(
                     '${chart.labels[groupIndex]}\n'
                     '${series.name}: ${_text(series.values[groupIndex])}',
-                    TextStyle(color: scheme.onInverseSurface, fontSize: 12),
+                    ChartStyle.tooltipText(context),
                   );
                 },
               ),
@@ -96,8 +102,10 @@ class TrendBarChart extends StatelessWidget {
                       BarChartRodData(
                         toY: _scale(chart.series[s].values[i]),
                         width: barWidth,
-                        color: colors[s % colors.length],
-                        borderRadius: BorderRadius.circular(2),
+                        color: tokens.chartColor(s),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(3),
+                        ),
                       ),
                   ],
                 ),
@@ -110,8 +118,7 @@ class TrendBarChart extends StatelessWidget {
 
   /// Legend entries for [chart] (colours match the bars).
   static List<Widget> legend(BuildContext context, ReportChart chart) {
-    final scheme = Theme.of(context).colorScheme;
-    final colors = [scheme.primary, scheme.tertiary, scheme.secondary];
+    final tokens = context.appColors;
     return [
       for (var s = 0; s < chart.series.length; s++)
         Row(
@@ -121,14 +128,16 @@ class TrendBarChart extends StatelessWidget {
               width: 10,
               height: 10,
               decoration: BoxDecoration(
-                color: colors[s % colors.length],
-                borderRadius: BorderRadius.circular(2),
+                color: tokens.chartColor(s),
+                borderRadius: BorderRadius.circular(3),
               ),
             ),
             const SizedBox(width: 6),
             Text(
               chart.series[s].name,
-              style: Theme.of(context).textTheme.labelMedium,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: tokens.textSecondary,
+              ),
             ),
           ],
         ),

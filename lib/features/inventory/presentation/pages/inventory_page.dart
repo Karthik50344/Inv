@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/inventory/domain/entities/inventory_valuation.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_status.dart';
@@ -10,12 +11,8 @@ import 'package:inventrix/features/inventory/presentation/bloc/inventory_bloc.da
 import 'package:inventrix/features/inventory/presentation/bloc/inventory_event.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/inventory_state.dart';
 import 'package:inventrix/features/inventory/presentation/widgets/stock_status_chip.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Current stock for every product, with valuation and low/out filters.
 ///
@@ -53,20 +50,20 @@ class InventoryPage extends StatelessWidget {
       builder: (context, state) {
         final bloc = context.read<InventoryBloc>();
         return Scaffold(
-          appBar: AppBar(
-            title: Text(title),
+          appBar: AppAppBar(
+            title: title,
             actions: [
               if (!isReport) ...[
-                IconButton(
+                AppIconButton(
                   key: const Key('open_low_stock'),
                   tooltip: 'Low-stock report',
-                  icon: const Icon(Icons.warning_amber_outlined),
+                  icon: Icons.warning_amber_outlined,
                   onPressed: () => _push(context, RouteNames.lowStock),
                 ),
-                IconButton(
+                AppIconButton(
                   key: const Key('open_reconcile'),
                   tooltip: 'Reconcile',
-                  icon: const Icon(Icons.fact_check_outlined),
+                  icon: Icons.fact_check_outlined,
                   onPressed: () => _push(context, RouteNames.reconcile),
                 ),
               ],
@@ -76,7 +73,7 @@ class InventoryPage extends StatelessWidget {
             children: [
               if (state.valuation != null && !isReport)
                 _ValuationCard(valuation: state.valuation!),
-              SearchField(
+              AppSearchField(
                 hintText: 'Search name, SKU or barcode',
                 onChanged: (query) => bloc.add(InventorySearchChanged(query)),
               ),
@@ -116,29 +113,76 @@ class InventoryPage extends StatelessWidget {
               : 'Add products first, then record their stock here.',
         );
       case ViewStatus.loaded:
-        const formatter = MoneyFormatter();
-        return ListView.separated(
-          itemCount: state.items.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final item = state.items[index];
-            final symbol = state.units[item.product.unitId]?.symbol ?? '';
-            return ListTile(
-              key: Key('stock_${item.product.id}'),
-              title: Text(item.product.name),
-              subtitle: Text(
-                '${item.product.sku} · '
-                '${item.balance.quantityOnHand.toDecimalString()} $symbol · '
-                '${formatter.format(item.balance.inventoryValue)}',
-              ),
-              trailing: StockStatusChip(status: item.status),
-              onTap: () => _push(
-                context,
-                RouteNames.stockDetail,
-                params: {'id': item.product.id},
-              ),
-            );
-          },
+        final tokens = context.appColors;
+        final theme = Theme.of(context);
+        return AppRefreshIndicator(
+          onRefresh: () async => bloc.add(const InventoryRefreshed()),
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              AppSpacing.s24,
+            ),
+            itemCount: state.items.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final item = state.items[index];
+              final symbol = state.units[item.product.unitId]?.symbol ?? '';
+              return AppCard(
+                key: Key('stock_${item.product.id}'),
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                onTap: () => _push(
+                  context,
+                  RouteNames.stockDetail,
+                  params: {'id': item.product.id},
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.product.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            item.product.sku,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                          AppSpacing.gap4,
+                          StockStatusChip(status: item.status),
+                        ],
+                      ),
+                    ),
+                    AppSpacing.hGap8,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '${item.balance.quantityOnHand.toDecimalString()} $symbol'
+                              .trim(),
+                          style: context.appText.financialSmall,
+                        ),
+                        AppSpacing.gap4,
+                        AppCurrencyText(
+                          item.balance.inventoryValue,
+                          tone: AppTone.neutral,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }
@@ -153,36 +197,61 @@ class _ValuationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const formatter = MoneyFormatter();
     final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.all(AppDimensions.spaceMd),
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.spaceMd),
+    final tokens = context.appColors;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.s16,
+        AppSpacing.s8,
+        AppSpacing.s16,
+        0,
+      ),
+      child: AppCard(
+        padding: const EdgeInsets.all(AppSpacing.s16),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Inventory value', style: theme.textTheme.labelMedium),
                   Text(
-                    formatter.format(valuation.totalValue),
-                    key: const Key('inventory_total_value'),
-                    style: theme.textTheme.titleLarge,
+                    'Inventory value',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: tokens.textSecondary,
+                    ),
                   ),
-                  Text('${valuation.productsInStock} products in stock'),
+                  AppSpacing.gap4,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      formatter.format(valuation.totalValue),
+                      key: const Key('inventory_total_value'),
+                      style: context.appText.financialMedium,
+                    ),
+                  ),
+                  Text(
+                    '${valuation.productsInStock} products in stock',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: tokens.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),
+            AppSpacing.hGap12,
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
+                _CountPill(
                   '${valuation.lowStockCount} low',
-                  key: const Key('inventory_low_count'),
+                  AppTone.warning,
+                  const Key('inventory_low_count'),
                 ),
-                Text(
+                AppSpacing.gap8,
+                _CountPill(
                   '${valuation.outOfStockCount} out',
-                  key: const Key('inventory_out_count'),
+                  AppTone.danger,
+                  const Key('inventory_out_count'),
                 ),
               ],
             ),
@@ -191,6 +260,18 @@ class _ValuationCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _CountPill extends StatelessWidget {
+  const _CountPill(this.text, this.tone, this.pillKey);
+
+  final String text;
+  final AppTone tone;
+  final Key pillKey;
+
+  @override
+  Widget build(BuildContext context) =>
+      AppBadge(key: pillKey, label: text, tone: tone);
 }
 
 class _StatusFilters extends StatelessWidget {
@@ -202,10 +283,10 @@ class _StatusFilters extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<InventoryBloc>();
     Widget chip(String label, StockStatusFilter value) => Padding(
-      padding: const EdgeInsets.only(right: AppDimensions.spaceSm),
-      child: ChoiceChip(
+      padding: const EdgeInsets.only(right: AppSpacing.s8),
+      child: AppChip(
         key: Key('filter_${value.name}'),
-        label: Text(label),
+        label: label,
         selected: state.filter.status == value,
         onSelected: (_) => bloc.add(InventoryStatusFilterChanged(value)),
       ),
@@ -214,7 +295,10 @@ class _StatusFilters extends StatelessWidget {
       height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spaceMd),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s16,
+          vertical: AppSpacing.s4,
+        ),
         children: [
           chip('All', StockStatusFilter.all),
           chip('Low stock', StockStatusFilter.low),

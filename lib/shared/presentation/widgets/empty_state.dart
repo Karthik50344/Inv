@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 
-/// Centered icon, title and optional message/action for empty lists.
+/// Placeholder for a list or screen with nothing to show: an icon in a soft
+/// tile, a title, an optional explanation and an optional action.
 class EmptyState extends StatelessWidget {
-  /// Creates an empty state.
+  /// Creates the placeholder.
   const EmptyState({
     required this.icon,
     required this.title,
@@ -12,49 +14,59 @@ class EmptyState extends StatelessWidget {
     super.key,
   });
 
-  /// Illustrative icon.
+  /// Large icon shown above the title.
   final IconData icon;
 
-  /// Headline.
+  /// Short headline, for example "No products yet".
   final String title;
 
-  /// Optional explanatory text.
+  /// Optional explanation or hint.
   final String? message;
 
-  /// Optional call to action.
+  /// Optional call to action, such as an "Add" button.
   final Widget? action;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = context.appColors;
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.spaceLg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 56, color: theme.colorScheme.outline),
-            const SizedBox(height: AppDimensions.spaceMd),
-            Text(
-              title,
-              style: theme.textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-            if (message != null) ...[
-              const SizedBox(height: AppDimensions.spaceSm),
-              Text(
-                message!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.s24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colors.neutral.container,
+                  shape: BoxShape.circle,
                 ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.s20),
+                  child: Icon(icon, size: 32, color: colors.textSecondary),
+                ),
+              ),
+              AppSpacing.gap16,
+              Text(
+                title,
+                style: theme.textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
+              if (message != null) ...[
+                AppSpacing.gap8,
+                Text(
+                  message!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              if (action != null) ...[AppSpacing.gap16, action!],
             ],
-            if (action != null) ...[
-              const SizedBox(height: AppDimensions.spaceMd),
-              action!,
-            ],
-          ],
+          ),
         ),
       ),
     );

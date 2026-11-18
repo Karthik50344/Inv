@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
-import 'package:inventrix/core/formatters/money_formatter.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/products/domain/entities/product.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_bloc.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_event.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_state.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/shared/presentation/widgets/stored_image.dart';
 
 /// Product list with search, category filter and archive toggle.
@@ -40,19 +36,19 @@ class ProductsPage extends StatelessWidget {
       builder: (context, state) {
         final bloc = context.read<ProductBloc>();
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Products'),
+          appBar: AppAppBar(
+            title: 'Products',
             actions: [
-              IconButton(
+              AppIconButton(
                 key: const Key('open_categories'),
                 tooltip: 'Categories',
-                icon: const Icon(Icons.category_outlined),
+                icon: Icons.category_outlined,
                 onPressed: () => _push(context, RouteNames.categories),
               ),
-              IconButton(
+              AppIconButton(
                 key: const Key('open_units'),
                 tooltip: 'Units',
-                icon: const Icon(Icons.straighten),
+                icon: Icons.straighten,
                 onPressed: () => _push(context, RouteNames.units),
               ),
             ],
@@ -65,7 +61,7 @@ class ProductsPage extends StatelessWidget {
           ),
           body: Column(
             children: [
-              SearchField(
+              AppSearchField(
                 hintText: 'Search name, SKU or barcode',
                 onChanged: (query) => bloc.add(ProductsSearchChanged(query)),
               ),
@@ -96,38 +92,88 @@ class ProductsPage extends StatelessWidget {
           message: state.isFiltered
               ? 'Try changing the search or filters.'
               : 'Add your first product to start tracking stock and sales.',
+          action: state.isFiltered
+              ? null
+              : AppButton(
+                  key: const Key('empty_add_product'),
+                  label: 'Add product',
+                  icon: Icons.add,
+                  onPressed: () => _push(context, RouteNames.productNew),
+                ),
         );
       case ViewStatus.loaded:
-        const formatter = MoneyFormatter();
-        return ListView.separated(
-          itemCount: state.products.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final Product product = state.products[index];
-            final unit = state.units[product.unitId];
-            return ListTile(
-              key: Key('product_${product.id}'),
-              leading: StoredImage(
-                relativePath: product.imagePath,
-                resolvePath: bloc.resolveImagePath,
-                size: 48,
-              ),
-              title: Text(product.name),
-              subtitle: Text(
-                '${product.sku}'
-                '${unit == null ? '' : ' · ${unit.symbol}'}'
-                ' · ${formatter.format(product.sellingPrice)}',
-              ),
-              trailing: product.isArchived
-                  ? const Chip(label: Text('Archived'))
-                  : const Icon(Icons.chevron_right),
-              onTap: () => _push(
-                context,
-                RouteNames.productDetail,
-                params: {'id': product.id},
-              ),
-            );
-          },
+        return AppRefreshIndicator(
+          onRefresh: () async => bloc.add(const ProductsRefreshed()),
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              96, // clears the floating action button
+            ),
+            itemCount: state.products.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final Product product = state.products[index];
+              final unit = state.units[product.unitId];
+              final tokens = context.appColors;
+              final theme = Theme.of(context);
+              return AppCard(
+                key: Key('product_${product.id}'),
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                onTap: () => _push(
+                  context,
+                  RouteNames.productDetail,
+                  params: {'id': product.id},
+                ),
+                child: Row(
+                  children: [
+                    StoredImage(
+                      relativePath: product.imagePath,
+                      resolvePath: bloc.resolveImagePath,
+                      size: 52,
+                    ),
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${product.sku}'
+                            '${unit == null ? '' : ' · ${unit.symbol}'}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    AppSpacing.hGap8,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        AppCurrencyText(product.sellingPrice),
+                        if (product.isArchived) ...[
+                          AppSpacing.gap4,
+                          const AppBadge(label: 'Archived'),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }
@@ -149,13 +195,14 @@ class _FilterBar extends StatelessWidget {
             child: ListView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.spaceMd,
+                horizontal: AppSpacing.s16,
+                vertical: AppSpacing.s4,
               ),
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(right: AppDimensions.spaceSm),
-                  child: ChoiceChip(
-                    label: const Text('All'),
+                  padding: const EdgeInsets.only(right: AppSpacing.s8),
+                  child: AppChip(
+                    label: 'All',
                     selected: state.filter.categoryId == null,
                     onSelected: (_) =>
                         bloc.add(const ProductsCategoryFilterChanged(null)),
@@ -163,11 +210,9 @@ class _FilterBar extends StatelessWidget {
                 ),
                 for (final category in state.categories)
                   Padding(
-                    padding: const EdgeInsets.only(
-                      right: AppDimensions.spaceSm,
-                    ),
-                    child: ChoiceChip(
-                      label: Text(category.name),
+                    padding: const EdgeInsets.only(right: AppSpacing.s8),
+                    child: AppChip(
+                      label: category.name,
                       selected: state.filter.categoryId == category.id,
                       onSelected: (_) =>
                           bloc.add(ProductsCategoryFilterChanged(category.id)),
@@ -178,6 +223,9 @@ class _FilterBar extends StatelessWidget {
           ),
         SwitchListTile(
           dense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.s16,
+          ),
           title: const Text('Show archived'),
           value: state.filter.includeArchived,
           onChanged: (value) =>

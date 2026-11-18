@@ -5,6 +5,7 @@ import 'package:inventrix/features/products/domain/entities/unit_of_measure.dart
 import 'package:inventrix/features/sales/domain/entities/sales_input.dart';
 import 'package:inventrix/shared/domain/value_objects/currency_config.dart';
 import 'package:inventrix/shared/domain/value_objects/discount.dart';
+import 'package:inventrix/shared/presentation/widgets/app_button.dart';
 
 /// Validates and stores a line; returns field errors (empty = accepted).
 typedef SaveLineCallback =
@@ -48,7 +49,7 @@ class SalesLineSheet extends StatefulWidget {
     super.key,
   });
 
-  /// Products that can be saled.
+  /// Products that can be sold.
   final List<Product> products;
 
   /// Units by id (for symbols and precision hints).
@@ -163,7 +164,6 @@ class _SalesLineSheetState extends State<SalesLineSheet> {
                 decoration: InputDecoration(
                   labelText: 'Product *',
                   errorText: _errors['product'],
-                  border: const OutlineInputBorder(),
                 ),
                 items: [
                   for (final p in widget.products)
@@ -191,7 +191,6 @@ class _SalesLineSheetState extends State<SalesLineSheet> {
                             ? 'Whole numbers only.'
                             : 'Up to $places decimal places.'),
                   errorText: _errors['quantity'],
-                  border: const OutlineInputBorder(),
                 ),
               ),
             ),
@@ -211,7 +210,6 @@ class _SalesLineSheetState extends State<SalesLineSheet> {
                             '(${product.sellingPrice.toPlainString()})'
                             '${product.priceIncludesTax ? ', tax included' : ''}.',
                   errorText: _errors['unitPrice'],
-                  border: const OutlineInputBorder(),
                 ),
               ),
             ),
@@ -247,14 +245,15 @@ class _SalesLineSheetState extends State<SalesLineSheet> {
                         ? 'Discount (%)'
                         : 'Discount amount',
                     errorText: _errors['discount'],
-                    border: const OutlineInputBorder(),
                   ),
                 ),
               ),
-            FilledButton(
+            AppButton(
               key: const Key('save_line'),
-              onPressed: _saving ? null : _save,
-              child: Text(widget.initial == null ? 'Add item' : 'Save item'),
+              label: widget.initial == null ? 'Add item' : 'Save item',
+              expand: true,
+              loading: _saving,
+              onPressed: _save,
             ),
             const SizedBox(height: AppDimensions.spaceSm),
           ],

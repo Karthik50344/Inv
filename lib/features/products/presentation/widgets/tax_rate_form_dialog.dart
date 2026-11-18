@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/features/settings/domain/entities/tax_rate.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Dialog that creates a tax rate; pops with the created [TaxRate].
 class TaxRateFormDialog extends StatefulWidget {
@@ -63,56 +64,34 @@ class _TaxRateFormDialogState extends State<TaxRateFormDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('New tax rate'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              key: const Key('tax_name'),
-              controller: _name,
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: 'Name *',
-                errorText: _errors['name'],
-              ),
-            ),
-            TextField(
-              key: const Key('tax_rate'),
-              controller: _rate,
-              enabled: !_exempt,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: InputDecoration(
-                labelText: 'Rate (%)',
-                errorText: _errors['ratePercent'],
-              ),
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Tax exempt'),
-              value: _exempt,
-              onChanged: (value) => setState(() => _exempt = value),
-            ),
-            if (_message != null)
-              Text(
-                _message!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-          ],
+    return AppFormDialog(
+      title: 'New tax rate',
+      saveKey: const Key('tax_save'),
+      saving: _saving,
+      message: _message,
+      onSave: _save,
+      children: [
+        AppTextField(
+          key: const Key('tax_name'),
+          controller: _name,
+          autofocus: true,
+          label: 'Name *',
+          errorText: _errors['name'],
+          textCapitalization: TextCapitalization.words,
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: _saving ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+        AppTextField(
+          key: const Key('tax_rate'),
+          controller: _rate,
+          enabled: !_exempt,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          label: 'Rate (%)',
+          errorText: _errors['ratePercent'],
         ),
-        FilledButton(
-          key: const Key('tax_save'),
-          onPressed: _saving ? null : _save,
-          child: const Text('Save'),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Tax exempt'),
+          value: _exempt,
+          onChanged: (value) => setState(() => _exempt = value),
         ),
       ],
     );

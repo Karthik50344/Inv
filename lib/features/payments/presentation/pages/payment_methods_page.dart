@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/payments/presentation/bloc/payment_methods_cubit.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Create and archive payment methods.
 class PaymentMethodsPage extends StatelessWidget {
@@ -27,12 +27,16 @@ class PaymentMethodsPage extends StatelessWidget {
             decoration: InputDecoration(labelText: 'Name', errorText: error),
           ),
           actions: [
-            TextButton(
+            AppButton(
+              label: 'Cancel',
+              variant: AppButtonVariant.text,
+              size: AppButtonSize.small,
               onPressed: () => Navigator.of(dialog).pop(false),
-              child: const Text('Cancel'),
             ),
-            FilledButton(
+            AppButton(
               key: const Key('save_method'),
+              label: 'Add',
+              size: AppButtonSize.small,
               onPressed: () async {
                 final message = await cubit.create(controller.text);
                 if (message == null) {
@@ -43,7 +47,6 @@ class PaymentMethodsPage extends StatelessWidget {
                   setState(() => error = message);
                 }
               },
-              child: const Text('Add'),
             ),
           ],
         ),
@@ -64,7 +67,7 @@ class PaymentMethodsPage extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<PaymentMethodsCubit>();
         return Scaffold(
-          appBar: AppBar(title: const Text('Payment methods')),
+          appBar: const AppAppBar(title: 'Payment methods'),
           floatingActionButton: FloatingActionButton.extended(
             key: const Key('add_method'),
             onPressed: () => _add(context),
@@ -79,36 +82,80 @@ class PaymentMethodsPage extends StatelessWidget {
               onRetry: cubit.load,
             ),
             ViewStatus.empty || ViewStatus.loaded => ListView(
-              padding: const EdgeInsets.only(bottom: 88),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s16,
+                AppSpacing.s8,
+                AppSpacing.s16,
+                96,
+              ),
               children: [
                 for (final m in state.methods)
-                  ListTile(
-                    key: Key('method_${m.id}'),
-                    leading: m.id == state.defaultMethodId
-                        ? const Icon(Icons.star, key: Key('default_method'))
-                        : const Icon(Icons.payments_outlined),
-                    title: Text(m.name),
-                    subtitle: Text(
-                      [
-                        if (m.id == state.defaultMethodId) 'Default',
-                        if (m.isArchived) 'Archived',
-                      ].join(' · '),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (!m.isArchived && m.id != state.defaultMethodId)
-                          TextButton(
-                            key: Key('make_default_${m.id}'),
-                            onPressed: () => cubit.setDefault(m.id),
-                            child: const Text('Make default'),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.s8),
+                    child: AppCard(
+                      key: Key('method_${m.id}'),
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.s16,
+                        AppSpacing.s8,
+                        AppSpacing.s8,
+                        AppSpacing.s8,
+                      ),
+                      child: Row(
+                        children: [
+                          m.id == state.defaultMethodId
+                              ? Icon(
+                                  Icons.star,
+                                  key: const Key('default_method'),
+                                  color: context.appColors.warning.solid,
+                                )
+                              : Icon(
+                                  Icons.payments_outlined,
+                                  color: context.appColors.textSecondary,
+                                ),
+                          AppSpacing.hGap12,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  m.name,
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                if (m.id == state.defaultMethodId || m.isArchived)
+                                  Text(
+                                    [
+                                      if (m.id == state.defaultMethodId)
+                                        'Default',
+                                      if (m.isArchived) 'Archived',
+                                    ].join(' · '),
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color:
+                                              context.appColors.textSecondary,
+                                        ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        TextButton(
-                          onPressed: () =>
-                              cubit.setArchived(m.id, archived: !m.isArchived),
-                          child: Text(m.isArchived ? 'Restore' : 'Archive'),
-                        ),
-                      ],
+                          if (!m.isArchived && m.id != state.defaultMethodId)
+                            AppButton(
+                              key: Key('make_default_${m.id}'),
+                              label: 'Make default',
+                              variant: AppButtonVariant.text,
+                              size: AppButtonSize.small,
+                              onPressed: () => cubit.setDefault(m.id),
+                            ),
+                          AppButton(
+                            label: m.isArchived ? 'Restore' : 'Archive',
+                            variant: AppButtonVariant.text,
+                            size: AppButtonSize.small,
+                            onPressed: () => cubit.setArchived(
+                              m.id,
+                              archived: !m.isArchived,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
               ],

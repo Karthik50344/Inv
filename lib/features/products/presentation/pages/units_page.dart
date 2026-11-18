@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/products/domain/entities/unit_of_measure.dart';
 import 'package:inventrix/features/products/presentation/bloc/unit_cubit.dart';
 import 'package:inventrix/features/products/presentation/bloc/unit_state.dart';
 import 'package:inventrix/features/products/presentation/widgets/unit_form_dialog.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/confirmation_dialog.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 enum _UnitAction { edit, archive, restore }
 
@@ -70,7 +67,7 @@ class UnitsPage extends StatelessWidget {
       listener: (context, state) => showAppMessage(context, state.message!),
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Units')),
+          appBar: const AppAppBar(title: 'Units'),
           floatingActionButton: FloatingActionButton.extended(
             key: const Key('add_unit'),
             onPressed: () => _openForm(context),
@@ -79,7 +76,7 @@ class UnitsPage extends StatelessWidget {
           ),
           body: Column(
             children: [
-              SearchField(
+              AppSearchField(
                 hintText: 'Search units',
                 onChanged: context.read<UnitCubit>().search,
               ),
@@ -117,49 +114,89 @@ class UnitsPage extends StatelessWidget {
               : 'Units define how products are counted, like pieces or kg.',
           action: searching
               ? null
-              : FilledButton(
+              : AppButton(
                   key: const Key('add_common_units'),
+                  label: 'Add common units',
+                  icon: Icons.auto_awesome_outlined,
                   onPressed: context.read<UnitCubit>().addCommonUnits,
-                  child: const Text('Add common units'),
                 ),
         );
       case ViewStatus.loaded:
-        return ListView.separated(
-          itemCount: state.units.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final unit = state.units[index];
-            return ListTile(
-              title: Text('${unit.name} (${unit.symbol})'),
-              subtitle: Text(
-                unit.decimalPlaces == 0
-                    ? 'Whole numbers only'
-                    : 'Up to ${unit.decimalPlaces} decimal places',
-              ),
-              leading: Icon(
-                unit.isArchived ? Icons.archive_outlined : Icons.straighten,
-              ),
-              trailing: PopupMenuButton<_UnitAction>(
-                onSelected: (action) => _onAction(context, action, unit),
-                itemBuilder: (_) => [
-                  const PopupMenuItem(
-                    value: _UnitAction.edit,
-                    child: Text('Edit'),
-                  ),
-                  if (unit.isArchived)
-                    const PopupMenuItem(
-                      value: _UnitAction.restore,
-                      child: Text('Restore'),
-                    )
-                  else
-                    const PopupMenuItem(
-                      value: _UnitAction.archive,
-                      child: Text('Archive'),
+        final tokens = context.appColors;
+        return AppRefreshIndicator(
+          onRefresh: context.read<UnitCubit>().load,
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              96,
+            ),
+            itemCount: state.units.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final unit = state.units[index];
+              return AppCard(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s16,
+                  AppSpacing.s8,
+                  AppSpacing.s4,
+                  AppSpacing.s8,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      unit.isArchived
+                          ? Icons.archive_outlined
+                          : Icons.straighten,
+                      color: tokens.textSecondary,
                     ),
-                ],
-              ),
-            );
-          },
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${unit.name} (${unit.symbol})',
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Text(
+                            unit.decimalPlaces == 0
+                                ? 'Whole numbers only'
+                                : 'Up to ${unit.decimalPlaces} decimal places',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: tokens.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuButton<_UnitAction>(
+                      tooltip: 'Unit actions',
+                      onSelected: (action) =>
+                          _onAction(context, action, unit),
+                      itemBuilder: (_) => [
+                        const PopupMenuItem(
+                          value: _UnitAction.edit,
+                          child: Text('Edit'),
+                        ),
+                        if (unit.isArchived)
+                          const PopupMenuItem(
+                            value: _UnitAction.restore,
+                            child: Text('Restore'),
+                          )
+                        else
+                          const PopupMenuItem(
+                            value: _UnitAction.archive,
+                            child: Text('Archive'),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }

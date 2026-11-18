@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:inventrix/features/settings/presentation/bloc/settings_state.dart';
 import 'package:inventrix/shared/domain/services/document_kind.dart';
 import 'package:inventrix/shared/domain/services/document_number.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Prefix per document type, digit padding and the next number.
 class NumberingPage extends StatefulWidget {
@@ -42,26 +42,19 @@ class _NumberingPageState extends State<NumberingPage> {
     final controller = TextEditingController();
     final text = await showDialog<String>(
       context: context,
-      builder: (dialog) => AlertDialog(
-        title: Text('Next ${kind.label.toLowerCase()} number'),
-        content: TextField(
-          key: const Key('next_number_input'),
-          controller: controller,
-          autofocus: true,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            helperText: 'Numbers already used cannot be reused.',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            key: const Key('next_number_save'),
-            onPressed: () => Navigator.of(dialog).pop(controller.text),
-            child: const Text('Set'),
+      builder: (dialog) => AppFormDialog(
+        title: 'Next ${kind.label.toLowerCase()} number',
+        saveKey: const Key('next_number_save'),
+        saveLabel: 'Set',
+        onSave: () => Navigator.of(dialog).pop(controller.text),
+        children: [
+          AppTextField(
+            key: const Key('next_number_input'),
+            controller: controller,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            label: 'Next number',
+            helper: 'Numbers already used cannot be reused.',
           ),
         ],
       ),
@@ -81,49 +74,74 @@ class _NumberingPageState extends State<NumberingPage> {
       listener: (context, state) => showAppMessage(context, state.message!),
       builder: (context, state) {
         final numbering = state.numbering;
+        final theme = Theme.of(context);
         return Scaffold(
-          appBar: AppBar(title: const Text('Document numbering')),
-          body: ListView(
-            padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          appBar: const AppAppBar(title: 'Document numbering'),
+          body: AppContentWidth(child: ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: AppSpacing.page,
             children: [
-              Text(
-                'Prefixes apply to documents posted from now on. Numbers '
-                'already issued never change, and counters never go back.',
-                style: Theme.of(context).textTheme.bodySmall,
+              AppCard(
+                tone: AppTone.info,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.info_outline, size: 20),
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Text(
+                        'Prefixes apply to documents posted from now on. '
+                        'Numbers already issued never change, and counters '
+                        'never go back.',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: AppDimensions.spaceSm),
+              const AppSectionHeader(
+                title: 'Prefixes',
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.s4,
+                  AppSpacing.s20,
+                  AppSpacing.s4,
+                  AppSpacing.s8,
+                ),
+              ),
               for (final kind in DocumentKind.values) ...[
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: TextField(
+                      child: AppTextField(
                         key: Key('prefix_${kind.sequenceKey}'),
                         controller: _prefixes[kind],
-                        decoration: InputDecoration(
-                          labelText: kind.label,
-                          helperText: 'Next: ${numbering.preview(kind)}',
-                          errorText:
-                              state.fieldErrors['prefix.${kind.sequenceKey}'],
-                        ),
+                        label: kind.label,
+                        helper: 'Next: ${numbering.preview(kind)}',
+                        errorText:
+                            state.fieldErrors['prefix.${kind.sequenceKey}'],
+                        textCapitalization: TextCapitalization.characters,
                       ),
                     ),
-                    IconButton(
-                      key: Key('next_${kind.sequenceKey}'),
-                      tooltip: 'Set next number',
-                      icon: const Icon(Icons.edit_outlined),
-                      onPressed: () => _setNext(cubit, kind),
+                    AppSpacing.hGap4,
+                    Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.s4),
+                      child: AppIconButton(
+                        key: Key('next_${kind.sequenceKey}'),
+                        tooltip: 'Set next number',
+                        icon: Icons.edit_outlined,
+                        onPressed: () => _setNext(cubit, kind),
+                      ),
                     ),
                   ],
                 ),
+                AppSpacing.gap12,
               ],
-              DropdownButtonFormField<int>(
+              AppDropdown<int>(
                 key: const Key('numbering_padding'),
-                initialValue: _padding,
-                decoration: InputDecoration(
-                  labelText: 'Digits in the number',
-                  errorText: state.fieldErrors['padding'],
-                ),
+                label: 'Digits in the number',
+                value: _padding,
+                errorText: state.fieldErrors['padding'],
                 onChanged: (v) => setState(() => _padding = v ?? _padding),
                 items: [
                   for (
@@ -131,12 +149,16 @@ class _NumberingPageState extends State<NumberingPage> {
                     i <= DocumentNumber.maxWidth;
                     i++
                   )
-                    DropdownMenuItem(value: i, child: Text('$i')),
+                    AppDropdownItem(value: i, label: '$i'),
                 ],
               ),
-              const SizedBox(height: AppDimensions.spaceMd),
-              FilledButton(
+              AppSpacing.gap16,
+              AppButton(
                 key: const Key('numbering_save'),
+                label: 'Save',
+                icon: Icons.check,
+                expand: true,
+                loading: state.saving,
                 onPressed: state.saving
                     ? null
                     : () => cubit.saveNumbering(
@@ -146,10 +168,9 @@ class _NumberingPageState extends State<NumberingPage> {
                         },
                         padding: _padding,
                       ),
-                child: const Text('Save'),
               ),
             ],
-          ),
+          )),
         );
       },
     );

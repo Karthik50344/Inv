@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inventrix/shared/presentation/widgets/app_app_bar.dart';
 import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
 
 /// Placeholder for features implemented in a later roadmap phase.
@@ -23,7 +24,7 @@ class ComingSoonPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppAppBar(title: title),
       body: EmptyState(
         icon: icon,
         title: title,

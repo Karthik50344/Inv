@@ -1,7 +1,9 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/date_formatter.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_kind.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_record.dart';
@@ -12,8 +14,7 @@ import 'package:inventrix/features/backup/presentation/bloc/backup_event.dart';
 import 'package:inventrix/features/backup/presentation/widgets/restore_confirmation_dialog.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/confirmation_dialog.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/shared/presentation/widgets/local_data_warning_banner.dart';
 
 /// Backup, export and restore.
@@ -67,7 +68,7 @@ class BackupPage extends StatelessWidget {
         ),
       ],
       child: Scaffold(
-        appBar: AppBar(title: const Text('Backup & restore')),
+        appBar: const AppAppBar(title: 'Backup & restore'),
         body: BlocBuilder<BackupBloc, BackupState>(
           builder: (context, state) {
             if (state.status == ViewStatus.failure && state.records.isEmpty) {
@@ -79,10 +80,12 @@ class BackupPage extends StatelessWidget {
             }
             return Stack(
               children: [
-                _Content(
-                  state: state,
-                  reminderDays: reminderDays,
-                  onPickFile: () => _pickFile(context),
+                AppContentWidth(
+                  child: _Content(
+                    state: state,
+                    reminderDays: reminderDays,
+                    onPickFile: () => _pickFile(context),
+                  ),
                 ),
                 if (state.busy) _BusyOverlay(activity: state.activity),
               ],
@@ -108,79 +111,136 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final tokens = context.appColors;
     final bloc = context.read<BackupBloc>();
     final last = state.lastBackupAt;
+    final brand = AppTone.brand.colors(context);
     return ListView(
       key: const Key('backup-history-list'),
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
+      padding: AppSpacing.page,
       children: [
         const LocalDataWarningBanner(),
-        const SizedBox(height: AppDimensions.spaceMd),
+        AppSpacing.gap12,
         if (state.status == ViewStatus.loaded &&
             BackupReminder.isDue(
               reminderDays: reminderDays,
               lastExportedAt: state.lastExportedAt,
               now: DateTime.now(),
-            ))
-          Card(
+            )) ...[
+          AppCard(
             key: const Key('backup-reminder'),
-            color: theme.colorScheme.tertiaryContainer,
-            child: ListTile(
-              leading: const Icon(Icons.notifications_active_outlined),
-              title: const Text('Time to export a backup'),
-              subtitle: Text(
-                state.lastExportedAt == null
-                    ? 'No backup has been exported yet.'
-                    : 'The last export was on '
-                          '${DateFormatter.dateTime(state.lastExportedAt!)}.',
-              ),
-            ),
-          ),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.spaceMd),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            tone: AppTone.warning,
+            child: Row(
               children: [
-                Text('Last backup', style: theme.textTheme.titleSmall),
-                const SizedBox(height: 4),
-                Text(
-                  last == null
-                      ? 'No backup has been made yet.'
-                      : DateFormatter.dateTime(last),
-                  key: const Key('backup-last'),
-                  style: theme.textTheme.titleMedium,
-                ),
-                const SizedBox(height: AppDimensions.spaceMd),
-                FilledButton.icon(
-                  key: const Key('backup-create'),
-                  onPressed: state.busy
-                      ? null
-                      : () => bloc.add(const BackupCreateRequested()),
-                  icon: const Icon(Icons.backup_outlined),
-                  label: const Text('Create backup'),
-                ),
-                const SizedBox(height: AppDimensions.spaceSm),
-                OutlinedButton.icon(
-                  key: const Key('backup-restore-file'),
-                  onPressed: state.busy ? null : onPickFile,
-                  icon: const Icon(Icons.restore_outlined),
-                  label: const Text('Restore from a file'),
+                const Icon(Icons.notifications_active_outlined),
+                AppSpacing.hGap12,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Time to export a backup',
+                        style: theme.textTheme.titleSmall,
+                      ),
+                      Text(
+                        state.lastExportedAt == null
+                            ? 'No backup has been exported yet.'
+                            : 'The last export was on '
+                                  '${DateFormatter.dateTime(state.lastExportedAt!)}.',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
+          AppSpacing.gap12,
+        ],
+        AppCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: brand.container,
+                      borderRadius: BorderRadius.circular(AppRadius.small),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.cloud_done_outlined,
+                        size: 22,
+                        color: brand.onContainer,
+                      ),
+                    ),
+                  ),
+                  AppSpacing.hGap12,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Last backup',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: tokens.textSecondary,
+                          ),
+                        ),
+                        Text(
+                          last == null
+                              ? 'No backup has been made yet.'
+                              : DateFormatter.dateTime(last),
+                          key: const Key('backup-last'),
+                          style: theme.textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              AppSpacing.gap16,
+              AppButton(
+                key: const Key('backup-create'),
+                label: 'Create backup',
+                icon: Icons.backup_outlined,
+                expand: true,
+                onPressed: state.busy
+                    ? null
+                    : () => bloc.add(const BackupCreateRequested()),
+              ),
+              AppSpacing.gap8,
+              AppButton(
+                key: const Key('backup-restore-file'),
+                label: 'Restore from a file',
+                icon: Icons.restore_outlined,
+                variant: AppButtonVariant.outlined,
+                expand: true,
+                onPressed: state.busy ? null : onPickFile,
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: AppDimensions.spaceMd),
-        Text('History', style: theme.textTheme.titleMedium),
-        const SizedBox(height: AppDimensions.spaceSm),
+        const AppSectionHeader(
+          title: 'History',
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.s4,
+            AppSpacing.s24,
+            AppSpacing.s4,
+            AppSpacing.s8,
+          ),
+        ),
         if (state.status == ViewStatus.loading && state.records.isEmpty)
           const Center(child: CircularProgressIndicator())
         else if (state.records.isEmpty)
-          const Text(
+          Text(
             'Backups you create appear here. Share or save them to a safe '
             'place outside this device.',
-            key: Key('backup-empty'),
+            key: const Key('backup-empty'),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: tokens.textSecondary,
+            ),
           )
         else
           for (final record in state.records)
@@ -221,22 +281,59 @@ class _RecordTile extends StatelessWidget {
         'copy deleted',
       if (failed) 'failed',
     ].join(' · ');
-    return Card(
-      child: ListTile(
+    final tokens = context.appColors;
+    final colors = (failed ? AppTone.danger : AppTone.neutral).colors(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.s8),
+      child: AppCard(
         key: Key('backup-record-${record.id}'),
-        leading: Icon(
-          failed ? Icons.error_outline : Icons.inventory_2_outlined,
-          color: failed ? theme.colorScheme.error : null,
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.s12,
+          AppSpacing.s12,
+          AppSpacing.s4,
+          AppSpacing.s12,
         ),
-        title: Text(record.fileName, overflow: TextOverflow.ellipsis),
-        subtitle: Text(
-          failed && record.errorMessage != null
-              ? '$details\n${record.errorMessage}'
-              : details,
-        ),
-        isThreeLine: failed && record.errorMessage != null,
-        trailing: record.hasStoredCopy
-            ? PopupMenuButton<String>(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: colors.container,
+                borderRadius: BorderRadius.circular(AppRadius.small),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Icon(
+                  failed ? Icons.error_outline : Icons.inventory_2_outlined,
+                  size: 20,
+                  color: colors.onContainer,
+                ),
+              ),
+            ),
+            AppSpacing.hGap12,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    record.fileName,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    failed && record.errorMessage != null
+                        ? '$details\n${record.errorMessage}'
+                        : details,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: failed ? colors.onContainer : tokens.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (record.hasStoredCopy)
+              PopupMenuButton<String>(
                 key: Key('backup-menu-${record.id}'),
                 enabled: !busy,
                 onSelected: (choice) async {
@@ -278,8 +375,9 @@ class _RecordTile extends StatelessWidget {
                     child: Text('Delete stored copy'),
                   ),
                 ],
-              )
-            : null,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -302,19 +400,21 @@ class _BusyOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: ColoredBox(
-        color: Colors.black54,
+        color: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.54),
         child: Center(
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppDimensions.spaceLg),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: AppDimensions.spaceMd),
-                  Text(_text, key: const Key('backup-busy-text')),
-                ],
-              ),
+          child: AppCard(
+            padding: const EdgeInsets.all(AppSpacing.s24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(),
+                AppSpacing.gap16,
+                Text(
+                  _text,
+                  key: const Key('backup-busy-text'),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
             ),
           ),
         ),

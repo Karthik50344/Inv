@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/features/settings/domain/entities/app_preferences.dart';
 import 'package:inventrix/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:inventrix/features/settings/presentation/bloc/settings_state.dart';
+import 'package:inventrix/features/settings/presentation/widgets/settings_tiles.dart';
+import 'package:inventrix/features/settings/presentation/widgets/theme_mode_selector.dart';
 import 'package:inventrix/shared/domain/services/document_kind.dart';
-import 'package:inventrix/shared/domain/value_objects/display_formats.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Home of the settings: links to the detail screens plus the switches that
 /// need no screen of their own.
@@ -38,8 +39,8 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (context, state) {
         final cubit = context.read<SettingsCubit>();
         return Scaffold(
-          appBar: AppBar(title: const Text('Settings')),
-          body: switch (state.status) {
+          appBar: const AppAppBar(title: 'Settings'),
+          body: AppContentWidth(child: switch (state.status) {
             ViewStatus.initial ||
             ViewStatus.loading => const LoadingIndicator(),
             ViewStatus.failure => ErrorState(
@@ -47,7 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
               onRetry: cubit.load,
             ),
             _ => _content(context, state, cubit),
-          },
+          }),
         );
       },
     );
@@ -60,125 +61,111 @@ class _SettingsPageState extends State<SettingsPage> {
   ) {
     final prefs = state.preferences;
     return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.s16,
+        0,
+        AppSpacing.s16,
+        AppSpacing.s32,
+      ),
       children: [
-        const _Header('Business'),
-        ListTile(
-          key: const Key('settings_business'),
-          leading: const Icon(Icons.storefront_outlined),
-          title: const Text('Business profile'),
-          subtitle: Text(state.business?.name ?? 'Not set up yet'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => context.pushNamed(RouteNames.settingsBusiness),
+        SettingsGroup(
+          title: 'Business',
+          children: [
+            SettingsTile(
+              key: const Key('settings_business'),
+              icon: Icons.storefront_outlined,
+              title: 'Business profile',
+              subtitle: state.business?.name ?? 'Not set up yet',
+              onTap: () => context.pushNamed(RouteNames.settingsBusiness),
+            ),
+            SettingsTile(
+              key: const Key('settings_regional'),
+              icon: Icons.language_outlined,
+              title: 'Currency and formats',
+              subtitle:
+                  '${state.currency.currencyCode} · '
+                  '${prefs.dateStyle.label} · ${prefs.numberStyle.label}',
+              onTap: () => context.pushNamed(RouteNames.settingsRegional),
+            ),
+          ],
         ),
-        ListTile(
-          key: const Key('settings_regional'),
-          leading: const Icon(Icons.language_outlined),
-          title: const Text('Currency and formats'),
-          subtitle: Text(
-            '${state.currency.currencyCode} · '
-            '${prefs.dateStyle.label} · ${prefs.numberStyle.label}',
-          ),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => context.pushNamed(RouteNames.settingsRegional),
+        SettingsGroup(
+          title: 'Sales and purchases',
+          children: [
+            SettingsTile(
+              key: const Key('settings_tax'),
+              icon: Icons.percent,
+              title: 'Tax rates',
+              onTap: () => context.pushNamed(RouteNames.taxRates),
+            ),
+            SettingsTile(
+              key: const Key('settings_numbering'),
+              icon: Icons.tag,
+              title: 'Document numbering',
+              subtitle:
+                  'Next invoice: '
+                  '${state.numbering.preview(DocumentKind.salesInvoice)}',
+              onTap: () => context.pushNamed(RouteNames.settingsNumbering),
+            ),
+            SettingsTile(
+              key: const Key('settings_methods'),
+              icon: Icons.payments_outlined,
+              title: 'Payment methods',
+              subtitle: 'Add methods and choose the default',
+              onTap: () => context.pushNamed(RouteNames.paymentMethods),
+            ),
+            SettingsSwitchTile(
+              key: const Key('settings_sales_approval'),
+              icon: Icons.verified_outlined,
+              title: 'Require approval for sales',
+              subtitle: 'Invoices must be approved before posting.',
+              value: prefs.salesApprovalRequired,
+              onChanged: (v) => cubit.setSalesApproval(required: v),
+            ),
+            SettingsSwitchTile(
+              key: const Key('settings_purchase_approval'),
+              icon: Icons.fact_check_outlined,
+              title: 'Require approval for purchases',
+              subtitle: 'Purchases must be approved before posting.',
+              value: prefs.purchaseApprovalRequired,
+              onChanged: (v) => cubit.setPurchaseApproval(required: v),
+            ),
+          ],
         ),
-        const _Header('Sales and purchases'),
-        ListTile(
-          key: const Key('settings_tax'),
-          leading: const Icon(Icons.percent),
-          title: const Text('Tax rates'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => context.pushNamed(RouteNames.taxRates),
+        SettingsGroup(
+          title: 'Appearance',
+          children: [
+            ThemeModeSelector(value: prefs.theme, onChanged: cubit.setTheme),
+          ],
         ),
-        ListTile(
-          key: const Key('settings_numbering'),
-          leading: const Icon(Icons.tag),
-          title: const Text('Document numbering'),
-          subtitle: Text(
-            'Next invoice: ${state.numbering.preview(DocumentKind.salesInvoice)}',
-          ),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => context.pushNamed(RouteNames.settingsNumbering),
-        ),
-        ListTile(
-          key: const Key('settings_methods'),
-          leading: const Icon(Icons.payments_outlined),
-          title: const Text('Payment methods'),
-          subtitle: const Text('Add methods and choose the default'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => context.pushNamed(RouteNames.paymentMethods),
-        ),
-        SwitchListTile(
-          key: const Key('settings_sales_approval'),
-          secondary: const Icon(Icons.verified_outlined),
-          title: const Text('Require approval for sales'),
-          subtitle: const Text('Invoices must be approved before posting.'),
-          value: prefs.salesApprovalRequired,
-          onChanged: (v) => cubit.setSalesApproval(required: v),
-        ),
-        SwitchListTile(
-          key: const Key('settings_purchase_approval'),
-          secondary: const Icon(Icons.fact_check_outlined),
-          title: const Text('Require approval for purchases'),
-          subtitle: const Text('Purchases must be approved before posting.'),
-          value: prefs.purchaseApprovalRequired,
-          onChanged: (v) => cubit.setPurchaseApproval(required: v),
-        ),
-        const _Header('App'),
-        ListTile(
-          leading: const Icon(Icons.brightness_6_outlined),
-          title: const Text('Theme'),
-          trailing: DropdownButton<ThemePreference>(
-            key: const Key('settings_theme'),
-            value: prefs.theme,
-            onChanged: (v) {
-              if (v != null) {
-                cubit.setTheme(v);
-              }
-            },
-            items: [
-              for (final t in ThemePreference.values)
-                DropdownMenuItem(value: t, child: Text(t.label)),
-            ],
-          ),
-        ),
-        ListTile(
-          leading: const Icon(Icons.backup_outlined),
-          title: const Text('Backup reminder'),
-          subtitle: const Text('Remind me to export a backup'),
-          trailing: DropdownButton<int>(
-            key: const Key('settings_reminder'),
-            value: prefs.backupReminderDays,
-            onChanged: (v) {
-              if (v != null) {
-                cubit.setBackupReminderDays(v);
-              }
-            },
-            items: [
-              for (final d in AppPreferences.reminderChoices)
-                DropdownMenuItem(
-                  value: d,
-                  child: Text(d == 0 ? 'Off' : 'Every $d days'),
-                ),
-            ],
-          ),
+        SettingsGroup(
+          title: 'Data',
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.s16),
+              child: AppDropdown<int>(
+                key: const Key('settings_reminder'),
+                label: 'Backup reminder',
+                helper: 'Remind me to export a backup',
+                prefixIcon: Icons.backup_outlined,
+                value: prefs.backupReminderDays,
+                items: [
+                  for (final d in AppPreferences.reminderChoices)
+                    AppDropdownItem(
+                      value: d,
+                      label: d == 0 ? 'Off' : 'Every $d days',
+                    ),
+                ],
+                onChanged: (v) {
+                  if (v != null) {
+                    cubit.setBackupReminderDays(v);
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ],
     );
   }
-}
-
-class _Header extends StatelessWidget {
-  const _Header(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-    child: Text(
-      text,
-      style: Theme.of(context).textTheme.titleSmall
-          ?.copyWith(color: Theme.of(context).colorScheme.primary),
-    ),
-  );
 }

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/stock_operation_cubit.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_state.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Form for opening stock, stock in and stock out. Pops with `true` after a
 /// successful save.
@@ -65,7 +63,7 @@ class _StockOperationPageState extends State<StockOperationPage> {
       builder: (context, state) {
         final cubit = context.read<StockOperationCubit>();
         return Scaffold(
-          appBar: AppBar(title: Text(widget.operation.title)),
+          appBar: AppAppBar(title: widget.operation.title),
           body: switch (state.loadStatus) {
             FormLoadStatus.loading => const LoadingIndicator(),
             FormLoadStatus.notFound => const EmptyState(
@@ -101,28 +99,33 @@ class _StockOperationPageState extends State<StockOperationPage> {
               ? 'Whole numbers only.'
               : 'Up to ${unit.decimalPlaces} decimal places.');
     Widget gap(Widget child) => Padding(
-      padding: const EdgeInsets.only(bottom: AppDimensions.spaceMd),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s16),
       child: child,
     );
     return Form(
       key: _formKey,
       child: ListView(
-        padding: const EdgeInsets.all(AppDimensions.spaceMd),
+        padding: const EdgeInsets.all(AppSpacing.s16),
         children: [
           gap(
-            Text(
-              '${item.product.name} · on hand '
-              '${item.balance.quantityOnHand.toDecimalString()} $symbol',
-              key: const Key('operation_summary'),
-              style: Theme.of(context).textTheme.titleMedium,
+            AppCard(
+              child: Text(
+                '${item.product.name} · on hand '
+                '${item.balance.quantityOnHand.toDecimalString()} $symbol',
+                key: const Key('operation_summary'),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
           ),
           if (blocked != null)
             gap(
-              Text(
-                blocked,
-                key: const Key('operation_blocked'),
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              AppCard(
+                tone: AppTone.danger,
+                child: Text(
+                  blocked,
+                  key: const Key('operation_blocked'),
+                  style: TextStyle(color: context.appColors.danger.onContainer),
+                ),
               ),
             ),
           gap(
@@ -139,7 +142,6 @@ class _StockOperationPageState extends State<StockOperationPage> {
                 helperText: precision,
                 suffixText: symbol,
                 errorText: errors['quantity'],
-                border: const OutlineInputBorder(),
               ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? 'Quantity is required.'
@@ -163,7 +165,6 @@ class _StockOperationPageState extends State<StockOperationPage> {
                       ? 'Defaults to the purchase price.'
                       : 'Defaults to the current average cost.',
                   errorText: errors['unitCost'],
-                  border: const OutlineInputBorder(),
                 ),
               ),
             ),
@@ -177,16 +178,19 @@ class _StockOperationPageState extends State<StockOperationPage> {
                 decoration: InputDecoration(
                   labelText: 'Reason *',
                   errorText: errors['reason'],
-                  border: const OutlineInputBorder(),
                 ),
                 validator: (value) => (value == null || value.trim().isEmpty)
                     ? 'A reason is required.'
                     : null,
               ),
             ),
-          FilledButton(
+          AppButton(
             key: const Key('save_stock_operation'),
-            onPressed: (saving || blocked != null)
+            label: 'Save',
+            icon: Icons.check,
+            expand: true,
+            loading: saving,
+            onPressed: blocked != null
                 ? null
                 : () {
                     if (_formKey.currentState?.validate() ?? false) {
@@ -197,13 +201,6 @@ class _StockOperationPageState extends State<StockOperationPage> {
                       );
                     }
                   },
-            child: saving
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Save'),
           ),
         ],
       ),

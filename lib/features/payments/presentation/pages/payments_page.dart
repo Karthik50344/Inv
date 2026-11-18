@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/payments/domain/entities/party_type.dart';
 import 'package:inventrix/features/payments/domain/entities/payment_kind.dart';
 import 'package:inventrix/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:inventrix/features/purchases/presentation/widgets/date_text.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Payment history: receipts, supplier payments and refunds.
 class PaymentsPage extends StatelessWidget {
@@ -67,13 +66,13 @@ class PaymentsPage extends StatelessWidget {
       builder: (context, state) {
         final bloc = context.read<PaymentsBloc>();
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Payments'),
+          appBar: AppAppBar(
+            title: 'Payments',
             actions: [
-              IconButton(
+              AppIconButton(
                 key: const Key('open_outstanding'),
                 tooltip: 'Outstanding balances',
-                icon: const Icon(Icons.account_balance_wallet_outlined),
+                icon: Icons.account_balance_wallet_outlined,
                 onPressed: () => _open(context, RouteNames.paymentOutstanding),
               ),
               PopupMenuButton<String>(
@@ -116,7 +115,7 @@ class PaymentsPage extends StatelessWidget {
           ),
           body: Column(
             children: [
-              SearchField(
+              AppSearchField(
                 hintText: 'Search number, party, method or reference',
                 onChanged: (query) => bloc.add(PaymentsSearchChanged(query)),
               ),
@@ -141,51 +140,102 @@ class PaymentsPage extends StatelessWidget {
           onRetry: () => bloc.add(const PaymentsRefreshed()),
         );
       case ViewStatus.empty:
-        return const EmptyState(
+        return EmptyState(
           icon: Icons.payments_outlined,
           title: 'No payments',
           message:
               'Record money received from customers or paid to suppliers. '
               'Payments settle invoices and update outstanding balances.',
+          action: AppButton(
+            key: const Key('empty_add_payment'),
+            label: 'Record payment',
+            icon: Icons.add,
+            onPressed: () => _chooseType(context),
+          ),
         );
       case ViewStatus.loaded:
-        const formatter = MoneyFormatter();
-        final scheme = Theme.of(context).colorScheme;
-        return ListView.separated(
-          padding: const EdgeInsets.only(bottom: 88),
-          itemCount: state.items.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final item = state.items[index];
-            final sign = item.isMoneyIn ? '+' : '-';
-            return ListTile(
-              key: Key('payment_${item.id}'),
-              onTap: () => _open(
-                context,
-                RouteNames.paymentDetail,
-                params: {'id': item.id},
-              ),
-              leading: Icon(
-                item.isMoneyIn ? Icons.south_west : Icons.north_east,
-                color: item.isMoneyIn ? scheme.primary : scheme.tertiary,
-              ),
-              title: Text(
-                '${item.number} · ${item.partyName}',
-                style: item.isReversed
-                    ? const TextStyle(decoration: TextDecoration.lineThrough)
-                    : null,
-              ),
-              subtitle: Text(
-                '${formatDocumentDate(item.paymentDate)} · ${item.methodName}'
-                '${item.reference == null ? '' : ' · ${item.reference}'}'
-                '${item.isReversed ? ' · Reversed' : ''}',
-              ),
-              trailing: Text(
-                '$sign ${formatter.format(item.amount)}',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-            );
-          },
+        final tokens = context.appColors;
+        final theme = Theme.of(context);
+        return AppRefreshIndicator(
+          onRefresh: () async => bloc.add(const PaymentsRefreshed()),
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              96,
+            ),
+            itemCount: state.items.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final item = state.items[index];
+              final sign = item.isMoneyIn ? '+' : '-';
+              final colors = (item.isMoneyIn ? AppTone.success : AppTone.warning)
+                  .colors(context);
+              return AppCard(
+                key: Key('payment_${item.id}'),
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                onTap: () => _open(
+                  context,
+                  RouteNames.paymentDetail,
+                  params: {'id': item.id},
+                ),
+                child: Row(
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.container,
+                        borderRadius: BorderRadius.circular(AppRadius.small),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Icon(
+                          item.isMoneyIn ? Icons.south_west : Icons.north_east,
+                          size: 20,
+                          color: colors.onContainer,
+                        ),
+                      ),
+                    ),
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${item.number} · ${item.partyName}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              decoration: item.isReversed
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${formatDocumentDate(item.paymentDate)} · ${item.methodName}'
+                            '${item.reference == null ? '' : ' · ${item.reference}'}'
+                            '${item.isReversed ? ' · Reversed' : ''}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    AppSpacing.hGap8,
+                    Text(
+                      '$sign ${const MoneyFormatter().format(item.amount)}',
+                      style: context.appText.financialSmall,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }
@@ -202,10 +252,10 @@ class _Filters extends StatelessWidget {
     final filter = state.filter;
     Widget chip(String key, String label, bool selected, VoidCallback onTap) =>
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: ChoiceChip(
+          padding: const EdgeInsets.only(right: AppSpacing.s8),
+          child: AppChip(
             key: Key(key),
-            label: Text(label),
+            label: label,
             selected: selected,
             onSelected: (_) => onTap(),
           ),
@@ -214,7 +264,10 @@ class _Filters extends StatelessWidget {
       height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s16,
+          vertical: AppSpacing.s4,
+        ),
         children: [
           chip(
             'filter_all',

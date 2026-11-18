@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/shared/presentation/widgets/app_search_field.dart';
 
-/// Search input used above lists.
+/// Search box used by the list screens.
+///
+/// Kept for the existing screens; it is [AppSearchField] with the original
+/// two-argument API. New code should use [AppSearchField] directly.
 class SearchField extends StatelessWidget {
-  /// Creates a search field.
+  /// Creates the field.
   const SearchField({
     required this.hintText,
     required this.onChanged,
@@ -13,28 +16,10 @@ class SearchField extends StatelessWidget {
   /// Placeholder text.
   final String hintText;
 
-  /// Called whenever the text changes.
+  /// Called on every edit with the current text.
   final ValueChanged<String> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppDimensions.spaceMd,
-        AppDimensions.spaceSm,
-        AppDimensions.spaceMd,
-        AppDimensions.spaceSm,
-      ),
-      child: TextField(
-        onChanged: onChanged,
-        textInputAction: TextInputAction.search,
-        decoration: InputDecoration(
-          hintText: hintText,
-          prefixIcon: const Icon(Icons.search),
-          border: const OutlineInputBorder(),
-          isDense: true,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      AppSearchField(hintText: hintText, onChanged: onChanged);
 }

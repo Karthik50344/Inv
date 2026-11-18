@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/reports/domain/entities/report_filter.dart';
 import 'package:inventrix/features/reports/domain/entities/report_kind.dart';
 import 'package:inventrix/features/reports/domain/services/report_filter_options.dart';
@@ -11,8 +12,7 @@ import 'package:inventrix/features/reports/presentation/widgets/report_formatter
 import 'package:inventrix/features/reports/presentation/widgets/report_view.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// One report with its period and filters. Provide a [ReportBloc] above it
 /// (already started with the report's kind).
@@ -38,20 +38,20 @@ class ReportPage extends StatelessWidget {
             state.document != null &&
             state.exportStatus != SubmitStatus.submitting;
         return Scaffold(
-          appBar: AppBar(
-            title: Text(kind.title),
+          appBar: AppAppBar(
+            title: kind.title,
             actions: [
-              IconButton(
+              AppIconButton(
                 key: const Key('report_export'),
                 tooltip: 'Export CSV',
-                icon: const Icon(Icons.ios_share_outlined),
+                icon: Icons.ios_share_outlined,
                 onPressed: canExport
                     ? () => bloc.add(const ReportExportRequested())
                     : null,
               ),
             ],
           ),
-          body: Column(
+          body: AppContentWidth(child: Column(
             children: [
               if (kind.usesDateRange && filter != null) ...[
                 PeriodChips(
@@ -61,8 +61,11 @@ class ReportPage extends StatelessWidget {
                       bloc.add(ReportPeriodChanged(period, range: range)),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimensions.spaceMd,
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s16,
+                    0,
+                    AppSpacing.s16,
+                    AppSpacing.s4,
                   ),
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -72,6 +75,9 @@ class ReportPage extends StatelessWidget {
                         filter.range.to,
                       ),
                       key: const Key('report_range'),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: context.appColors.textSecondary,
+                      ),
                     ),
                   ),
                 ),
@@ -79,7 +85,7 @@ class ReportPage extends StatelessWidget {
               if (filter != null) _Filters(kind: kind, state: state),
               Expanded(child: _body(context, state)),
             ],
-          ),
+          )),
         );
       },
     );
@@ -118,7 +124,7 @@ class ReportPage extends StatelessWidget {
               : 'Nothing to show.',
         );
       case ViewStatus.loaded:
-        return RefreshIndicator(
+        return AppRefreshIndicator(
           onRefresh: () async => bloc.add(const ReportRefreshed()),
           child: ReportView(document: document!),
         );
@@ -144,21 +150,17 @@ class _Filters extends StatelessWidget {
       required ReportFilter Function(String? id) apply,
     }) => Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppDimensions.spaceMd,
-        vertical: 2,
+        horizontal: AppSpacing.s16,
+        vertical: AppSpacing.s4,
       ),
-      child: DropdownButton<String?>(
+      child: AppDropdown<String?>(
         key: key,
-        isExpanded: true,
         value: options.any((o) => o.id == value) ? value : null,
-        hint: Text(all),
+        hint: all,
         items: [
-          DropdownMenuItem<String?>(child: Text(all)),
+          AppDropdownItem<String?>(value: null, label: all),
           for (final o in options)
-            DropdownMenuItem<String?>(
-              value: o.id,
-              child: Text(o.name, overflow: TextOverflow.ellipsis),
-            ),
+            AppDropdownItem<String?>(value: o.id, label: o.name),
         ],
         onChanged: (id) => bloc.add(ReportFilterChanged(apply(id))),
       ),

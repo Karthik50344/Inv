@@ -43,7 +43,6 @@ class _VoidReasonDialogState extends State<_VoidReasonDialog> {
       maxLines: 2,
       decoration: const InputDecoration(
         labelText: 'Reason *',
-        border: OutlineInputBorder(),
       ),
     ),
     actions: [

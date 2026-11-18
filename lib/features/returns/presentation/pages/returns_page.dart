@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/returns/presentation/bloc/returns_bloc.dart';
 import 'package:inventrix/features/sales/presentation/widgets/date_text.dart';
 import 'package:inventrix/shared/domain/enums/invoice_kind.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Sales and purchase returns with search and a kind filter.
 class ReturnsPage extends StatelessWidget {
@@ -42,29 +41,32 @@ class ReturnsPage extends StatelessWidget {
       builder: (context, state) {
         final bloc = context.read<ReturnsBloc>();
         return Scaffold(
-          appBar: AppBar(title: const Text('Returns')),
+          appBar: const AppAppBar(title: 'Returns'),
           floatingActionButton: FloatingActionButton.extended(
             key: const Key('add_return'),
             onPressed: () async {
-              final kind = await showModalBottomSheet<InvoiceKind>(
+              final kind = await showAppBottomSheet<InvoiceKind>(
                 context: context,
-                builder: (sheet) => SafeArea(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (final kind in InvoiceKind.values)
-                        ListTile(
-                          key: Key('new_return_${kind.name}'),
-                          leading: const Icon(Icons.assignment_return_outlined),
-                          title: Text(
-                            kind == InvoiceKind.sales
-                                ? 'Customer return (sales)'
-                                : 'Return to supplier (purchase)',
-                          ),
-                          onTap: () => Navigator.of(sheet).pop(kind),
+                title: 'New return',
+                builder: (sheet) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final kind in InvoiceKind.values)
+                      ListTile(
+                        key: Key('new_return_${kind.name}'),
+                        leading: Icon(
+                          kind == InvoiceKind.sales
+                              ? Icons.south_west
+                              : Icons.north_east,
                         ),
-                    ],
-                  ),
+                        title: Text(
+                          kind == InvoiceKind.sales
+                              ? 'Customer return (sales)'
+                              : 'Return to supplier (purchase)',
+                        ),
+                        onTap: () => Navigator.of(sheet).pop(kind),
+                      ),
+                  ],
                 ),
               );
               if (kind != null && context.mounted) {
@@ -78,38 +80,49 @@ class ReturnsPage extends StatelessWidget {
             icon: const Icon(Icons.add),
             label: const Text('New return'),
           ),
-          body: Column(
+          body: AppContentWidth(child: Column(
             children: [
-              SearchField(
+              AppSearchField(
                 hintText: 'Search number, invoice or name',
                 onChanged: (query) => bloc.add(ReturnsSearchChanged(query)),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Wrap(
-                  spacing: 8,
+              SizedBox(
+                height: 48,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s16,
+                    vertical: AppSpacing.s4,
+                  ),
                   children: [
-                    ChoiceChip(
-                      key: const Key('filter_all'),
-                      label: const Text('All'),
-                      selected: state.filter.kind == null,
-                      onSelected: (_) => bloc.add(const ReturnsKindChanged(null)),
+                    Padding(
+                      padding: const EdgeInsets.only(right: AppSpacing.s8),
+                      child: AppChip(
+                        key: const Key('filter_all'),
+                        label: 'All',
+                        selected: state.filter.kind == null,
+                        onSelected: (_) =>
+                            bloc.add(const ReturnsKindChanged(null)),
+                      ),
                     ),
                     for (final kind in InvoiceKind.values)
-                      ChoiceChip(
-                        key: Key('filter_${kind.name}'),
-                        label: Text(
-                          kind == InvoiceKind.sales ? 'Sales' : 'Purchases',
+                      Padding(
+                        padding: const EdgeInsets.only(right: AppSpacing.s8),
+                        child: AppChip(
+                          key: Key('filter_${kind.name}'),
+                          label: kind == InvoiceKind.sales
+                              ? 'Sales'
+                              : 'Purchases',
+                          selected: state.filter.kind == kind,
+                          onSelected: (_) => bloc.add(ReturnsKindChanged(kind)),
                         ),
-                        selected: state.filter.kind == kind,
-                        onSelected: (_) => bloc.add(ReturnsKindChanged(kind)),
                       ),
                   ],
                 ),
               ),
               Expanded(child: _body(context, state)),
             ],
-          ),
+          )),
         );
       },
     );
@@ -140,42 +153,99 @@ class ReturnsPage extends StatelessWidget {
         );
       case ViewStatus.loaded:
         const formatter = MoneyFormatter();
-        return ListView.separated(
-          padding: const EdgeInsets.only(bottom: 88),
-          itemCount: state.items.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final item = state.items[index];
-            return ListTile(
-              key: Key('return_${item.id}'),
-              onTap: () => _open(
-                context,
-                RouteNames.returnDetail,
-                params: {'kind': item.kind.name, 'id': item.id},
-              ),
-              title: Text('${item.number} · ${item.partyName}'),
-              subtitle: Text(
-                '${formatDocumentDate(item.returnDate)} · '
-                'against ${item.invoiceNumber} · '
-                '${item.lineCount} item${item.lineCount == 1 ? '' : 's'}',
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    formatter.format(item.total),
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  if (item.refundAmount.isPositive)
-                    Text(
-                      'Refunded ${formatter.format(item.refundAmount)}',
-                      style: Theme.of(context).textTheme.bodySmall,
+        final tokens = context.appColors;
+        final theme = Theme.of(context);
+        return AppRefreshIndicator(
+          onRefresh: () async => bloc.add(const ReturnsRefreshed()),
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              96,
+            ),
+            itemCount: state.items.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final item = state.items[index];
+              final colors = (item.kind == InvoiceKind.sales
+                      ? AppTone.warning
+                      : AppTone.info)
+                  .colors(context);
+              return AppCard(
+                key: Key('return_${item.id}'),
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                onTap: () => _open(
+                  context,
+                  RouteNames.returnDetail,
+                  params: {'kind': item.kind.name, 'id': item.id},
+                ),
+                child: Row(
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.container,
+                        borderRadius: BorderRadius.circular(AppRadius.small),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Icon(
+                          Icons.assignment_return_outlined,
+                          size: 20,
+                          color: colors.onContainer,
+                        ),
+                      ),
                     ),
-                ],
-              ),
-            );
-          },
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${item.number} · ${item.partyName}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${formatDocumentDate(item.returnDate)} · '
+                            'against ${item.invoiceNumber} · '
+                            '${item.lineCount} item'
+                            '${item.lineCount == 1 ? '' : 's'}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    AppSpacing.hGap8,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          formatter.format(item.total),
+                          style: context.appText.financialSmall,
+                        ),
+                        if (item.refundAmount.isPositive)
+                          Text(
+                            'Refunded ${formatter.format(item.refundAmount)}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }

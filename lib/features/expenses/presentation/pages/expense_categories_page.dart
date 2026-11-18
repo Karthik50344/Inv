@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/expenses/domain/entities/expense_category.dart';
 import 'package:inventrix/features/expenses/presentation/bloc/expense_categories_cubit.dart';
 import 'package:inventrix/features/expenses/presentation/widgets/expense_category_dialog.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/confirmation_dialog.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 enum _Action { edit, archive, restore }
 
@@ -67,27 +66,30 @@ class ExpenseCategoriesPage extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<ExpenseCategoriesCubit>();
         return Scaffold(
-          appBar: AppBar(title: const Text('Expense categories')),
+          appBar: const AppAppBar(title: 'Expense categories'),
           floatingActionButton: FloatingActionButton.extended(
             key: const Key('add_expense_category'),
             onPressed: () => _openForm(context),
             icon: const Icon(Icons.add),
             label: const Text('Category'),
           ),
-          body: Column(
+          body: AppContentWidth(child: Column(
             children: [
-              SearchField(
+              AppSearchField(
                 hintText: 'Search categories',
                 onChanged: cubit.search,
               ),
               SwitchListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.s20,
+                ),
                 title: const Text('Show archived'),
                 value: state.includeArchived,
                 onChanged: (value) => cubit.setIncludeArchived(value: value),
               ),
               Expanded(child: _body(context, state)),
             ],
-          ),
+          )),
         );
       },
     );
@@ -111,42 +113,111 @@ class ExpenseCategoriesPage extends StatelessWidget {
           message: state.query.isEmpty
               ? 'Create categories to organize your expenses.'
               : 'Try a different search.',
+          action: state.query.isEmpty
+              ? AppButton(
+                  key: const Key('empty_add_expense_category'),
+                  label: 'Add category',
+                  icon: Icons.add,
+                  onPressed: () => _openForm(context),
+                )
+              : null,
         );
       case ViewStatus.loaded:
-        return ListView.separated(
-          itemCount: state.categories.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final category = state.categories[index];
-            return ListTile(
-              key: Key('expense_category_${category.id}'),
-              title: Text(category.name),
-              subtitle: category.description == null
-                  ? null
-                  : Text(category.description!),
-              leading: Icon(
-                category.isArchived
-                    ? Icons.archive_outlined
-                    : Icons.category_outlined,
-              ),
-              trailing: PopupMenuButton<_Action>(
-                onSelected: (action) => _onAction(context, action, category),
-                itemBuilder: (_) => [
-                  const PopupMenuItem(value: _Action.edit, child: Text('Edit')),
-                  if (category.isArchived)
-                    const PopupMenuItem(
-                      value: _Action.restore,
-                      child: Text('Restore'),
-                    )
-                  else
-                    const PopupMenuItem(
-                      value: _Action.archive,
-                      child: Text('Archive'),
+        final tokens = context.appColors;
+        final theme = Theme.of(context);
+        return AppRefreshIndicator(
+          onRefresh: cubit.load,
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              96,
+            ),
+            itemCount: state.categories.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final category = state.categories[index];
+              final colors =
+                  (category.isArchived ? AppTone.neutral : AppTone.brand)
+                      .colors(context);
+              return AppCard(
+                key: Key('expense_category_${category.id}'),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s12,
+                  AppSpacing.s8,
+                  AppSpacing.s4,
+                  AppSpacing.s8,
+                ),
+                child: Row(
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.container,
+                        borderRadius: BorderRadius.circular(AppRadius.small),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Icon(
+                          category.isArchived
+                              ? Icons.archive_outlined
+                              : Icons.category_outlined,
+                          size: 20,
+                          color: colors.onContainer,
+                        ),
+                      ),
                     ),
-                ],
-              ),
-            );
-          },
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            category.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          if (category.description != null)
+                            Text(
+                              category.description!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: tokens.textSecondary,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    if (category.isArchived)
+                      const AppBadge(label: 'Archived'),
+                    PopupMenuButton<_Action>(
+                      onSelected: (action) =>
+                          _onAction(context, action, category),
+                      itemBuilder: (_) => [
+                        const PopupMenuItem(
+                          value: _Action.edit,
+                          child: Text('Edit'),
+                        ),
+                        if (category.isArchived)
+                          const PopupMenuItem(
+                            value: _Action.restore,
+                            child: Text('Restore'),
+                          )
+                        else
+                          const PopupMenuItem(
+                            value: _Action.archive,
+                            child: Text('Archive'),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }

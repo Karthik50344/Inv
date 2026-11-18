@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/features/suppliers/presentation/bloc/supplier_form_cubit.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_state.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/shared/presentation/widgets/party_form_fields.dart';
 
 /// Create/edit supplier form. Pops with `true` after a successful save.
@@ -80,8 +77,8 @@ class _SupplierFormPageState extends State<SupplierFormPage> {
         final cubit = context.read<SupplierFormCubit>();
         final editing = widget.supplierId != null;
         return Scaffold(
-          appBar: AppBar(
-            title: Text(editing ? 'Edit supplier' : 'New supplier'),
+          appBar: AppAppBar(
+            title: editing ? 'Edit supplier' : 'New supplier',
           ),
           body: switch (state.loadStatus) {
             FormLoadStatus.loading => const LoadingIndicator(),
@@ -97,7 +94,7 @@ class _SupplierFormPageState extends State<SupplierFormPage> {
             FormLoadStatus.ready => Form(
               key: _formKey,
               child: ListView(
-                padding: const EdgeInsets.all(AppDimensions.spaceMd),
+                padding: const EdgeInsets.all(AppSpacing.s16),
                 children: [
                   PartyFormFields(
                     controllers: _controllers,
@@ -106,22 +103,17 @@ class _SupplierFormPageState extends State<SupplierFormPage> {
                     openingBalanceHint:
                         'Positive: amount you owe the supplier. Negative: a credit.',
                   ),
-                  FilledButton(
+                  AppButton(
                     key: const Key('save_supplier'),
-                    onPressed: state.submitStatus == SubmitStatus.submitting
-                        ? null
-                        : () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              cubit.submit(_controllers.toDraft());
-                            }
-                          },
-                    child: state.submitStatus == SubmitStatus.submitting
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Save'),
+                    label: 'Save',
+                    icon: Icons.check,
+                    expand: true,
+                    loading: state.submitStatus == SubmitStatus.submitting,
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        cubit.submit(_controllers.toDraft());
+                      }
+                    },
                   ),
                 ],
               ),

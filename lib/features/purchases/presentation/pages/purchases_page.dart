@@ -2,19 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
-import 'package:inventrix/core/formatters/money_formatter.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/purchases/presentation/bloc/purchase_bloc.dart';
 import 'package:inventrix/features/purchases/presentation/bloc/purchase_event.dart';
 import 'package:inventrix/features/purchases/presentation/widgets/date_text.dart';
 import 'package:inventrix/features/purchases/presentation/widgets/purchase_status_chip.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/confirmation_dialog.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Purchase invoices with search, status filter and the approval switch.
 class PurchasesPage extends StatelessWidget {
@@ -40,8 +36,8 @@ class PurchasesPage extends StatelessWidget {
       builder: (context, state) {
         final bloc = context.read<PurchaseBloc>();
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Purchases'),
+          appBar: AppAppBar(
+            title: 'Purchases',
             actions: [
               PopupMenuButton<bool>(
                 key: const Key('purchase_menu'),
@@ -85,7 +81,7 @@ class PurchasesPage extends StatelessWidget {
           ),
           body: Column(
             children: [
-              SearchField(
+              AppSearchField(
                 hintText: 'Search number, supplier or reference',
                 onChanged: (query) => bloc.add(PurchasesSearchChanged(query)),
               ),
@@ -119,41 +115,80 @@ class PurchasesPage extends StatelessWidget {
               ? 'Try a different search or status.'
               : 'Record what you buy from suppliers. Posting a purchase '
                     'adds the items to your stock.',
+          action: filtered
+              ? null
+              : AppButton(
+                  key: const Key('empty_add_purchase'),
+                  label: 'New purchase',
+                  icon: Icons.add,
+                  onPressed: () => _open(context, RouteNames.purchaseNew),
+                ),
         );
       case ViewStatus.loaded:
-        const formatter = MoneyFormatter();
-        return ListView.separated(
-          padding: const EdgeInsets.only(bottom: 88),
-          itemCount: state.items.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final item = state.items[index];
-            return ListTile(
-              key: Key('purchase_${item.id}'),
-              onTap: () => _open(
-                context,
-                RouteNames.purchaseDetail,
-                params: {'id': item.id},
-              ),
-              title: Text('${item.displayNumber} · ${item.supplierName}'),
-              subtitle: Text(
-                '${formatDocumentDate(item.invoiceDate)} · '
-                '${item.lineCount} item${item.lineCount == 1 ? '' : 's'}'
-                '${item.supplierReference == null ? '' : ' · ${item.supplierReference}'}',
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    formatter.format(item.total),
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  PurchaseStatusChip(status: item.status),
-                ],
-              ),
-            );
-          },
+        final tokens = context.appColors;
+        final theme = Theme.of(context);
+        return AppRefreshIndicator(
+          onRefresh: () async => bloc.add(const PurchasesRefreshed()),
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              96,
+            ),
+            itemCount: state.items.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final item = state.items[index];
+              return AppCard(
+                key: Key('purchase_${item.id}'),
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                onTap: () => _open(
+                  context,
+                  RouteNames.purchaseDetail,
+                  params: {'id': item.id},
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${item.displayNumber} · ${item.supplierName}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${formatDocumentDate(item.invoiceDate)} · '
+                            '${item.lineCount} item${item.lineCount == 1 ? '' : 's'}'
+                            '${item.supplierReference == null ? '' : ' · ${item.supplierReference}'}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    AppSpacing.hGap8,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        AppCurrencyText(item.total),
+                        AppSpacing.gap4,
+                        PurchaseStatusChip(status: item.status),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }
@@ -180,23 +215,26 @@ class _StatusFilters extends StatelessWidget {
       height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s16,
+          vertical: AppSpacing.s4,
+        ),
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: ChoiceChip(
+            padding: const EdgeInsets.only(right: AppSpacing.s8),
+            child: AppChip(
               key: const Key('filter_all'),
-              label: const Text('All'),
+              label: 'All',
               selected: selected == null,
               onSelected: (_) => bloc.add(const PurchasesStatusChanged(null)),
             ),
           ),
           for (final status in _statuses)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: ChoiceChip(
+              padding: const EdgeInsets.only(right: AppSpacing.s8),
+              child: AppChip(
                 key: Key('filter_${status.dbName}'),
-                label: Text(status.label),
+                label: status.label,
                 selected: selected == status,
                 onSelected: (_) => bloc.add(PurchasesStatusChanged(status)),
               ),

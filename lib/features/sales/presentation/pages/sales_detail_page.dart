@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
 import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_detail_cubit.dart';
 import 'package:inventrix/features/sales/domain/entities/sales_invoice.dart';
@@ -14,11 +16,7 @@ import 'package:inventrix/features/sales/presentation/widgets/date_text.dart';
 import 'package:inventrix/features/sales/presentation/widgets/sales_status_chip.dart';
 import 'package:inventrix/features/sales/presentation/widgets/sales_totals_card.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
-import 'package:inventrix/shared/presentation/widgets/confirmation_dialog.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// A sale invoice with its workflow actions: edit, submit, approve,
 /// post, cancel and void.
@@ -41,14 +39,14 @@ class SalesDetailPage extends StatelessWidget {
         final cubit = context.read<SalesDetailCubit>();
         final invoice = state.invoice;
         return Scaffold(
-          appBar: AppBar(
-            title: Text(invoice?.displayNumber ?? 'Sales'),
+          appBar: AppAppBar(
+            title: invoice?.displayNumber ?? 'Sales',
             actions: [
               if (invoice != null && invoice.isEditable)
-                IconButton(
+                AppIconButton(
                   key: const Key('edit_sale'),
                   tooltip: 'Edit',
-                  icon: const Icon(Icons.edit_outlined),
+                  icon: Icons.edit_outlined,
                   onPressed: state.busy
                       ? null
                       : () async {
@@ -90,73 +88,144 @@ class _Details extends StatelessWidget {
     final invoice = state.invoice!;
     const formatter = MoneyFormatter();
     final theme = Theme.of(context);
-    Widget row(String label, String? value, {Key? key}) => ListTile(
-      dense: true,
-      title: Text(label),
-      trailing: Text(value ?? '—', key: key),
-    );
+    final tokens = context.appColors;
+    final facts = <(String, String?, Key?)>[
+      ('Customer', invoice.customerName, null),
+      ('Invoice date', formatDocumentDate(invoice.invoiceDate), null),
+      if (invoice.dueDate != null)
+        ('Due date', formatDocumentDate(invoice.dueDate!), null),
+      if (invoice.customerReference != null)
+        ('Customer invoice no.', invoice.customerReference, null),
+      if (invoice.status == DocumentStatus.voided) ...[
+        (
+          'Voided',
+          invoice.voidedAt == null
+              ? null
+              : formatDocumentDate(invoice.voidedAt!),
+          null,
+        ),
+        ('Reason', invoice.voidReason, const Key('void_reason')),
+      ],
+    ];
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           maxWidth: AppDimensions.maxContentWidth,
         ),
         child: ListView(
-          padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          padding: AppSpacing.page,
           children: [
             Align(
               alignment: Alignment.centerLeft,
               child: SalesStatusChip(status: invoice.status),
             ),
-            row('Customer', invoice.customerName),
-            row('Invoice date', formatDocumentDate(invoice.invoiceDate)),
-            if (invoice.dueDate != null)
-              row('Due date', formatDocumentDate(invoice.dueDate!)),
-            if (invoice.customerReference != null)
-              row('Customer invoice no.', invoice.customerReference),
-            if (invoice.status == DocumentStatus.voided) ...[
-              row(
-                'Voided',
-                invoice.voidedAt == null
-                    ? null
-                    : formatDocumentDate(invoice.voidedAt!),
-              ),
-              row('Reason', invoice.voidReason, key: const Key('void_reason')),
-            ],
-            if (invoice.notes != null)
-              Padding(
-                padding: const EdgeInsets.all(AppDimensions.spaceSm),
-                child: Text(invoice.notes!),
-              ),
-            const Divider(),
-            Padding(
+            AppSpacing.gap12,
+            AppCard(
               padding: const EdgeInsets.symmetric(
-                vertical: AppDimensions.spaceSm,
+                horizontal: AppSpacing.s16,
+                vertical: AppSpacing.s4,
               ),
-              child: Text('Items', style: theme.textTheme.titleMedium),
+              child: Column(
+                children: [
+                  for (var i = 0; i < facts.length; i++)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.s12,
+                      ),
+                      decoration: BoxDecoration(
+                        border: i == facts.length - 1
+                            ? null
+                            : Border(
+                                bottom: BorderSide(color: tokens.divider),
+                              ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            facts[i].$1,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                          AppSpacing.hGap16,
+                          Expanded(
+                            child: Text(
+                              facts[i].$2 ?? '—',
+                              key: facts[i].$3,
+                              textAlign: TextAlign.end,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
             ),
-            for (final line in invoice.lines)
-              Card(
-                key: Key('detail_line_${line.lineNo}'),
-                child: ListTile(
-                  title: Text('${line.productName} (${line.sku})'),
-                  subtitle: Text(
-                    [
-                      '${line.quantity.toDecimalString()} ${line.unitSymbol} '
-                          '× ${formatter.format(line.unitPrice)}'
-                          '${line.priceIncludesTax ? ' (incl. tax)' : ''}',
-                      if (line.discountAmount.isPositive)
-                        'discount ${formatter.format(line.discountAmount)}',
-                      if (line.taxRateBp > 0)
-                        '${line.taxName ?? 'Tax'} ${formatter.format(line.tax)}',
-                    ].join(' · '),
-                  ),
-                  trailing: Text(
-                    formatter.format(line.total),
-                    style: theme.textTheme.titleSmall,
+            if (invoice.notes != null) ...[
+              AppSpacing.gap12,
+              AppCard(
+                child: Text(
+                  invoice.notes!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: tokens.textSecondary,
                   ),
                 ),
               ),
-            const SizedBox(height: AppDimensions.spaceSm),
+            ],
+            const AppSectionHeader(
+              title: 'Items',
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.s4,
+                AppSpacing.s24,
+                AppSpacing.s4,
+                AppSpacing.s8,
+              ),
+            ),
+            for (final line in invoice.lines)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.s8),
+                child: AppCard(
+                  key: Key('detail_line_${line.lineNo}'),
+                  padding: const EdgeInsets.all(AppSpacing.s12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${line.productName} (${line.sku})',
+                              style: theme.textTheme.titleSmall,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              [
+                                '${line.quantity.toDecimalString()} ${line.unitSymbol} '
+                                    '× ${formatter.format(line.unitPrice)}'
+                                    '${line.priceIncludesTax ? ' (incl. tax)' : ''}',
+                                if (line.discountAmount.isPositive)
+                                  'discount ${formatter.format(line.discountAmount)}',
+                                if (line.taxRateBp > 0)
+                                  '${line.taxName ?? 'Tax'} ${formatter.format(line.tax)}',
+                              ].join(' · '),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: tokens.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      AppSpacing.hGap8,
+                      AppCurrencyText(line.total),
+                    ],
+                  ),
+                ),
+              ),
+            AppSpacing.gap8,
             SalesTotalsCard(totals: invoice.totals),
             if (invoice.status == DocumentStatus.posted)
               InvoiceSettlementCard(
@@ -168,7 +237,7 @@ class _Details extends StatelessWidget {
                 kind: InvoiceKind.sales,
                 invoiceId: invoice.id,
               ),
-            const SizedBox(height: AppDimensions.spaceMd),
+            AppSpacing.gap16,
             ..._actions(context, invoice),
           ],
         ),
@@ -180,7 +249,7 @@ class _Details extends StatelessWidget {
     final cubit = context.read<SalesDetailCubit>();
     final busy = state.busy;
     Widget gap(Widget child) => Padding(
-      padding: const EdgeInsets.only(bottom: AppDimensions.spaceSm),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s8),
       child: child,
     );
 
@@ -214,10 +283,11 @@ class _Details extends StatelessWidget {
     }
 
     Widget filled(String key, String label, VoidCallback? onPressed) => gap(
-      FilledButton(
+      AppButton(
         key: Key(key),
+        label: label,
+        expand: true,
         onPressed: busy ? null : onPressed,
-        child: Text(label),
       ),
     );
     Widget outlined(
@@ -226,15 +296,12 @@ class _Details extends StatelessWidget {
       VoidCallback? onPressed, {
       bool destructive = false,
     }) => gap(
-      OutlinedButton(
+      AppButton(
         key: Key(key),
-        style: destructive
-            ? OutlinedButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.error,
-              )
-            : null,
+        label: label,
+        expand: true,
+        variant: AppButtonVariant.outlined,
         onPressed: busy ? null : onPressed,
-        child: Text(label),
       ),
     );
 
@@ -312,18 +379,21 @@ class _Details extends StatelessWidget {
           maxLines: 2,
           decoration: const InputDecoration(
             labelText: 'Reason *',
-            border: OutlineInputBorder(),
           ),
         ),
         actions: [
-          TextButton(
+          AppButton(
+            label: 'Keep',
+            variant: AppButtonVariant.text,
+            size: AppButtonSize.small,
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Keep'),
           ),
-          FilledButton(
+          AppButton(
             key: const Key('confirm_void'),
+            label: 'Void',
+            variant: AppButtonVariant.destructive,
+            size: AppButtonSize.small,
             onPressed: () => Navigator.of(dialogContext).pop(controller.text),
-            child: const Text('Void'),
           ),
         ],
       ),

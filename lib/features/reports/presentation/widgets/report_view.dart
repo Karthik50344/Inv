@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/reports/domain/entities/report_document.dart';
 import 'package:inventrix/features/reports/presentation/widgets/report_formatters.dart';
 import 'package:inventrix/features/reports/presentation/widgets/trend_bar_chart.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Draws any [ReportDocument]: headline figures, charts, tables and the
 /// notes that explain how the figures were worked out.
@@ -23,28 +25,42 @@ class ReportView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final tokens = context.appColors;
     return ListView(
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
+      physics: AppRefreshIndicator.physics,
+      padding: AppSpacing.page,
       children: [
         if (document.scope.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(bottom: AppDimensions.spaceSm),
+            padding: const EdgeInsets.only(bottom: AppSpacing.s12),
             child: Text(
               document.scope.join(' · '),
-              style: theme.textTheme.bodyMedium,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: tokens.textSecondary,
+              ),
             ),
           ),
         if (document.metrics.isNotEmpty) _Metrics(metrics: document.metrics),
         if (emptyMessage != null)
           Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: AppDimensions.spaceMd,
-            ),
-            child: Text(
-              emptyMessage!,
-              key: const Key('report_empty_message'),
-              style: theme.textTheme.bodyMedium,
-              textAlign: TextAlign.center,
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.s24),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.inbox_outlined,
+                  size: 40,
+                  color: tokens.textSecondary,
+                ),
+                AppSpacing.gap8,
+                Text(
+                  emptyMessage!,
+                  key: const Key('report_empty_message'),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: tokens.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
         for (final chart in document.charts) _ChartCard(chart: chart),
@@ -65,7 +81,7 @@ class _Metrics extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final columns = constraints.maxWidth >= 600 ? 3 : 2;
-        const gap = AppDimensions.spaceSm;
+        const gap = AppSpacing.s12;
         final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
         return Wrap(
           spacing: gap,
@@ -86,32 +102,12 @@ class _Metric extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final negative = ReportFormatters.isNegative(metric.value);
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.spaceMd),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(metric.label, style: theme.textTheme.labelMedium),
-            const SizedBox(height: 4),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(
-                ReportFormatters.cell(metric.value),
-                style: theme.textTheme.titleLarge?.copyWith(
-                  color: negative ? theme.colorScheme.error : null,
-                ),
-              ),
-            ),
-            if (metric.hint != null)
-              Text(metric.hint!, style: theme.textTheme.bodySmall),
-          ],
-        ),
-      ),
+    return AppStatCard(
+      label: metric.label,
+      value: ReportFormatters.cell(metric.value),
+      subtitle: metric.hint,
+      valueTone: negative ? AppTone.danger : null,
     );
   }
 }
@@ -124,30 +120,31 @@ class _ChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.spaceMd),
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.s12),
+      child: AppCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(chart.title, style: theme.textTheme.titleSmall),
-            const SizedBox(height: AppDimensions.spaceSm),
+            AppSpacing.gap12,
             if (chart.isFlat)
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: AppDimensions.spaceMd,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.s16),
                 child: Text(
                   'Nothing to chart in this period.',
-                  style: theme.textTheme.bodySmall,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: context.appColors.textSecondary,
+                  ),
                 ),
               )
             else ...[
               Wrap(
-                spacing: AppDimensions.spaceMd,
+                spacing: AppSpacing.s16,
+                runSpacing: AppSpacing.s4,
                 children: TrendBarChart.legend(context, chart),
               ),
-              const SizedBox(height: AppDimensions.spaceSm),
+              AppSpacing.gap12,
               TrendBarChart(chart: chart),
             ],
           ],
@@ -165,70 +162,57 @@ class _TableCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final tokens = context.appColors;
     final shown = table.rows.take(ReportView.screenRowLimit).toList();
     final total = table.totalRowCount ?? table.rows.length;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppDimensions.spaceMd),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.spaceMd,
-              ),
-              child: Text(table.title, style: theme.textTheme.titleSmall),
-            ),
-            if (table.rows.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(AppDimensions.spaceMd),
-                child: Text('No rows.', style: theme.textTheme.bodySmall),
-              )
-            else
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columnSpacing: 20,
-                  columns: [
-                    for (final c in table.columns)
-                      DataColumn(label: Text(c.label), numeric: c.numeric),
-                  ],
-                  rows: [
-                    for (final row in shown)
-                      DataRow(
-                        cells: [
-                          for (final cell in row)
-                            DataCell(
-                              Text(
-                                ReportFormatters.cell(cell),
-                                style: ReportFormatters.isNegative(cell)
-                                    ? TextStyle(color: theme.colorScheme.error)
-                                    : null,
-                              ),
-                            ),
-                        ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSectionHeader(
+          title: table.title,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.s4,
+            AppSpacing.s24,
+            AppSpacing.s4,
+            AppSpacing.s8,
+          ),
+        ),
+        AppDataTable(
+          emptyMessage: 'No rows.',
+          columns: [
+            for (final c in table.columns)
+              AppDataColumn(label: c.label, numeric: c.numeric),
+          ],
+          rows: [
+            for (final row in shown)
+              AppDataRow(
+                cells: [
+                  for (final cell in row)
+                    Text(
+                      ReportFormatters.cell(cell),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: ReportFormatters.isNegative(cell)
+                            ? tokens.danger.solid
+                            : null,
                       ),
-                  ],
-                ),
-              ),
-            if (shown.length < total)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppDimensions.spaceMd,
-                  AppDimensions.spaceSm,
-                  AppDimensions.spaceMd,
-                  0,
-                ),
-                child: Text(
-                  'Showing ${shown.length} of $total rows. Export to CSV for '
-                  'the full list.',
-                  key: const Key('table_truncated'),
-                  style: theme.textTheme.bodySmall,
-                ),
+                    ),
+                ],
               ),
           ],
         ),
-      ),
+        if (shown.length < total)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.s8),
+            child: Text(
+              'Showing ${shown.length} of $total rows. Export to CSV for '
+              'the full list.',
+              key: const Key('table_truncated'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: tokens.textSecondary,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
@@ -240,19 +224,37 @@ class _Notes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ExpansionTile(
-        key: const Key('report_notes'),
-        title: const Text('How this is calculated'),
-        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final note in notes)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Text('•  $note'),
+    final tokens = context.appColors;
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.s16),
+      child: AppCard(
+        padding: EdgeInsets.zero,
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            key: const Key('report_notes'),
+            title: const Text('How this is calculated'),
+            childrenPadding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              0,
+              AppSpacing.s16,
+              AppSpacing.s16,
             ),
-        ],
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final note in notes)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Text(
+                    '•  $note',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: tokens.textSecondary,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

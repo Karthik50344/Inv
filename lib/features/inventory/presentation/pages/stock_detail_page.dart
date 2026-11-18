@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/date_formatter.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_movement.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/stock_detail_cubit.dart';
 import 'package:inventrix/features/inventory/presentation/widgets/stock_status_chip.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_detail_cubit.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Stock position, valuation and movement history for one product.
 class StockDetailPage extends StatelessWidget {
@@ -39,7 +37,7 @@ class StockDetailPage extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<StockDetailCubit>();
         return Scaffold(
-          appBar: AppBar(title: Text(state.item?.product.name ?? 'Stock')),
+          appBar: AppAppBar(title: state.item?.product.name ?? 'Stock'),
           body: switch (state.status) {
             DetailStatus.loading => const LoadingIndicator(),
             DetailStatus.notFound => const EmptyState(
@@ -74,13 +72,26 @@ class _Body extends StatelessWidget {
     final symbol = state.unit?.symbol ?? '';
     const formatter = MoneyFormatter();
     final theme = Theme.of(context);
+    final tokens = context.appColors;
     final average = item.balance.averageCost;
-    return ListView(
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
-      children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.spaceMd),
+    Widget fact(String text, {Key? key}) => Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.s4),
+      child: Text(
+        text,
+        key: key,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: tokens.textSecondary,
+        ),
+      ),
+    );
+    return AppRefreshIndicator(
+      onRefresh: () => context.read<StockDetailCubit>().load(item.product.id),
+      child: ListView(
+        physics: AppRefreshIndicator.physics,
+        padding: AppSpacing.page,
+        children: [
+          AppCard(
+            padding: const EdgeInsets.all(AppSpacing.s20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -96,68 +107,92 @@ class _Body extends StatelessWidget {
                     StockStatusChip(status: item.status),
                   ],
                 ),
-                const SizedBox(height: AppDimensions.spaceSm),
-                Text(
+                AppSpacing.gap8,
+                fact(
                   'Value: ${formatter.format(item.balance.inventoryValue)}',
                   key: const Key('stock_value'),
                 ),
-                Text(
+                fact(
                   'Average cost: '
                   '${average == null ? '—' : formatter.format(average)}',
                   key: const Key('stock_average_cost'),
                 ),
-                Text(
+                fact(
                   'Reorder level: '
                   '${item.product.reorderLevel.toDecimalString()} $symbol',
                 ),
               ],
             ),
           ),
-        ),
-        const SizedBox(height: AppDimensions.spaceMd),
-        Wrap(
-          spacing: AppDimensions.spaceSm,
-          runSpacing: AppDimensions.spaceSm,
-          children: [
-            if (state.canRecordOpeningStock)
-              FilledButton(
-                key: const Key('opening_stock'),
-                onPressed: () => onOpen(RouteNames.stockOpening),
-                child: const Text('Opening stock'),
+          AppSpacing.gap16,
+          Wrap(
+            spacing: AppSpacing.s8,
+            runSpacing: AppSpacing.s8,
+            children: [
+              if (state.canRecordOpeningStock)
+                AppButton(
+                  key: const Key('opening_stock'),
+                  label: 'Opening stock',
+                  icon: Icons.playlist_add,
+                  onPressed: () => onOpen(RouteNames.stockOpening),
+                ),
+              AppButton(
+                key: const Key('stock_in'),
+                label: 'Stock in',
+                icon: Icons.add,
+                variant: AppButtonVariant.secondary,
+                onPressed: () => onOpen(RouteNames.stockIn),
               ),
-            FilledButton.tonal(
-              key: const Key('stock_in'),
-              onPressed: () => onOpen(RouteNames.stockIn),
-              child: const Text('Stock in'),
-            ),
-            OutlinedButton(
-              key: const Key('stock_out'),
-              onPressed: () => onOpen(RouteNames.stockOut),
-              child: const Text('Stock out'),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppDimensions.spaceLg),
-        Text('Movement history', style: theme.textTheme.titleMedium),
-        if (state.movements.isEmpty)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: AppDimensions.spaceMd),
-            child: Text('No stock movements yet.'),
-          )
-        else
-          for (final movement in state.movements)
-            _MovementTile(movement: movement, symbol: symbol),
-        if (state.hasMore)
-          Center(
-            child: TextButton(
-              key: const Key('load_more_movements'),
-              onPressed: state.loadingMore
-                  ? null
-                  : context.read<StockDetailCubit>().loadMore,
-              child: Text(state.loadingMore ? 'Loading…' : 'Load more'),
+              AppButton(
+                key: const Key('stock_out'),
+                label: 'Stock out',
+                icon: Icons.remove,
+                variant: AppButtonVariant.outlined,
+                onPressed: () => onOpen(RouteNames.stockOut),
+              ),
+            ],
+          ),
+          const AppSectionHeader(
+            title: 'Movement history',
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.s4,
+              AppSpacing.s24,
+              AppSpacing.s4,
+              AppSpacing.s8,
             ),
           ),
-      ],
+          if (state.movements.isEmpty)
+            const AppCard(child: Text('No stock movements yet.'))
+          else
+            AppCard(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s16,
+              ),
+              child: Column(
+                children: [
+                  for (var i = 0; i < state.movements.length; i++) ...[
+                    if (i > 0) Divider(height: 1, color: tokens.divider),
+                    _MovementTile(
+                      movement: state.movements[i],
+                      symbol: symbol,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          if (state.hasMore)
+            Center(
+              child: AppButton(
+                key: const Key('load_more_movements'),
+                label: state.loadingMore ? 'Loading…' : 'Load more',
+                variant: AppButtonVariant.text,
+                onPressed: state.loadingMore
+                    ? null
+                    : context.read<StockDetailCubit>().loadMore,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -170,24 +205,56 @@ class _MovementTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const formatter = MoneyFormatter();
     final inbound = movement.isInbound;
     final sign = inbound ? '+' : '';
     final when = DateFormatter.dateTime(movement.occurredAt);
-    return ListTile(
+    final tone = inbound ? AppTone.success : AppTone.danger;
+    final colors = tone.colors(context);
+    final theme = Theme.of(context);
+    return Padding(
       key: Key('movement_${movement.id}'),
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(
-        inbound ? Icons.south_west : Icons.north_east,
-        color: inbound ? Colors.green : Theme.of(context).colorScheme.error,
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
+      child: Row(
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: colors.container,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: Icon(
+                inbound ? Icons.south_west : Icons.north_east,
+                size: 18,
+                color: colors.onContainer,
+              ),
+            ),
+          ),
+          AppSpacing.hGap12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${movement.type.label}: $sign${movement.quantityDelta.toDecimalString()} $symbol',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  [if (movement.reason != null) movement.reason!, when]
+                      .join(' · '),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: context.appColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          AppSpacing.hGap8,
+          AppCurrencyText(movement.totalCost),
+        ],
       ),
-      title: Text(
-        '${movement.type.label}: $sign${movement.quantityDelta.toDecimalString()} $symbol',
-      ),
-      subtitle: Text(
-        [if (movement.reason != null) movement.reason!, when].join(' · '),
-      ),
-      trailing: Text(formatter.format(movement.totalCost)),
     );
   }
 }

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/reports/domain/entities/report_kind.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// The list of reports.
 class ReportsPage extends StatelessWidget {
@@ -22,26 +26,74 @@ class ReportsPage extends StatelessWidget {
     ReportKind.profitability => Icons.trending_up_outlined,
   };
 
+  static AppTone _tone(ReportKind kind) => switch (kind) {
+    ReportKind.sales || ReportKind.profitability => AppTone.success,
+    ReportKind.purchases || ReportKind.payments => AppTone.info,
+    ReportKind.lowStock ||
+    ReportKind.customerOutstanding ||
+    ReportKind.supplierOutstanding ||
+    ReportKind.expenses => AppTone.warning,
+    _ => AppTone.brand,
+  };
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final tokens = context.appColors;
     return Scaffold(
-      appBar: AppBar(title: const Text('Reports')),
-      body: ListView(
-        children: [
-          for (final kind in ReportKind.values)
-            ListTile(
-              key: Key('report_${kind.name}'),
-              leading: Icon(_icon(kind)),
-              title: Text(kind.title),
-              subtitle: Text(kind.description),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.pushNamed(
-                RouteNames.reportView,
-                pathParameters: {'kind': kind.slug},
-              ),
+      appBar: const AppAppBar(title: 'Reports'),
+      body: AppContentWidth(child: ListView.separated(
+        padding: AppSpacing.page,
+        itemCount: ReportKind.values.length,
+        separatorBuilder: (_, _) => AppSpacing.gap8,
+        itemBuilder: (context, index) {
+          final kind = ReportKind.values[index];
+          final colors = _tone(kind).colors(context);
+          return AppCard(
+            key: Key('report_${kind.name}'),
+            padding: const EdgeInsets.all(AppSpacing.s12),
+            onTap: () => context.pushNamed(
+              RouteNames.reportView,
+              pathParameters: {'kind': kind.slug},
             ),
-        ],
-      ),
+            child: Row(
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: colors.container,
+                    borderRadius: BorderRadius.circular(AppRadius.small),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Icon(
+                      _icon(kind),
+                      size: 22,
+                      color: colors.onContainer,
+                    ),
+                  ),
+                ),
+                AppSpacing.hGap12,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(kind.title, style: theme.textTheme.titleSmall),
+                      const SizedBox(height: 2),
+                      Text(
+                        kind.description,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: tokens.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: tokens.textSecondary),
+              ],
+            ),
+          );
+        },
+      )),
     );
   }
 }

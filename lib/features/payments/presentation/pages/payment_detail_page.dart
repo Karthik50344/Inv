@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/payments/domain/entities/open_invoice.dart';
 import 'package:inventrix/features/payments/presentation/bloc/payment_detail_cubit.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_detail_cubit.dart';
 import 'package:inventrix/features/purchases/presentation/widgets/date_text.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// One payment or refund with its allocations, and the actions that are
 /// allowed on it: reverse, refund, apply credit.
@@ -32,17 +32,21 @@ class PaymentDetailPage extends StatelessWidget {
         switch (state.status) {
           case DetailStatus.loading:
             return Scaffold(
-              appBar: AppBar(title: const Text('Payment')),
+              appBar: const AppAppBar(title: 'Payment'),
               body: const LoadingIndicator(),
             );
           case DetailStatus.notFound:
             return Scaffold(
-              appBar: AppBar(title: const Text('Payment')),
-              body: const Center(child: Text('This payment no longer exists.')),
+              appBar: const AppAppBar(title: 'Payment'),
+              body: const EmptyState(
+                icon: Icons.search_off,
+                title: 'Payment not found',
+                message: 'This payment no longer exists.',
+              ),
             );
           case DetailStatus.failure:
             return Scaffold(
-              appBar: AppBar(title: const Text('Payment')),
+              appBar: const AppAppBar(title: 'Payment'),
               body: ErrorState(
                 message: state.message ?? 'Could not load the payment.',
                 onRetry: () => cubit.load(paymentId),
@@ -54,121 +58,197 @@ class PaymentDetailPage extends StatelessWidget {
         const formatter = MoneyFormatter();
         final p = payment!;
         final position = state.position;
-        Widget row(String label, String? value) => value == null
-            ? const SizedBox.shrink()
-            : ListTile(
-                dense: true,
-                title: Text(label),
-                trailing: Text(value),
-              );
+        final theme = Theme.of(context);
+        final tokens = context.appColors;
+        final facts = <(String, String?)>[
+          ('Type', p.isRefund ? 'Refund' : 'Payment'),
+          (p.partyType.label, p.partyName),
+          ('Date', formatDocumentDate(p.paymentDate)),
+          ('Method', p.methodName),
+          ('Reference', p.reference),
+          if (p.notes != null) (p.isRefund ? 'Reason' : 'Notes', p.notes),
+        ].where((f) => f.$2 != null).toList();
+        Widget row(String label, String value, {Key? key, bool bold = false}) =>
+            Padding(
+              key: key,
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: bold
+                        ? theme.textTheme.titleSmall
+                        : theme.textTheme.bodyMedium?.copyWith(
+                            color: tokens.textSecondary,
+                          ),
+                  ),
+                  AppSpacing.hGap16,
+                  Expanded(
+                    child: Text(
+                      value,
+                      textAlign: TextAlign.end,
+                      style: bold
+                          ? context.appText.financialMedium
+                          : theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+        Widget heading(String text) => AppSectionHeader(
+          title: text,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.s4,
+            AppSpacing.s20,
+            AppSpacing.s4,
+            AppSpacing.s8,
+          ),
+        );
         return Scaffold(
-          appBar: AppBar(title: Text(p.number)),
+          appBar: AppAppBar(title: p.number),
           body: ListView(
+            padding: AppSpacing.page,
             children: [
               if (p.isReversed)
-                MaterialBanner(
-                  key: const Key('reversed_banner'),
-                  content: Text(
-                    'Reversed on ${formatDocumentDate(p.reversal!.reversedAt)}: '
-                    '${p.reversal!.reason}',
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.s12),
+                  child: AppCard(
+                    key: const Key('reversed_banner'),
+                    tone: AppTone.danger,
+                    child: Text(
+                      'Reversed on ${formatDocumentDate(p.reversal!.reversedAt)}: '
+                      '${p.reversal!.reason}',
+                      style: TextStyle(color: tokens.danger.onContainer),
+                    ),
                   ),
-                  actions: const [SizedBox.shrink()],
                 ),
-              row('Type', p.isRefund ? 'Refund' : 'Payment'),
-              row(p.partyType.label, p.partyName),
-              row('Date', formatDocumentDate(p.paymentDate)),
-              row('Method', p.methodName),
-              row('Reference', p.reference),
-              row(
-                'Amount',
-                '${p.isMoneyIn ? '+' : '-'} ${formatter.format(p.amount)}',
+              AppCard(
+                child: Column(
+                  children: [
+                    for (final f in facts) row(f.$1, f.$2!),
+                    Divider(height: AppSpacing.s16, color: tokens.divider),
+                    row(
+                      'Amount',
+                      '${p.isMoneyIn ? '+' : '-'} ${formatter.format(p.amount)}',
+                      bold: true,
+                    ),
+                  ],
+                ),
               ),
-              if (p.notes != null) row(p.isRefund ? 'Reason' : 'Notes', p.notes),
-              if (p.refundOfPaymentId != null)
-                ListTile(
-                  dense: true,
-                  title: const Text('Refund of'),
-                  trailing: const Icon(Icons.chevron_right),
+              if (p.refundOfPaymentId != null) ...[
+                AppSpacing.gap8,
+                AppCard(
                   onTap: () => context.pushNamed(
                     RouteNames.paymentDetail,
                     pathParameters: {'id': p.refundOfPaymentId!},
                   ),
-                ),
-              if (position != null) ...[
-                row('Applied to invoices', formatter.format(position.allocatedNet)),
-                ListTile(
-                  key: const Key('payment_credit'),
-                  dense: true,
-                  title: const Text('Unallocated credit'),
-                  trailing: Text(
-                    formatter.format(position.credit),
-                    style: Theme.of(context).textTheme.titleSmall,
+                  child: Row(
+                    children: [
+                      const Expanded(child: Text('Refund of')),
+                      Icon(Icons.chevron_right, color: tokens.textDisabled),
+                    ],
                   ),
                 ),
-                if (position.refunded.isPositive)
-                  row('Refunded', formatter.format(position.refunded)),
               ],
-              const Divider(),
-              if (p.allocations.isNotEmpty)
-                const ListTile(
-                  dense: true,
-                  title: Text('Invoices'),
-                ),
-              for (final a in p.allocations)
-                ListTile(
-                  key: Key('allocation_${a.id}'),
-                  dense: true,
-                  title: Text(a.invoiceNumber),
-                  trailing: Text(formatter.format(a.amount)),
-                ),
-              if (state.refunds.isNotEmpty) const ListTile(title: Text('Refunds')),
-              for (final r in state.refunds)
-                ListTile(
-                  key: Key('refund_${r.id}'),
-                  dense: true,
-                  title: Text('${r.number} · ${formatDocumentDate(r.paymentDate)}'),
-                  trailing: Text(formatter.format(r.amount)),
-                  onTap: () => context.pushNamed(
-                    RouteNames.paymentDetail,
-                    pathParameters: {'id': r.id},
+              if (position != null) ...[
+                heading('Settlement'),
+                AppCard(
+                  child: Column(
+                    children: [
+                      row(
+                        'Applied to invoices',
+                        formatter.format(position.allocatedNet),
+                      ),
+                      row(
+                        'Unallocated credit',
+                        formatter.format(position.credit),
+                        key: const Key('payment_credit'),
+                        bold: true,
+                      ),
+                      if (position.refunded.isPositive)
+                        row('Refunded', formatter.format(position.refunded)),
+                    ],
                   ),
                 ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    if (state.canAllocate)
-                      OutlinedButton(
-                        key: const Key('allocate_credit'),
-                        onPressed: state.busy
-                            ? null
-                            : () => _allocate(context, cubit, state),
-                        child: const Text('Apply credit'),
-                      ),
-                    if (state.canRefund)
-                      OutlinedButton(
-                        key: const Key('refund_payment'),
-                        onPressed: state.busy
-                            ? null
-                            : () => _refund(context, cubit, state),
-                        child: const Text('Refund'),
-                      ),
-                    if (state.canReverse)
-                      FilledButton(
-                        key: const Key('reverse_payment'),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.error,
-                          foregroundColor: Theme.of(context).colorScheme.onError,
+              ],
+              if (p.allocations.isNotEmpty) ...[
+                heading('Invoices'),
+                AppCard(
+                  child: Column(
+                    children: [
+                      for (final a in p.allocations)
+                        row(
+                          a.invoiceNumber,
+                          formatter.format(a.amount),
+                          key: Key('allocation_${a.id}'),
                         ),
-                        onPressed: state.busy
-                            ? null
-                            : () => _reverse(context, cubit),
-                        child: const Text('Reverse'),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
+              ],
+              if (state.refunds.isNotEmpty) ...[
+                heading('Refunds'),
+                for (final r in state.refunds)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.s8),
+                    child: AppCard(
+                      key: Key('refund_${r.id}'),
+                      onTap: () => context.pushNamed(
+                        RouteNames.paymentDetail,
+                        pathParameters: {'id': r.id},
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${r.number} · ${formatDocumentDate(r.paymentDate)}',
+                            ),
+                          ),
+                          Text(
+                            formatter.format(r.amount),
+                            style: context.appText.financialSmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+              AppSpacing.gap16,
+              Wrap(
+                spacing: AppSpacing.s8,
+                runSpacing: AppSpacing.s8,
+                children: [
+                  if (state.canAllocate)
+                    AppButton(
+                      key: const Key('allocate_credit'),
+                      label: 'Apply credit',
+                      variant: AppButtonVariant.outlined,
+                      onPressed: state.busy
+                          ? null
+                          : () => _allocate(context, cubit, state),
+                    ),
+                  if (state.canRefund)
+                    AppButton(
+                      key: const Key('refund_payment'),
+                      label: 'Refund',
+                      variant: AppButtonVariant.outlined,
+                      onPressed: state.busy
+                          ? null
+                          : () => _refund(context, cubit, state),
+                    ),
+                  if (state.canReverse)
+                    AppButton(
+                      key: const Key('reverse_payment'),
+                      label: 'Reverse',
+                      variant: AppButtonVariant.destructive,
+                      onPressed: state.busy
+                          ? null
+                          : () => _reverse(context, cubit),
+                    ),
+                ],
               ),
             ],
           ),
@@ -199,14 +279,18 @@ class PaymentDetailPage extends StatelessWidget {
           ],
         ),
         actions: [
-          TextButton(
+          AppButton(
+            label: 'Cancel',
+            variant: AppButtonVariant.text,
+            size: AppButtonSize.small,
             onPressed: () => Navigator.of(dialog).pop(),
-            child: const Text('Cancel'),
           ),
-          FilledButton(
+          AppButton(
             key: const Key('confirm_reverse'),
+            label: 'Reverse',
+            variant: AppButtonVariant.destructive,
+            size: AppButtonSize.small,
             onPressed: () => Navigator.of(dialog).pop(controller.text),
-            child: const Text('Reverse'),
           ),
         ],
       ),
@@ -277,14 +361,17 @@ class PaymentDetailPage extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(
+          AppButton(
+            label: 'Cancel',
+            variant: AppButtonVariant.text,
+            size: AppButtonSize.small,
             onPressed: () => Navigator.of(dialog).pop(false),
-            child: const Text('Cancel'),
           ),
-          FilledButton(
+          AppButton(
             key: const Key('confirm_refund'),
+            label: 'Refund',
+            size: AppButtonSize.small,
             onPressed: () => Navigator.of(dialog).pop(true),
-            child: const Text('Refund'),
           ),
         ],
       ),
@@ -343,14 +430,17 @@ class PaymentDetailPage extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(
+          AppButton(
+            label: 'Cancel',
+            variant: AppButtonVariant.text,
+            size: AppButtonSize.small,
             onPressed: () => Navigator.of(dialog).pop(false),
-            child: const Text('Cancel'),
           ),
-          FilledButton(
+          AppButton(
             key: const Key('confirm_allocate'),
+            label: 'Apply',
+            size: AppButtonSize.small,
             onPressed: () => Navigator.of(dialog).pop(true),
-            child: const Text('Apply'),
           ),
         ],
       ),

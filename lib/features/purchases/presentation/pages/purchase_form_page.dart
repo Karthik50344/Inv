@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_state.dart';
 import 'package:inventrix/features/purchases/presentation/bloc/purchase_form_cubit.dart';
 import 'package:inventrix/features/purchases/presentation/widgets/date_text.dart';
 import 'package:inventrix/features/purchases/presentation/widgets/purchase_line_sheet.dart';
 import 'package:inventrix/features/purchases/presentation/widgets/purchase_totals_card.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Create or edit a purchase draft. Pops with `true` after saving.
 class PurchaseFormPage extends StatefulWidget {
@@ -99,10 +98,8 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
       builder: (context, state) {
         final cubit = context.read<PurchaseFormCubit>();
         return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              widget.purchaseId == null ? 'New purchase' : 'Edit purchase',
-            ),
+          appBar: AppAppBar(
+            title: widget.purchaseId == null ? 'New purchase' : 'Edit purchase',
           ),
           body: switch (state.loadStatus) {
             FormLoadStatus.loading => const LoadingIndicator(),
@@ -133,7 +130,7 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
     final saving = state.submitStatus == SubmitStatus.submitting;
     final theme = Theme.of(context);
     Widget gap(Widget child) => Padding(
-      padding: const EdgeInsets.only(bottom: AppDimensions.spaceMd),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s16),
       child: child,
     );
     return Center(
@@ -142,16 +139,25 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
           maxWidth: AppDimensions.maxContentWidth,
         ),
         child: ListView(
-          padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          padding: const EdgeInsets.all(AppSpacing.s16),
           children: [
             if (blocked != null)
               gap(
-                Text(
-                  blocked,
-                  key: const Key('purchase_blocked'),
-                  style: TextStyle(color: theme.colorScheme.error),
+                AppCard(
+                  tone: AppTone.danger,
+                  child: Text(
+                    blocked,
+                    key: const Key('purchase_blocked'),
+                    style: TextStyle(
+                      color: context.appColors.danger.onContainer,
+                    ),
+                  ),
                 ),
               ),
+            const AppSectionHeader(
+              title: 'Supplier and dates',
+              padding: EdgeInsets.only(bottom: AppSpacing.s12),
+            ),
             gap(
               DropdownButtonFormField<String>(
                 key: const Key('purchase_supplier'),
@@ -160,7 +166,6 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                 decoration: InputDecoration(
                   labelText: 'Supplier *',
                   errorText: errors['supplierId'],
-                  border: const OutlineInputBorder(),
                 ),
                 items: [
                   for (final s in state.suppliers)
@@ -187,7 +192,7 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                             ),
                     ),
                   ),
-                  const SizedBox(width: AppDimensions.spaceMd),
+                  const SizedBox(width: AppSpacing.s16),
                   Expanded(
                     child: _DateField(
                       fieldKey: const Key('purchase_due_date'),
@@ -217,7 +222,6 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                 decoration: InputDecoration(
                   labelText: 'Supplier invoice no.',
                   errorText: errors['supplierReference'],
-                  border: const OutlineInputBorder(),
                 ),
               ),
             ),
@@ -230,31 +234,32 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                 decoration: InputDecoration(
                   labelText: 'Notes',
                   errorText: errors['notes'],
-                  border: const OutlineInputBorder(),
                 ),
               ),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Text('Items', style: theme.textTheme.titleMedium),
-                ),
-                TextButton.icon(
-                  key: const Key('add_line'),
-                  onPressed: blocked == null
-                      ? () => _editLine(context, cubit, state)
-                      : null,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add item'),
-                ),
-              ],
+            AppSectionHeader(
+              title: 'Items',
+              padding: const EdgeInsets.only(
+                top: AppSpacing.s8,
+                bottom: AppSpacing.s8,
+              ),
+              trailing: AppButton(
+                key: const Key('add_line'),
+                label: 'Add item',
+                icon: Icons.add,
+                variant: AppButtonVariant.secondary,
+                size: AppButtonSize.small,
+                onPressed: blocked == null
+                    ? () => _editLine(context, cubit, state)
+                    : null,
+              ),
             ),
             if (errors['lines'] != null)
               gap(
                 Text(
                   errors['lines']!,
                   key: const Key('lines_error'),
-                  style: TextStyle(color: theme.colorScheme.error),
+                  style: TextStyle(color: context.appColors.danger.solid),
                 ),
               ),
             if (state.lines.isEmpty && errors['lines'] == null)
@@ -262,32 +267,29 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
                 Text(
                   'No items yet. Tap "Add item" to choose a product.',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                    color: context.appColors.textSecondary,
                   ),
                 ),
               ),
             for (var i = 0; i < state.lines.length; i++)
               _lineCard(context, cubit, state, i, formatter, blocked == null),
-            const SizedBox(height: AppDimensions.spaceSm),
+            const SizedBox(height: AppSpacing.s8),
             if (state.totals != null) PurchaseTotalsCard(totals: state.totals!),
-            const SizedBox(height: AppDimensions.spaceMd),
-            FilledButton(
+            const SizedBox(height: AppSpacing.s16),
+            AppButton(
               key: const Key('save_purchase'),
-              onPressed: (saving || blocked != null)
+              label: 'Save draft',
+              icon: Icons.check,
+              expand: true,
+              loading: saving,
+              onPressed: blocked != null
                   ? null
                   : () => cubit.submit(
                       supplierReference: _reference.text,
                       notes: _notes.text,
                     ),
-              child: saving
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Save draft'),
             ),
-            const SizedBox(height: AppDimensions.spaceSm),
+            const SizedBox(height: AppSpacing.s8),
             Text(
               'A draft does not change your stock. Post it from the purchase '
               'screen when the goods are received.',
@@ -321,39 +323,65 @@ class _PurchaseFormPageState extends State<PurchaseFormPage> {
         if (state.fieldErrors['lines.$index.$key'] != null)
           state.fieldErrors['lines.$index.$key']!,
     ];
-    return Card(
-      key: Key('line_$index'),
-      child: ListTile(
+    final theme = Theme.of(context);
+    final tokens = context.appColors;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.s8),
+      child: AppCard(
+        key: Key('line_$index'),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.s16,
+          AppSpacing.s12,
+          AppSpacing.s4,
+          AppSpacing.s12,
+        ),
         onTap: enabled
             ? () => _editLine(context, cubit, state, index: index)
             : null,
-        title: Text(preview?.productName ?? product?.name ?? 'Unknown product'),
-        subtitle: Text(
-          [
-            '${input.quantity} $unit'.trim(),
-            if (preview != null)
-              '× ${formatter.format(preview.unitPrice)}'
-                  '${preview.priceIncludesTax ? ' (incl. tax)' : ''}',
-            if (preview != null && preview.discountAmount.isPositive)
-              'discount ${formatter.format(preview.discountAmount)}',
-            if (preview != null && preview.taxRateBp > 0)
-              '${preview.taxName ?? 'Tax'} ${formatter.format(preview.tax)}',
-            ...lineErrors,
-          ].join(' · '),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
           children: [
-            if (preview != null)
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    preview?.productName ?? product?.name ?? 'Unknown product',
+                    style: theme.textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    [
+                      '${input.quantity} $unit'.trim(),
+                      if (preview != null)
+                        '× ${formatter.format(preview.unitPrice)}'
+                            '${preview.priceIncludesTax ? ' (incl. tax)' : ''}',
+                      if (preview != null && preview.discountAmount.isPositive)
+                        'discount ${formatter.format(preview.discountAmount)}',
+                      if (preview != null && preview.taxRateBp > 0)
+                        '${preview.taxName ?? 'Tax'} ${formatter.format(preview.tax)}',
+                      ...lineErrors,
+                    ].join(' · '),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: lineErrors.isEmpty
+                          ? tokens.textSecondary
+                          : tokens.danger.solid,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (preview != null) ...[
+              AppSpacing.hGap8,
               Text(
                 formatter.format(preview.total),
                 key: Key('line_total_$index'),
-                style: Theme.of(context).textTheme.titleSmall,
+                style: context.appText.financialSmall,
               ),
-            IconButton(
+            ],
+            AppIconButton(
               key: Key('remove_line_$index'),
               tooltip: 'Remove',
-              icon: const Icon(Icons.delete_outline),
+              icon: Icons.delete_outline,
               onPressed: enabled ? () => cubit.removeLine(index) : null,
             ),
           ],
@@ -389,7 +417,6 @@ class _DateField extends StatelessWidget {
         decoration: InputDecoration(
           labelText: label,
           errorText: error,
-          border: const OutlineInputBorder(),
           suffixIcon: onClear == null
               ? const Icon(Icons.calendar_today_outlined, size: 18)
               : IconButton(

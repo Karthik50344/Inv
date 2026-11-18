@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_state.dart';
 import 'package:inventrix/features/returns/domain/entities/returnable_invoice.dart';
@@ -11,9 +12,7 @@ import 'package:inventrix/shared/domain/enums/invoice_kind.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Records a return: choose a posted invoice, enter what comes back, see the
 /// value and the possible cash refund, then post.
@@ -42,16 +41,14 @@ class ReturnFormPage extends StatelessWidget {
         final cubit = context.read<ReturnFormCubit>();
         final invoice = state.invoice;
         return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              invoice == null
-                  ? (state.kind == InvoiceKind.sales
-                        ? 'Customer return'
-                        : 'Return to supplier')
-                  : 'Return against ${invoice.invoiceNumber}',
-            ),
+          appBar: AppAppBar(
+            title: invoice == null
+                ? (state.kind == InvoiceKind.sales
+                      ? 'Customer return'
+                      : 'Return to supplier')
+                : 'Return against ${invoice.invoiceNumber}',
           ),
-          body: switch (state.loadStatus) {
+          body: AppContentWidth(child: switch (state.loadStatus) {
             FormLoadStatus.loading => const LoadingIndicator(),
             FormLoadStatus.failure || FormLoadStatus.notFound => ErrorState(
               message: state.message ?? 'Could not open the form.',
@@ -61,7 +58,7 @@ class ReturnFormPage extends StatelessWidget {
               invoice == null
                   ? _Chooser(state: state)
                   : _Editor(state: state, invoice: invoice),
-          },
+          }),
         );
       },
     );
@@ -80,7 +77,12 @@ class _Chooser extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.s16,
+            AppSpacing.s8,
+            AppSpacing.s16,
+            0,
+          ),
           child: SegmentedButton<InvoiceKind>(
             key: const Key('return_kind'),
             segments: const [
@@ -99,24 +101,62 @@ class _Chooser extends StatelessWidget {
             onSelectionChanged: (value) => cubit.setKind(value.first),
           ),
         ),
-        SearchField(
+        AppSearchField(
           hintText: 'Search invoice number or name',
           onChanged: cubit.searchInvoices,
         ),
         Expanded(
           child: state.choices.isEmpty
-              ? const Center(child: Text('No posted invoices found.'))
+              ? const EmptyState(
+                  icon: Icons.receipt_long_outlined,
+                  title: 'No posted invoices found',
+                  message: 'Only posted invoices can have returns.',
+                )
               : ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s16,
+                    AppSpacing.s4,
+                    AppSpacing.s16,
+                    AppSpacing.s24,
+                  ),
                   itemCount: state.choices.length,
-                  separatorBuilder: (_, _) => const Divider(height: 1),
+                  separatorBuilder: (_, _) => AppSpacing.gap8,
                   itemBuilder: (context, index) {
                     final choice = state.choices[index];
-                    return ListTile(
+                    final theme = Theme.of(context);
+                    return AppCard(
                       key: Key('choice_${choice.id}'),
-                      title: Text('${choice.number} · ${choice.partyName}'),
-                      subtitle: Text(formatDocumentDate(choice.invoiceDate)),
-                      trailing: Text(formatter.format(choice.total)),
+                      padding: const EdgeInsets.all(AppSpacing.s12),
                       onTap: () => cubit.selectInvoice(choice.id),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${choice.number} · ${choice.partyName}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleSmall,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  formatDocumentDate(choice.invoiceDate),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: context.appColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          AppSpacing.hGap8,
+                          Text(
+                            formatter.format(choice.total),
+                            style: context.appText.financialSmall,
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -144,33 +184,59 @@ class _Editor extends StatelessWidget {
     final max = state.maxRefund ?? invoice.zero;
     final errors = state.fieldErrors;
 
+    final tokens = context.appColors;
     return ListView(
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: AppSpacing.page,
       children: [
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(invoice.partyName),
-          subtitle: Text(
-            '${invoice.invoiceNumber} · '
-            '${formatDocumentDate(invoice.invoiceDate)}',
+        AppCard(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.s16,
+            vertical: AppSpacing.s8,
           ),
-          trailing: TextButton(
-            key: const Key('change_invoice'),
-            onPressed: cubit.clearInvoice,
-            child: const Text('Change'),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(invoice.partyName, style: theme.textTheme.titleSmall),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${invoice.invoiceNumber} · '
+                      '${formatDocumentDate(invoice.invoiceDate)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: tokens.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              AppButton(
+                key: const Key('change_invoice'),
+                label: 'Change',
+                variant: AppButtonVariant.text,
+                size: AppButtonSize.small,
+                onPressed: cubit.clearInvoice,
+              ),
+            ],
           ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: Text('Items', style: theme.textTheme.titleMedium),
-            ),
-            TextButton(
-              key: const Key('return_everything'),
-              onPressed: invoice.hasReturnable ? cubit.returnEverything : null,
-              child: const Text('Return everything'),
-            ),
-          ],
+        AppSectionHeader(
+          title: 'Items',
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.s4,
+            AppSpacing.s16,
+            AppSpacing.s4,
+            AppSpacing.s8,
+          ),
+          trailing: AppButton(
+            key: const Key('return_everything'),
+            label: 'Return everything',
+            variant: AppButtonVariant.text,
+            size: AppButtonSize.small,
+            onPressed: invoice.hasReturnable ? cubit.returnEverything : null,
+          ),
         ),
         for (final line in invoice.lines)
           _LineCard(
@@ -182,59 +248,71 @@ class _Editor extends StatelessWidget {
                 plan?.lineErrors[line.invoiceLineId] ??
                 errors['line:${line.invoiceLineId}'],
           ),
-        const SizedBox(height: AppDimensions.spaceSm),
-        TextFormField(
-          key: const Key('return_reason'),
-          decoration: InputDecoration(
-            labelText: 'Reason',
-            errorText: errors['reason'],
+        const AppSectionHeader(
+          title: 'Return details',
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.s4,
+            AppSpacing.s16,
+            AppSpacing.s4,
+            AppSpacing.s8,
           ),
+        ),
+        AppTextField(
+          key: const Key('return_reason'),
+          label: 'Reason',
+          errorText: errors['reason'],
+          textCapitalization: TextCapitalization.sentences,
           onChanged: cubit.setReason,
         ),
-        const SizedBox(height: AppDimensions.spaceSm),
-        TextFormField(
+        AppSpacing.gap12,
+        AppTextField(
           key: const Key('return_notes'),
-          decoration: const InputDecoration(labelText: 'Notes (optional)'),
+          label: 'Notes (optional)',
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 3,
+          minLines: 1,
           onChanged: cubit.setNotes,
         ),
-        ListTile(
+        AppSpacing.gap12,
+        AppDatePickerField(
           key: const Key('return_date'),
-          contentPadding: EdgeInsets.zero,
-          title: const Text('Return date'),
-          subtitle: errors['returnDate'] == null
-              ? null
-              : Text(
-                  errors['returnDate']!,
-                  style: TextStyle(color: theme.colorScheme.error),
+          label: 'Return date',
+          value: state.returnDate,
+          errorText: errors['returnDate'],
+          onChanged: cubit.setDate,
+        ),
+        AppSpacing.gap16,
+        AppCard(
+          child: Row(
+            key: const Key('return_value'),
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Value of this return',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    if (plan != null && plan.tax.isPositive)
+                      Text(
+                        'including tax ${formatter.format(plan.tax)}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: tokens.textSecondary,
+                        ),
+                      ),
+                  ],
                 ),
-          trailing: Text(
-            state.returnDate == null ? '-' : formatDocumentDate(state.returnDate!),
-          ),
-          onTap: () async {
-            final picked = await showDatePicker(
-              context: context,
-              initialDate: state.returnDate ?? DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-            );
-            if (picked != null) {
-              cubit.setDate(picked);
-            }
-          },
-        ),
-        const Divider(),
-        ListTile(
-          key: const Key('return_value'),
-          contentPadding: EdgeInsets.zero,
-          title: const Text('Value of this return'),
-          subtitle: plan != null && plan.tax.isPositive
-              ? Text('including tax ${formatter.format(plan.tax)}')
-              : null,
-          trailing: Text(
-            formatter.format(total),
-            style: theme.textTheme.titleMedium,
+              ),
+              AppSpacing.hGap8,
+              Text(
+                formatter.format(total),
+                style: context.appText.financialMedium,
+              ),
+            ],
           ),
         ),
+        AppSpacing.gap12,
         _Settlement(
           state: state,
           invoice: invoice,
@@ -243,13 +321,16 @@ class _Editor extends StatelessWidget {
           isSales: isSales,
           errors: errors,
         ),
-        const SizedBox(height: AppDimensions.spaceMd),
-        FilledButton(
+        AppSpacing.gap16,
+        AppButton(
           key: const Key('post_return'),
+          label: submitting ? 'Posting...' : 'Post return',
+          icon: Icons.check,
+          expand: true,
+          loading: submitting,
           onPressed: submitting || plan == null || !plan.isValid
               ? null
               : () => cubit.submit(),
-          child: Text(submitting ? 'Posting...' : 'Post return'),
         ),
       ],
     );
@@ -278,84 +359,101 @@ class _Settlement extends StatelessWidget {
     final cubit = context.read<ReturnFormCubit>();
     const formatter = MoneyFormatter();
     final canRefund = invoice.isWalkIn || max.isPositive;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (invoice.isWalkIn)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              'This was a walk-in sale, so the whole value '
-              '(${formatter.format(total)}) is handed back.',
-            ),
-          )
-        else if (!canRefund)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              isSales
-                  ? 'The value of this return is taken off what the customer '
-                        'owes. Nothing has been paid beyond that, so there is '
-                        'nothing to refund in cash.'
-                  : 'The value of this return is taken off what you owe the '
-                        'supplier. Nothing has been paid beyond that, so '
-                        'there is nothing to claim back in cash.',
-            ),
-          )
-        else ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              isSales
-                  ? 'Cash to hand back to the customer (up to '
-                        '${formatter.format(max)}). Whatever you '
-                        'do not hand back stays as credit.'
-                  : 'Cash the supplier hands back (up to '
-                        '${formatter.format(max)}). The rest stays '
-                        'as credit.',
+    final theme = Theme.of(context);
+    final tokens = context.appColors;
+    final String explanation;
+    if (invoice.isWalkIn) {
+      explanation =
+          'This was a walk-in sale, so the whole value '
+          '(${formatter.format(total)}) is handed back.';
+    } else if (!canRefund) {
+      explanation = isSales
+          ? 'The value of this return is taken off what the customer '
+                'owes. Nothing has been paid beyond that, so there is '
+                'nothing to refund in cash.'
+          : 'The value of this return is taken off what you owe the '
+                'supplier. Nothing has been paid beyond that, so '
+                'there is nothing to claim back in cash.';
+    } else {
+      explanation = isSales
+          ? 'Cash to hand back to the customer (up to '
+                '${formatter.format(max)}). Whatever you '
+                'do not hand back stays as credit.'
+          : 'Cash the supplier hands back (up to '
+                '${formatter.format(max)}). The rest stays '
+                'as credit.';
+    }
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Settlement', style: theme.textTheme.titleMedium),
+          AppSpacing.gap4,
+          Text(
+            explanation,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: tokens.textSecondary,
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: _SyncedField(
-                  key: const Key('refund_amount'),
-                  value: state.refundText,
-                  labelText: 'Cash refund',
-                  errorText: errors['refund'],
-                  onChanged: cubit.setRefundText,
+          if (!invoice.isWalkIn && canRefund) ...[
+            AppSpacing.gap12,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: _SyncedField(
+                    key: const Key('refund_amount'),
+                    value: state.refundText,
+                    labelText: 'Cash refund',
+                    errorText: errors['refund'],
+                    onChanged: cubit.setRefundText,
+                  ),
+                ),
+                AppSpacing.hGap8,
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.s4),
+                  child: AppButton(
+                    key: const Key('refund_maximum'),
+                    label: 'Maximum',
+                    variant: AppButtonVariant.secondary,
+                    size: AppButtonSize.small,
+                    onPressed: cubit.refundMaximum,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (invoice.isWalkIn || state.refundText.trim().isNotEmpty) ...[
+            AppSpacing.gap12,
+            AppDropdown<String>(
+              key: const Key('refund_method'),
+              label: 'Paid back by',
+              value: state.refundMethodId,
+              items: [
+                for (final method in state.methods)
+                  AppDropdownItem(value: method.id, label: method.name),
+              ],
+              onChanged: cubit.setRefundMethod,
+            ),
+            if (errors['refundMethod'] != null)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.s4),
+                child: Text(
+                  errors['refundMethod']!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.error,
+                  ),
                 ),
               ),
-              TextButton(
-                key: const Key('refund_maximum'),
-                onPressed: cubit.refundMaximum,
-                child: const Text('Maximum'),
-              ),
-            ],
-          ),
-        ],
-        if (invoice.isWalkIn || state.refundText.trim().isNotEmpty) ...[
-          const SizedBox(height: AppDimensions.spaceSm),
-          DropdownButtonFormField<String>(
-            key: const Key('refund_method'),
-            initialValue: state.refundMethodId,
-            decoration: InputDecoration(
-              labelText: 'Paid back by',
-              errorText: errors['refundMethod'],
+            AppSpacing.gap12,
+            AppTextField(
+              key: const Key('refund_reference'),
+              label: 'Reference (optional)',
+              onChanged: cubit.setRefundReference,
             ),
-            items: [
-              for (final method in state.methods)
-                DropdownMenuItem(value: method.id, child: Text(method.name)),
-            ],
-            onChanged: cubit.setRefundMethod,
-          ),
-          TextFormField(
-            key: const Key('refund_reference'),
-            decoration: const InputDecoration(labelText: 'Reference (optional)'),
-            onChanged: cubit.setRefundReference,
-          ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
@@ -380,10 +478,11 @@ class _LineCard extends StatelessWidget {
     final cubit = context.read<ReturnFormCubit>();
     final theme = Theme.of(context);
     final left = line.returnable;
-    return Card(
-      key: Key('return_line_${line.lineNo}'),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+    final tokens = context.appColors;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.s8),
+      child: AppCard(
+        key: Key('return_line_${line.lineNo}'),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -391,12 +490,16 @@ class _LineCard extends StatelessWidget {
               '${line.productName} (${line.sku})',
               style: theme.textTheme.titleSmall,
             ),
+            const SizedBox(height: 2),
             Text(
               'Invoiced ${line.quantity.toDecimalString()} ${line.unitSymbol}'
               '${line.returnedQuantity.isPositive ? ' · already returned ${line.returnedQuantity.toDecimalString()}' : ''}',
-              style: theme.textTheme.bodySmall,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: tokens.textSecondary,
+              ),
             ),
             if (left.isPositive) ...[
+              AppSpacing.gap12,
               _SyncedField(
                 key: Key('return_qty_${line.invoiceLineId}'),
                 value: quantity,
@@ -418,9 +521,13 @@ class _LineCard extends StatelessWidget {
                   ),
                 ),
             ] else
-              const Padding(
-                padding: EdgeInsets.only(top: 4),
-                child: Text('Everything on this line has been returned.'),
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.s8),
+                child: const AppBadge(
+                  label: 'Fully returned',
+                  tone: AppTone.success,
+                  icon: Icons.check,
+                ),
               ),
           ],
         ),

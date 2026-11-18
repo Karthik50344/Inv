@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/expenses/domain/entities/expense_report.dart';
 import 'package:inventrix/features/expenses/domain/services/expense_period.dart';
@@ -8,9 +9,7 @@ import 'package:inventrix/features/expenses/presentation/bloc/expense_report_cub
 import 'package:inventrix/features/expenses/presentation/widgets/expense_formatters.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Posted expenses by category for a period.
 class ExpenseReportPage extends StatelessWidget {
@@ -25,11 +24,11 @@ class ExpenseReportPage extends StatelessWidget {
     final now = DateTime.now();
     final from = state.from;
     final to = state.to;
-    final picked = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(now.year + 1, 12, 31),
-      initialDateRange: from != null && to != null
+    final picked = await showAppDateRangePicker(
+      context,
+      first: DateTime(2000),
+      last: DateTime(now.year + 1, 12, 31),
+      initial: from != null && to != null
           ? DateTimeRange(start: from, end: to)
           : null,
     );
@@ -49,24 +48,24 @@ class ExpenseReportPage extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<ExpenseReportCubit>();
         return Scaffold(
-          appBar: AppBar(title: const Text('Expense report')),
-          body: Column(
+          appBar: const AppAppBar(title: 'Expense report'),
+          body: AppContentWidth(child: Column(
             children: [
               SizedBox(
                 height: 52,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
+                    horizontal: AppSpacing.s16,
+                    vertical: AppSpacing.s8,
                   ),
                   children: [
                     for (final period in ExpensePeriod.values)
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: ChoiceChip(
+                        padding: const EdgeInsets.only(right: AppSpacing.s8),
+                        child: AppChip(
                           key: Key('period_${period.name}'),
-                          label: Text(period.label),
+                          label: period.label,
                           selected: state.period == period,
                           onSelected: (_) => period == ExpensePeriod.custom
                               ? _pickRange(context, state)
@@ -77,35 +76,42 @@ class ExpenseReportPage extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.spaceMd,
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s16,
+                  AppSpacing.s4,
+                  AppSpacing.s16,
+                  AppSpacing.s8,
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        state.from == null || state.to == null
-                            ? ''
-                            : '${formatExpenseDate(state.from!)} – '
-                                  '${formatExpenseDate(state.to!)}',
-                        key: const Key('report_range'),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                    Text(
+                      state.from == null || state.to == null
+                          ? ''
+                          : '${formatExpenseDate(state.from!)} – '
+                                '${formatExpenseDate(state.to!)}',
+                      key: const Key('report_range'),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: context.appColors.textSecondary,
                       ),
                     ),
-                    DropdownButton<String?>(
+                    AppSpacing.gap8,
+                    AppDropdown<String?>(
                       key: const Key('report_category'),
                       value: state.categoryId,
-                      hint: const Text('All categories'),
+                      hint: 'All categories',
+                      prefixIcon: Icons.category_outlined,
                       items: [
-                        const DropdownMenuItem<String?>(
-                          child: Text('All categories'),
+                        const AppDropdownItem<String?>(
+                          value: null,
+                          label: 'All categories',
                         ),
                         for (final c in state.categories)
-                          DropdownMenuItem<String?>(
+                          AppDropdownItem<String?>(
                             value: c.id,
-                            child: Text(
-                              c.isArchived ? '${c.name} (archived)' : c.name,
-                            ),
+                            label: c.isArchived
+                                ? '${c.name} (archived)'
+                                : c.name,
                           ),
                       ],
                       onChanged: cubit.setCategory,
@@ -115,7 +121,7 @@ class ExpenseReportPage extends StatelessWidget {
               ),
               Expanded(child: _body(context, state)),
             ],
-          ),
+          )),
         );
       },
     );
@@ -153,54 +159,61 @@ class _Report extends StatelessWidget {
   Widget build(BuildContext context) {
     const formatter = MoneyFormatter();
     final theme = Theme.of(context);
+    final tokens = context.appColors;
     final whole = report.total.minorUnits;
     return ListView(
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
+      padding: AppSpacing.page,
       children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.spaceMd),
-            child: Column(
-              children: [
-                _line(
-                  theme,
-                  'Expenses',
-                  '${report.count}',
-                  key: const Key('report_count'),
-                ),
-                _line(theme, 'Net', formatter.format(report.net)),
-                _line(theme, 'Tax', formatter.format(report.tax)),
-                const Divider(),
-                _line(
-                  theme,
-                  'Total spent',
-                  formatter.format(report.total),
-                  strong: true,
-                  key: const Key('report_total'),
-                ),
-              ],
-            ),
+        AppStatCard(
+          label: 'Total spent',
+          value: formatter.format(report.total),
+          icon: Icons.account_balance_wallet_outlined,
+          tone: AppTone.warning,
+          subtitle: '${report.count} expense${report.count == 1 ? '' : 's'}',
+          key: const Key('report_total'),
+        ),
+        AppSpacing.gap12,
+        AppCard(
+          child: Column(
+            children: [
+              _line(
+                context,
+                'Expenses',
+                '${report.count}',
+                key: const Key('report_count'),
+              ),
+              _line(context, 'Net', formatter.format(report.net)),
+              _line(context, 'Tax', formatter.format(report.tax)),
+            ],
           ),
         ),
-        if (report.otherCurrencyCount > 0)
-          Padding(
-            padding: const EdgeInsets.only(top: AppDimensions.spaceSm),
+        if (report.otherCurrencyCount > 0) ...[
+          AppSpacing.gap12,
+          AppCard(
+            tone: AppTone.warning,
             child: Text(
               '${report.otherCurrencyCount} posted expense'
               '${report.otherCurrencyCount == 1 ? ' is' : 's are'} in '
               'another currency and not included in these totals.',
               key: const Key('report_other_currency'),
-              style: TextStyle(color: theme.colorScheme.error),
+              style: theme.textTheme.bodyMedium,
             ),
           ),
-        const SizedBox(height: AppDimensions.spaceMd),
-        Text('By category', style: theme.textTheme.titleMedium),
-        const SizedBox(height: AppDimensions.spaceSm),
+        ],
+        const AppSectionHeader(
+          title: 'By category',
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.s4,
+            AppSpacing.s24,
+            AppSpacing.s4,
+            AppSpacing.s8,
+          ),
+        ),
         for (final item in report.byCategory)
-          Card(
-            key: Key('report_category_${item.categoryId}'),
-            child: Padding(
-              padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.s8),
+            child: AppCard(
+              key: Key('report_category_${item.categoryId}'),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -215,54 +228,65 @@ class _Report extends StatelessWidget {
                       ),
                       Text(
                         formatter.format(item.total),
-                        style: theme.textTheme.titleSmall,
+                        style: context.appText.financialSmall,
                       ),
                     ],
                   ),
-                  const SizedBox(height: AppDimensions.spaceXs),
+                  AppSpacing.gap8,
                   // Display only: the bar is a drawing, the figures above
                   // and below are exact integer values.
-                  LinearProgressIndicator(
-                    value: whole <= 0 ? 0 : item.total.minorUnits / whole,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      minHeight: 6,
+                      value: whole <= 0 ? 0 : item.total.minorUnits / whole,
+                      backgroundColor: tokens.divider,
+                    ),
                   ),
-                  const SizedBox(height: AppDimensions.spaceXs),
+                  AppSpacing.gap8,
                   Text(
                     '${item.count} expense${item.count == 1 ? '' : 's'} · '
                     '${formatShare(item.total.minorUnits, whole)} of total',
-                    style: theme.textTheme.bodySmall,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: tokens.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-        const SizedBox(height: AppDimensions.spaceSm),
+        AppSpacing.gap8,
         Text(
           'Only posted expenses are counted, by their expense date, at the '
           'amount paid (tax included). Drafts, cancelled and voided '
           'expenses are left out.',
-          style: theme.textTheme.bodySmall,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: tokens.textSecondary,
+          ),
         ),
       ],
     );
   }
 
   Widget _line(
-    ThemeData theme,
+    BuildContext context,
     String label,
     String value, {
-    bool strong = false,
     Key? key,
   }) {
-    final style = strong
-        ? theme.textTheme.titleMedium
-        : theme.textTheme.bodyMedium;
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: style),
-          Text(value, key: key, style: style),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: context.appColors.textSecondary,
+            ),
+          ),
+          Text(value, key: key, style: context.appText.financialSmall),
         ],
       ),
     );

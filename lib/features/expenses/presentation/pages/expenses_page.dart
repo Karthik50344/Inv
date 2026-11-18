@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/expenses/presentation/bloc/expenses_bloc.dart';
 import 'package:inventrix/features/expenses/presentation/bloc/expenses_event.dart';
@@ -10,11 +12,7 @@ import 'package:inventrix/features/expenses/presentation/widgets/expense_formatt
 import 'package:inventrix/shared/domain/enums/document_status.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/document_status_chip.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Expense history with search and status, category and date filters.
 class ExpensesPage extends StatelessWidget {
@@ -33,14 +31,14 @@ class ExpensesPage extends StatelessWidget {
 
   Future<void> _pickRange(BuildContext context, ExpensesState state) async {
     final bloc = context.read<ExpensesBloc>();
-    final now = DateTime.now();
     final from = state.filter.from;
     final to = state.filter.to;
-    final picked = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(now.year + 1, 12, 31),
-      initialDateRange: from != null && to != null
+    final now = DateTime.now();
+    final picked = await showAppDateRangePicker(
+      context,
+      first: DateTime(2000),
+      last: DateTime(now.year + 1, 12, 31),
+      initial: from != null && to != null
           ? DateTimeRange(start: from, end: to)
           : null,
     );
@@ -67,19 +65,19 @@ class ExpensesPage extends StatelessWidget {
       builder: (context, state) {
         final bloc = context.read<ExpensesBloc>();
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Expenses'),
+          appBar: AppAppBar(
+            title: 'Expenses',
             actions: [
-              IconButton(
+              AppIconButton(
                 key: const Key('open_expense_report'),
                 tooltip: 'Report',
-                icon: const Icon(Icons.bar_chart_outlined),
+                icon: Icons.bar_chart_outlined,
                 onPressed: () => _open(context, RouteNames.expenseReport),
               ),
-              IconButton(
+              AppIconButton(
                 key: const Key('open_expense_categories'),
                 tooltip: 'Categories',
-                icon: const Icon(Icons.category_outlined),
+                icon: Icons.category_outlined,
                 onPressed: () => _open(context, RouteNames.expenseCategories),
               ),
             ],
@@ -90,9 +88,9 @@ class ExpensesPage extends StatelessWidget {
             icon: const Icon(Icons.add),
             label: const Text('New expense'),
           ),
-          body: Column(
+          body: AppContentWidth(child: Column(
             children: [
-              SearchField(
+              AppSearchField(
                 hintText: 'Search description, payee or category',
                 onChanged: (query) => bloc.add(ExpensesSearchChanged(query)),
               ),
@@ -104,28 +102,39 @@ class ExpensesPage extends StatelessWidget {
               if (state.postedTotal != null &&
                   state.status == ViewStatus.loaded)
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimensions.spaceMd,
-                    vertical: AppDimensions.spaceXs,
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s16,
+                    AppSpacing.s4,
+                    AppSpacing.s16,
+                    AppSpacing.s8,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Posted total of this list',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      Text(
-                        const MoneyFormatter().format(state.postedTotal!),
-                        key: const Key('expenses_posted_total'),
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                    ],
+                  child: AppCard(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s16,
+                      vertical: AppSpacing.s12,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Posted total of this list',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: context.appColors.textSecondary,
+                              ),
+                        ),
+                        Text(
+                          const MoneyFormatter().format(state.postedTotal!),
+                          key: const Key('expenses_posted_total'),
+                          style: context.appText.financialMedium,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               Expanded(child: _body(context, state)),
             ],
-          ),
+          )),
         );
       },
     );
@@ -151,44 +160,104 @@ class ExpensesPage extends StatelessWidget {
               ? 'Try different filters.'
               : 'Record what the business spends: rent, utilities, '
                     'transport and more.',
+          action: filtered
+              ? null
+              : AppButton(
+                  key: const Key('empty_add_expense'),
+                  label: 'New expense',
+                  icon: Icons.add,
+                  onPressed: () => _open(context, RouteNames.expenseNew),
+                ),
         );
       case ViewStatus.loaded:
         const formatter = MoneyFormatter();
-        return ListView.separated(
-          padding: const EdgeInsets.only(bottom: 88),
-          itemCount: state.items.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final item = state.items[index];
-            return ListTile(
-              key: Key('expense_${item.id}'),
-              onTap: () => _open(
-                context,
-                RouteNames.expenseDetail,
-                params: {'id': item.id},
-              ),
-              title: Text(item.description),
-              subtitle: Text(
-                [
-                  formatExpenseDate(item.expenseDate),
-                  item.categoryName,
-                  if (item.payee != null) item.payee!,
-                  item.displayNumber,
-                ].join(' · '),
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    formatter.format(item.total),
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  DocumentStatusChip(status: item.status),
-                ],
-              ),
-            );
-          },
+        final tokens = context.appColors;
+        final theme = Theme.of(context);
+        final brand = AppTone.brand.colors(context);
+        return AppRefreshIndicator(
+          onRefresh: () async => bloc.add(const ExpensesRefreshed()),
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              96,
+            ),
+            itemCount: state.items.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final item = state.items[index];
+              return AppCard(
+                key: Key('expense_${item.id}'),
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                onTap: () => _open(
+                  context,
+                  RouteNames.expenseDetail,
+                  params: {'id': item.id},
+                ),
+                child: Row(
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: brand.container,
+                        borderRadius: BorderRadius.circular(AppRadius.small),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Icon(
+                          Icons.receipt_long_outlined,
+                          size: 20,
+                          color: brand.onContainer,
+                        ),
+                      ),
+                    ),
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.description,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            [
+                              formatExpenseDate(item.expenseDate),
+                              item.categoryName,
+                              if (item.payee != null) item.payee!,
+                              item.displayNumber,
+                            ].join(' · '),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    AppSpacing.hGap8,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          formatter.format(item.total),
+                          style: context.appText.financialSmall,
+                        ),
+                        AppSpacing.gap4,
+                        DocumentStatusChip(status: item.status),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }
@@ -213,23 +282,26 @@ class _StatusFilters extends StatelessWidget {
       height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s16,
+          vertical: AppSpacing.s4,
+        ),
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: ChoiceChip(
+            padding: const EdgeInsets.only(right: AppSpacing.s8),
+            child: AppChip(
               key: const Key('filter_all'),
-              label: const Text('All'),
+              label: 'All',
               selected: selected == null,
               onSelected: (_) => bloc.add(const ExpensesStatusChanged(null)),
             ),
           ),
           for (final status in _statuses)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: ChoiceChip(
+              padding: const EdgeInsets.only(right: AppSpacing.s8),
+              child: AppChip(
                 key: Key('filter_${status.dbName}'),
-                label: Text(status.label),
+                label: status.label,
                 selected: selected == status,
                 onSelected: (_) => bloc.add(ExpensesStatusChanged(status)),
               ),
@@ -253,31 +325,37 @@ class _OtherFilters extends StatelessWidget {
     final to = state.filter.to;
     final hasRange = from != null && to != null;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spaceMd),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.s16,
+        AppSpacing.s4,
+        AppSpacing.s16,
+        AppSpacing.s8,
+      ),
       child: Row(
         children: [
           Expanded(
-            child: DropdownButton<String?>(
+            child: AppDropdown<String?>(
               key: const Key('filter_category'),
-              isExpanded: true,
               value: state.filter.categoryId,
-              hint: const Text('All categories'),
+              hint: 'All categories',
+              prefixIcon: Icons.category_outlined,
               items: [
-                const DropdownMenuItem<String?>(child: Text('All categories')),
+                const AppDropdownItem<String?>(
+                  value: null,
+                  label: 'All categories',
+                ),
                 for (final category in state.categories)
-                  DropdownMenuItem<String?>(
+                  AppDropdownItem<String?>(
                     value: category.id,
-                    child: Text(
-                      category.isArchived
-                          ? '${category.name} (archived)'
-                          : category.name,
-                    ),
+                    label: category.isArchived
+                        ? '${category.name} (archived)'
+                        : category.name,
                   ),
               ],
               onChanged: (value) => bloc.add(ExpensesCategoryChanged(value)),
             ),
           ),
-          const SizedBox(width: AppDimensions.spaceSm),
+          AppSpacing.hGap8,
           InputChip(
             key: const Key('filter_range'),
             avatar: const Icon(Icons.date_range, size: 18),

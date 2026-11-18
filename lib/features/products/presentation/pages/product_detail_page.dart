@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
-import 'package:inventrix/core/formatters/money_formatter.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/products/domain/entities/product.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_detail_cubit.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
-import 'package:inventrix/shared/presentation/widgets/confirmation_dialog.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/shared/presentation/widgets/stored_image.dart';
 
 /// Read-only product details with edit and archive actions.
@@ -33,14 +29,14 @@ class ProductDetailPage extends StatelessWidget {
         final cubit = context.read<ProductDetailCubit>();
         final product = state.product;
         return Scaffold(
-          appBar: AppBar(
-            title: Text(product?.name ?? 'Product'),
+          appBar: AppAppBar(
+            title: product?.name ?? 'Product',
             actions: [
               if (product != null) ...[
-                IconButton(
+                AppIconButton(
                   key: const Key('edit_product'),
                   tooltip: 'Edit',
-                  icon: const Icon(Icons.edit_outlined),
+                  icon: Icons.edit_outlined,
                   onPressed: () async {
                     await context.pushNamed(
                       RouteNames.productEdit,
@@ -49,14 +45,12 @@ class ProductDetailPage extends StatelessWidget {
                     await cubit.load(product.id);
                   },
                 ),
-                IconButton(
+                AppIconButton(
                   key: const Key('toggle_archive_product'),
                   tooltip: product.isArchived ? 'Restore' : 'Archive',
-                  icon: Icon(
-                    product.isArchived
-                        ? Icons.unarchive_outlined
-                        : Icons.archive_outlined,
-                  ),
+                  icon: product.isArchived
+                      ? Icons.unarchive_outlined
+                      : Icons.archive_outlined,
                   onPressed: () async {
                     if (product.isArchived) {
                       await cubit.restore();
@@ -107,54 +101,191 @@ class _Details extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Product product = state.product!;
-    const formatter = MoneyFormatter();
+    final theme = Theme.of(context);
+    final tokens = context.appColors;
     final unitSymbol = state.unit?.symbol ?? '';
-    Widget row(String label, String value) =>
-        ListTile(dense: true, title: Text(label), trailing: Text(value));
     return ListView(
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
+      padding: AppSpacing.page,
       children: [
-        Center(
-          child: StoredImage(
-            relativePath: product.imagePath,
-            resolvePath: cubit.resolveImagePath,
-            size: 160,
+        AppCard(
+          padding: const EdgeInsets.all(AppSpacing.s20),
+          child: Column(
+            children: [
+              StoredImage(
+                relativePath: product.imagePath,
+                resolvePath: cubit.resolveImagePath,
+                size: 140,
+              ),
+              AppSpacing.gap16,
+              Text(
+                product.name,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge,
+              ),
+              if (product.isArchived) ...[
+                AppSpacing.gap8,
+                const AppBadge(label: 'Archived'),
+              ],
+            ],
           ),
         ),
-        const SizedBox(height: AppDimensions.spaceMd),
-        if (product.isArchived)
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Chip(label: Text('Archived')),
+        AppSpacing.gap12,
+        Row(
+          children: [
+            Expanded(
+              child: _PriceCard(
+                label: 'Purchase price',
+                child: AppCurrencyText(
+                  product.purchasePrice,
+                  size: AppCurrencySize.medium,
+                ),
+              ),
+            ),
+            AppSpacing.hGap12,
+            Expanded(
+              child: _PriceCard(
+                label: 'Selling price',
+                child: AppCurrencyText(
+                  product.sellingPrice,
+                  size: AppCurrencySize.medium,
+                  tone: AppTone.success,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const AppSectionHeader(
+          title: 'Details',
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.s4,
+            AppSpacing.s24,
+            AppSpacing.s4,
+            AppSpacing.s8,
           ),
-        row('SKU', product.sku),
-        row('Barcode', product.barcode ?? '—'),
-        row('Category', state.category?.name ?? '—'),
-        row(
-          'Unit',
-          state.unit == null ? '—' : '${state.unit!.name} ($unitSymbol)',
         ),
-        row('Purchase price', formatter.format(product.purchasePrice)),
-        row('Selling price', formatter.format(product.sellingPrice)),
-        row('Prices include tax', product.priceIncludesTax ? 'Yes' : 'No'),
-        row(
-          'Tax',
-          state.taxRate == null
-              ? 'None'
-              : '${state.taxRate!.name} (${state.taxRate!.percentLabel}%)',
-        ),
-        row(
-          'Reorder level',
-          '${product.reorderLevel.toDecimalString()} $unitSymbol'.trim(),
+        AppCard(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.s16,
+            vertical: AppSpacing.s4,
+          ),
+          child: Column(
+            children: [
+              _InfoRow('SKU', product.sku),
+              _InfoRow('Barcode', product.barcode ?? '—'),
+              _InfoRow('Category', state.category?.name ?? '—'),
+              _InfoRow(
+                'Unit',
+                state.unit == null
+                    ? '—'
+                    : '${state.unit!.name} ($unitSymbol)',
+              ),
+              _InfoRow(
+                'Prices include tax',
+                product.priceIncludesTax ? 'Yes' : 'No',
+              ),
+              _InfoRow(
+                'Tax',
+                state.taxRate == null
+                    ? 'None'
+                    : '${state.taxRate!.name} (${state.taxRate!.percentLabel}%)',
+              ),
+              _InfoRow(
+                'Reorder level',
+                '${product.reorderLevel.toDecimalString()} $unitSymbol'.trim(),
+                last: true,
+              ),
+            ],
+          ),
         ),
         if (product.description != null) ...[
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(AppDimensions.spaceSm),
-            child: Text(product.description!),
+          const AppSectionHeader(
+            title: 'Description',
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.s4,
+              AppSpacing.s24,
+              AppSpacing.s4,
+              AppSpacing.s8,
+            ),
+          ),
+          AppCard(
+            child: Text(
+              product.description!,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: tokens.textSecondary,
+              ),
+            ),
           ),
         ],
       ],
+    );
+  }
+}
+
+class _PriceCard extends StatelessWidget {
+  const _PriceCard({required this.label, required this.child});
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: context.appColors.textSecondary,
+            ),
+          ),
+          AppSpacing.gap8,
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow(this.label, this.value, {this.last = false});
+
+  final String label;
+  final String value;
+  final bool last;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final tokens = context.appColors;
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
+      decoration: BoxDecoration(
+        border: last
+            ? null
+            : Border(bottom: BorderSide(color: tokens.divider)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: tokens.textSecondary,
+            ),
+          ),
+          AppSpacing.hGap16,
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

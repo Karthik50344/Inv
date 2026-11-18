@@ -1,29 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/shared/presentation/widgets/app_bottom_navigation.dart';
 
-class _NavItem {
-  const _NavItem(this.label, this.icon, this.selectedIcon);
-
-  final String label;
-  final IconData icon;
-  final IconData selectedIcon;
-}
-
-/// Navigation scaffold: bottom bar on phones, rail on wide screens.
+/// Frame around the five main tabs: bottom bar on phones, side rail on wide
+/// screens. The tab content is the [navigationShell] and keeps its own state.
 class AppShell extends StatelessWidget {
-  /// Creates the shell around the active branch.
+  /// Creates the shell.
   const AppShell({required this.navigationShell, super.key});
 
-  /// The active branch container provided by GoRouter.
+  /// The router's tab container.
   final StatefulNavigationShell navigationShell;
 
-  static const List<_NavItem> _items = [
-    _NavItem('Dashboard', Icons.dashboard_outlined, Icons.dashboard),
-    _NavItem('Products', Icons.inventory_2_outlined, Icons.inventory_2),
-    _NavItem('Inventory', Icons.warehouse_outlined, Icons.warehouse),
-    _NavItem('Sales', Icons.receipt_long_outlined, Icons.receipt_long),
-    _NavItem('More', Icons.more_horiz, Icons.more_horiz),
+  static const List<AppNavItem> _items = [
+    AppNavItem(
+      label: 'Dashboard',
+      icon: Icons.dashboard_outlined,
+      selectedIcon: Icons.dashboard,
+    ),
+    AppNavItem(
+      label: 'Products',
+      icon: Icons.inventory_2_outlined,
+      selectedIcon: Icons.inventory_2,
+    ),
+    AppNavItem(
+      label: 'Inventory',
+      icon: Icons.warehouse_outlined,
+      selectedIcon: Icons.warehouse,
+    ),
+    AppNavItem(
+      label: 'Sales',
+      icon: Icons.receipt_long_outlined,
+      selectedIcon: Icons.receipt_long,
+    ),
+    AppNavItem(
+      label: 'More',
+      icon: Icons.more_horiz,
+      selectedIcon: Icons.more_horiz,
+    ),
   ];
 
   void _select(int index) => navigationShell.goBranch(
@@ -39,20 +53,11 @@ class AppShell extends StatelessWidget {
       return Scaffold(
         body: Row(
           children: [
-            NavigationRail(
+            AppNavigationRail(
+              items: _items,
               selectedIndex: navigationShell.currentIndex,
-              onDestinationSelected: _select,
-              labelType: NavigationRailLabelType.all,
-              destinations: [
-                for (final item in _items)
-                  NavigationRailDestination(
-                    icon: Icon(item.icon),
-                    selectedIcon: Icon(item.selectedIcon),
-                    label: Text(item.label),
-                  ),
-              ],
+              onSelected: _select,
             ),
-            const VerticalDivider(width: 1),
             Expanded(child: navigationShell),
           ],
         ),
@@ -60,17 +65,10 @@ class AppShell extends StatelessWidget {
     }
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: AppBottomNavigation(
+        items: _items,
         selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _select,
-        destinations: [
-          for (final item in _items)
-            NavigationDestination(
-              icon: Icon(item.icon),
-              selectedIcon: Icon(item.selectedIcon),
-              label: item.label,
-            ),
-        ],
+        onSelected: _select,
       ),
     );
   }

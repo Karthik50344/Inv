@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/features/categories/domain/entities/category.dart';
 import 'package:inventrix/features/categories/presentation/bloc/category_cubit.dart';
 import 'package:inventrix/features/categories/presentation/bloc/category_state.dart';
 import 'package:inventrix/features/categories/presentation/widgets/category_form_dialog.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/confirmation_dialog.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
-import 'package:inventrix/shared/presentation/widgets/search_field.dart';
 
 enum _CategoryAction { edit, archive, restore }
 
@@ -67,7 +64,7 @@ class CategoriesPage extends StatelessWidget {
       listener: (context, state) => showAppMessage(context, state.message!),
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Categories')),
+          appBar: const AppAppBar(title: 'Categories'),
           floatingActionButton: FloatingActionButton.extended(
             key: const Key('add_category'),
             onPressed: () => _openForm(context),
@@ -76,7 +73,7 @@ class CategoriesPage extends StatelessWidget {
           ),
           body: Column(
             children: [
-              SearchField(
+              AppSearchField(
                 hintText: 'Search categories',
                 onChanged: context.read<CategoryCubit>().search,
               ),
@@ -112,44 +109,90 @@ class CategoriesPage extends StatelessWidget {
           message: state.query.isEmpty
               ? 'Create categories to organize your products.'
               : 'Try a different search.',
+          action: state.query.isEmpty
+              ? AppButton(
+                  key: const Key('empty_add_category'),
+                  label: 'Add category',
+                  icon: Icons.add,
+                  onPressed: () => _openForm(context),
+                )
+              : null,
         );
       case ViewStatus.loaded:
-        return ListView.separated(
-          itemCount: state.categories.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final category = state.categories[index];
-            return ListTile(
-              title: Text(category.name),
-              subtitle: category.description == null
-                  ? null
-                  : Text(category.description!),
-              leading: Icon(
-                category.isArchived
-                    ? Icons.archive_outlined
-                    : Icons.category_outlined,
-              ),
-              trailing: PopupMenuButton<_CategoryAction>(
-                onSelected: (action) => _onAction(context, action, category),
-                itemBuilder: (_) => [
-                  const PopupMenuItem(
-                    value: _CategoryAction.edit,
-                    child: Text('Edit'),
-                  ),
-                  if (category.isArchived)
-                    const PopupMenuItem(
-                      value: _CategoryAction.restore,
-                      child: Text('Restore'),
-                    )
-                  else
-                    const PopupMenuItem(
-                      value: _CategoryAction.archive,
-                      child: Text('Archive'),
+        final tokens = context.appColors;
+        return AppRefreshIndicator(
+          onRefresh: context.read<CategoryCubit>().load,
+          child: ListView.separated(
+            physics: AppRefreshIndicator.physics,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s4,
+              AppSpacing.s16,
+              96,
+            ),
+            itemCount: state.categories.length,
+            separatorBuilder: (_, _) => AppSpacing.gap8,
+            itemBuilder: (context, index) {
+              final category = state.categories[index];
+              return AppCard(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s16,
+                  AppSpacing.s8,
+                  AppSpacing.s4,
+                  AppSpacing.s8,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      category.isArchived
+                          ? Icons.archive_outlined
+                          : Icons.category_outlined,
+                      color: tokens.textSecondary,
                     ),
-                ],
-              ),
-            );
-          },
+                    AppSpacing.hGap12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            category.name,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          if (category.description != null)
+                            Text(
+                              category.description!,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: tokens.textSecondary),
+                            ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuButton<_CategoryAction>(
+                      tooltip: 'Category actions',
+                      onSelected: (action) =>
+                          _onAction(context, action, category),
+                      itemBuilder: (_) => [
+                        const PopupMenuItem(
+                          value: _CategoryAction.edit,
+                          child: Text('Edit'),
+                        ),
+                        if (category.isArchived)
+                          const PopupMenuItem(
+                            value: _CategoryAction.restore,
+                            child: Text('Restore'),
+                          )
+                        else
+                          const PopupMenuItem(
+                            value: _CategoryAction.archive,
+                            child: Text('Archive'),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
     }
   }

@@ -2,17 +2,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/features/products/domain/entities/product_draft.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_cubit.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_state.dart';
 import 'package:inventrix/features/settings/domain/entities/tax_rate.dart';
 import 'package:inventrix/features/settings/presentation/widgets/tax_rate_form_dialog.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/shared/presentation/widgets/stored_image.dart';
 
 /// Create/edit product form. Pops with `true` after a successful save.
@@ -156,7 +153,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
         final cubit = context.read<ProductFormCubit>();
         final editing = widget.productId != null;
         return Scaffold(
-          appBar: AppBar(title: Text(editing ? 'Edit product' : 'New product')),
+          appBar: AppAppBar(title: editing ? 'Edit product' : 'New product'),
           body: switch (state.loadStatus) {
             FormLoadStatus.loading => const LoadingIndicator(),
             FormLoadStatus.notFound => const EmptyState(
@@ -185,13 +182,13 @@ class _ProductFormPageState extends State<ProductFormPage> {
     final saving = state.submitStatus == SubmitStatus.submitting;
     final unit = state.units.where((u) => u.id == _unitId).firstOrNull;
     Widget gap(Widget child) => Padding(
-      padding: const EdgeInsets.only(bottom: AppDimensions.spaceMd),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s16),
       child: child,
     );
     return Form(
       key: _formKey,
       child: ListView(
-        padding: const EdgeInsets.all(AppDimensions.spaceMd),
+        padding: const EdgeInsets.all(AppSpacing.s16),
         children: [
           gap(
             Row(
@@ -202,26 +199,35 @@ class _ProductFormPageState extends State<ProductFormPage> {
                   size: 96,
                   placeholder: const Icon(Icons.add_a_photo_outlined),
                 ),
-                const SizedBox(width: AppDimensions.spaceMd),
+                const SizedBox(width: AppSpacing.s16),
                 Wrap(
-                  spacing: AppDimensions.spaceSm,
+                  spacing: AppSpacing.s8,
                   children: [
-                    OutlinedButton(
+                    AppButton(
                       key: const Key('pick_image'),
+                      label: state.imagePath == null
+                          ? 'Add image'
+                          : 'Change image',
+                      icon: Icons.photo_camera_outlined,
+                      variant: AppButtonVariant.outlined,
+                      size: AppButtonSize.small,
                       onPressed: () => _pickImage(cubit),
-                      child: Text(
-                        state.imagePath == null ? 'Add image' : 'Change image',
-                      ),
                     ),
                     if (state.imagePath != null)
-                      TextButton(
+                      AppButton(
+                        label: 'Remove',
+                        variant: AppButtonVariant.text,
+                        size: AppButtonSize.small,
                         onPressed: cubit.removeImage,
-                        child: const Text('Remove'),
                       ),
                   ],
                 ),
               ],
             ),
+          ),
+          const AppSectionHeader(
+            title: 'Basic information',
+            padding: EdgeInsets.only(top: AppSpacing.s8, bottom: AppSpacing.s12),
           ),
           gap(
             TextFormField(
@@ -231,7 +237,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
               decoration: InputDecoration(
                 labelText: 'Name *',
                 errorText: errors['name'],
-                border: const OutlineInputBorder(),
               ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? 'Name is required.'
@@ -250,7 +255,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     ? 'Leave blank to generate automatically.'
                     : null,
                 errorText: errors['sku'],
-                border: const OutlineInputBorder(),
               ),
               validator: (value) =>
                   widget.productId != null && (value ?? '').trim().isEmpty
@@ -266,7 +270,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
               decoration: InputDecoration(
                 labelText: 'Barcode',
                 errorText: errors['barcode'],
-                border: const OutlineInputBorder(),
               ),
             ),
           ),
@@ -277,7 +280,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
               decoration: InputDecoration(
                 labelText: 'Category',
                 errorText: errors['categoryId'],
-                border: const OutlineInputBorder(),
               ),
               items: [
                 const DropdownMenuItem<String?>(child: Text('None')),
@@ -300,7 +302,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 helperText: state.units.isEmpty
                     ? 'Add units first (Products > Units).'
                     : null,
-                border: const OutlineInputBorder(),
               ),
               items: [
                 for (final u in state.units)
@@ -312,6 +313,10 @@ class _ProductFormPageState extends State<ProductFormPage> {
               validator: (value) => value == null ? 'Select a unit.' : null,
               onChanged: (value) => setState(() => _unitId = value),
             ),
+          ),
+          const AppSectionHeader(
+            title: 'Pricing and tax',
+            padding: EdgeInsets.only(top: AppSpacing.s8, bottom: AppSpacing.s12),
           ),
           gap(
             TextFormField(
@@ -325,7 +330,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 labelText: 'Purchase price',
                 prefixText: '$currency ',
                 errorText: errors['purchasePrice'],
-                border: const OutlineInputBorder(),
               ),
             ),
           ),
@@ -341,7 +345,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 labelText: 'Selling price',
                 prefixText: '$currency ',
                 errorText: errors['sellingPrice'],
-                border: const OutlineInputBorder(),
               ),
             ),
           ),
@@ -362,7 +365,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     decoration: InputDecoration(
                       labelText: 'Tax rate',
                       errorText: errors['taxRateId'],
-                      border: const OutlineInputBorder(),
                     ),
                     items: [
                       const DropdownMenuItem<String?>(child: Text('None')),
@@ -379,14 +381,18 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     onChanged: (value) => setState(() => _taxRateId = value),
                   ),
                 ),
-                IconButton(
+                AppIconButton(
                   key: const Key('add_tax_rate'),
                   tooltip: 'New tax rate',
-                  icon: const Icon(Icons.add_circle_outline),
+                  icon: Icons.add_circle_outline,
                   onPressed: () => _addTaxRate(cubit),
                 ),
               ],
             ),
+          ),
+          const AppSectionHeader(
+            title: 'Stock and notes',
+            padding: EdgeInsets.only(top: AppSpacing.s8, bottom: AppSpacing.s12),
           ),
           gap(
             TextFormField(
@@ -405,7 +411,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     : 'Up to ${unit.decimalPlaces} decimal places.',
                 suffixText: unit?.symbol,
                 errorText: errors['reorderLevel'],
-                border: const OutlineInputBorder(),
               ),
             ),
           ),
@@ -417,20 +422,16 @@ class _ProductFormPageState extends State<ProductFormPage> {
               decoration: InputDecoration(
                 labelText: 'Description',
                 errorText: errors['description'],
-                border: const OutlineInputBorder(),
               ),
             ),
           ),
-          FilledButton(
+          AppButton(
             key: const Key('save_product'),
-            onPressed: saving ? null : () => _submit(cubit, state),
-            child: saving
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Save'),
+            label: 'Save',
+            icon: Icons.check,
+            expand: true,
+            loading: saving,
+            onPressed: () => _submit(cubit, state),
           ),
         ],
       ),

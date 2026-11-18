@@ -441,3 +441,7 @@ Business profile (name, address, phone, e-mail, tax number, logo; logo printed o
 
 ### Next
 Run `flutter pub get`, `dart format .`, `flutter analyze`, `flutter test` and send me the output; fixing Phases 1-11 together is the best next step before Phase 12 (QA and release).
+
+## Redesign Phase 5 (screens): in progress
+
+Dashboard, Products, Units, Categories, Inventory, Sales, Purchases, Customers, Suppliers and Payments restyled; the other groups are listed in `docs/redesign/phase5_screens.md`. Not compiled or run.

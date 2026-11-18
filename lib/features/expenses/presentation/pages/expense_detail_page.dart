@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
 import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/expenses/domain/entities/expense_attachment.dart';
 import 'package:inventrix/features/expenses/domain/usecases/manage_expense_attachments.dart';
@@ -12,11 +14,7 @@ import 'package:inventrix/features/expenses/presentation/widgets/expense_formatt
 import 'package:inventrix/features/products/presentation/bloc/product_detail_cubit.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
-import 'package:inventrix/shared/presentation/widgets/confirmation_dialog.dart';
-import 'package:inventrix/shared/presentation/widgets/document_status_chip.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 import 'package:inventrix/shared/presentation/widgets/void_reason_dialog.dart';
 
 /// An expense with its actions: edit, post, cancel, void and receipts.
@@ -39,14 +37,14 @@ class ExpenseDetailPage extends StatelessWidget {
         final cubit = context.read<ExpenseDetailCubit>();
         final expense = state.expense;
         return Scaffold(
-          appBar: AppBar(
-            title: Text(expense?.displayNumber ?? 'Expense'),
+          appBar: AppAppBar(
+            title: expense?.displayNumber ?? 'Expense',
             actions: [
               if (expense != null && expense.isEditable)
-                IconButton(
+                AppIconButton(
                   key: const Key('edit_expense'),
                   tooltip: 'Edit',
-                  icon: const Icon(Icons.edit_outlined),
+                  icon: Icons.edit_outlined,
                   onPressed: state.busy
                       ? null
                       : () async {
@@ -100,11 +98,7 @@ class _Details extends StatelessWidget {
     final expense = state.expense!;
     const formatter = MoneyFormatter();
     final theme = Theme.of(context);
-    Widget row(String label, String? value, {Key? key}) => ListTile(
-      dense: true,
-      title: Text(label),
-      trailing: Text(value ?? '—', key: key),
-    );
+    final tokens = context.appColors;
     final canAttach =
         (expense.status == DocumentStatus.draft ||
             expense.status == DocumentStatus.posted) &&
@@ -115,90 +109,105 @@ class _Details extends StatelessWidget {
           maxWidth: AppDimensions.maxContentWidth,
         ),
         child: ListView(
-          padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          padding: AppSpacing.page,
           children: [
             Align(
               alignment: Alignment.centerLeft,
               child: DocumentStatusChip(status: expense.status),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppDimensions.spaceSm,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
               child: Text(
                 expense.description,
                 key: const Key('expense_detail_description'),
                 style: theme.textTheme.titleLarge,
               ),
             ),
-            row('Category', expense.categoryName),
-            row('Date', formatExpenseDate(expense.expenseDate)),
-            row('Paid with', expense.methodName),
-            if (expense.payee != null) row('Paid to', expense.payee),
-            if (expense.reference != null) row('Reference', expense.reference),
-            if (expense.status == DocumentStatus.voided) ...[
-              row(
-                'Voided',
-                expense.voidedAt == null
-                    ? null
-                    : formatExpenseDate(expense.voidedAt!),
-              ),
-              row('Reason', expense.voidReason, key: const Key('void_reason')),
-            ],
-            if (expense.notes != null)
-              Padding(
-                padding: const EdgeInsets.all(AppDimensions.spaceSm),
-                child: Text(expense.notes!),
-              ),
-            const SizedBox(height: AppDimensions.spaceSm),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.spaceMd),
-                child: Column(
-                  children: [
-                    _amountRow(
-                      theme,
-                      'Net',
-                      formatter.format(expense.amounts.net),
-                    ),
-                    _amountRow(
-                      theme,
-                      expense.taxName ?? 'Tax',
-                      formatter.format(expense.amounts.tax),
-                    ),
-                    const Divider(),
-                    _amountRow(
-                      theme,
-                      'Total',
-                      formatter.format(expense.amounts.total),
-                      strong: true,
-                      key: const Key('expense_detail_total'),
-                    ),
-                  ],
+            AppFactsCard(
+              facts: [
+                AppFact('Category', expense.categoryName),
+                AppFact('Date', formatExpenseDate(expense.expenseDate)),
+                AppFact('Paid with', expense.methodName),
+                if (expense.payee != null) AppFact('Paid to', expense.payee),
+                if (expense.reference != null)
+                  AppFact('Reference', expense.reference),
+                if (expense.status == DocumentStatus.voided) ...[
+                  AppFact(
+                    'Voided',
+                    expense.voidedAt == null
+                        ? null
+                        : formatExpenseDate(expense.voidedAt!),
+                  ),
+                  AppFact(
+                    'Reason',
+                    expense.voidReason,
+                    key: const Key('void_reason'),
+                  ),
+                ],
+              ],
+            ),
+            if (expense.notes != null) ...[
+              AppSpacing.gap12,
+              AppCard(
+                child: Text(
+                  expense.notes!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: tokens.textSecondary,
+                  ),
                 ),
+              ),
+            ],
+            AppSpacing.gap12,
+            AppCard(
+              child: Column(
+                children: [
+                  _amountRow(
+                    context,
+                    'Net',
+                    formatter.format(expense.amounts.net),
+                  ),
+                  _amountRow(
+                    context,
+                    expense.taxName ?? 'Tax',
+                    formatter.format(expense.amounts.tax),
+                  ),
+                  AppSpacing.gap8,
+                  Divider(height: 1, color: tokens.divider),
+                  AppSpacing.gap8,
+                  _amountRow(
+                    context,
+                    'Total',
+                    formatter.format(expense.amounts.total),
+                    strong: true,
+                    key: const Key('expense_detail_total'),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: AppDimensions.spaceSm),
-            Row(
-              children: [
-                Expanded(
-                  child: Text('Receipts', style: theme.textTheme.titleMedium),
-                ),
-                TextButton.icon(
-                  key: const Key('add_attachment'),
-                  onPressed: canAttach && !state.busy
-                      ? () => _attach(context)
-                      : null,
-                  icon: const Icon(Icons.attach_file),
-                  label: const Text('Attach'),
-                ),
-              ],
+            AppSectionHeader(
+              title: 'Receipts',
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s4,
+                AppSpacing.s24,
+                AppSpacing.s4,
+                AppSpacing.s8,
+              ),
+              trailing: AppButton(
+                key: const Key('add_attachment'),
+                label: 'Attach',
+                icon: Icons.attach_file,
+                variant: AppButtonVariant.secondary,
+                size: AppButtonSize.small,
+                onPressed: canAttach && !state.busy
+                    ? () => _attach(context)
+                    : null,
+              ),
             ),
             if (expense.attachments.isEmpty)
               Text(
                 'No receipts attached.',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: tokens.textSecondary,
                 ),
               ),
             for (final attachment in expense.attachments)
@@ -206,7 +215,7 @@ class _Details extends StatelessWidget {
                 attachment: attachment,
                 canRemove: expense.isEditable && !state.busy,
               ),
-            const SizedBox(height: AppDimensions.spaceMd),
+            AppSpacing.gap16,
             ..._actions(context, expense.status),
           ],
         ),
@@ -215,22 +224,33 @@ class _Details extends StatelessWidget {
   }
 
   Widget _amountRow(
-    ThemeData theme,
+    BuildContext context,
     String label,
     String value, {
     bool strong = false,
     Key? key,
   }) {
-    final style = strong
-        ? theme.textTheme.titleMedium
-        : theme.textTheme.bodyMedium;
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: style),
-          Text(value, key: key, style: style),
+          Text(
+            label,
+            style: strong
+                ? theme.textTheme.titleMedium
+                : theme.textTheme.bodyMedium?.copyWith(
+                    color: context.appColors.textSecondary,
+                  ),
+          ),
+          Text(
+            value,
+            key: key,
+            style: strong
+                ? context.appText.financialMedium
+                : context.appText.financialSmall,
+          ),
         ],
       ),
     );
@@ -239,12 +259,16 @@ class _Details extends StatelessWidget {
   List<Widget> _actions(BuildContext context, DocumentStatus status) {
     final cubit = context.read<ExpenseDetailCubit>();
     final busy = state.busy;
-    const gap = SizedBox(height: AppDimensions.spaceSm);
+    const gap = AppSpacing.gap8;
     switch (status) {
       case DocumentStatus.draft:
         return [
-          FilledButton(
+          AppButton(
             key: const Key('post_expense'),
+            label: 'Post expense',
+            icon: Icons.check,
+            expand: true,
+            loading: busy,
             onPressed: busy
                 ? null
                 : () async {
@@ -260,11 +284,13 @@ class _Details extends StatelessWidget {
                       await cubit.post();
                     }
                   },
-            child: const Text('Post expense'),
           ),
           gap,
-          OutlinedButton(
+          AppButton(
             key: const Key('cancel_expense'),
+            label: 'Cancel draft',
+            variant: AppButtonVariant.outlined,
+            expand: true,
             onPressed: busy
                 ? null
                 : () async {
@@ -282,13 +308,15 @@ class _Details extends StatelessWidget {
                       await cubit.cancel();
                     }
                   },
-            child: const Text('Cancel draft'),
           ),
         ];
       case DocumentStatus.posted:
         return [
-          OutlinedButton(
+          AppButton(
             key: const Key('void_expense'),
+            label: 'Void expense',
+            variant: AppButtonVariant.destructive,
+            expand: true,
             onPressed: busy
                 ? null
                 : () async {
@@ -300,7 +328,6 @@ class _Details extends StatelessWidget {
                       await cubit.voidExpense(reason);
                     }
                   },
-            child: const Text('Void expense'),
           ),
         ];
       case _:
@@ -317,21 +344,50 @@ class _AttachmentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      key: Key('attachment_${attachment.id}'),
-      child: ListTile(
-        leading: Icon(
-          attachment.isImage
-              ? Icons.image_outlined
-              : Icons.picture_as_pdf_outlined,
+    final theme = Theme.of(context);
+    final tokens = context.appColors;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.s8),
+      child: AppCard(
+        key: Key('attachment_${attachment.id}'),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.s16,
+          AppSpacing.s8,
+          AppSpacing.s4,
+          AppSpacing.s8,
         ),
-        title: Text(attachment.fileName, overflow: TextOverflow.ellipsis),
-        subtitle: Text(_describe(attachment)),
-        trailing: canRemove
-            ? IconButton(
+        child: Row(
+          children: [
+            Icon(
+              attachment.isImage
+                  ? Icons.image_outlined
+                  : Icons.picture_as_pdf_outlined,
+              color: tokens.textSecondary,
+            ),
+            AppSpacing.hGap12,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    attachment.fileName,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                  Text(
+                    _describe(attachment),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: tokens.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (canRemove)
+              AppIconButton(
                 key: Key('remove_attachment_${attachment.id}'),
                 tooltip: 'Remove',
-                icon: const Icon(Icons.delete_outline),
+                icon: Icons.delete_outline,
                 onPressed: () async {
                   final cubit = context.read<ExpenseDetailCubit>();
                   final confirmed = await showConfirmationDialog(
@@ -345,8 +401,9 @@ class _AttachmentTile extends StatelessWidget {
                     await cubit.removeAttachment(attachment.id);
                   }
                 },
-              )
-            : null,
+              ),
+          ],
+        ),
       ),
     );
   }

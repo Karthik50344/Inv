@@ -1,33 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_radius.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/core/constants/app_constants.dart';
+import 'package:inventrix/shared/presentation/widgets/app_tone.dart';
 
-/// Prominent reminder that all data lives on this device only.
+/// Reminder that data lives only on this device and should be backed up.
 class LocalDataWarningBanner extends StatelessWidget {
   /// Creates the banner.
   const LocalDataWarningBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
+    final colors = AppTone.warning.colors(context);
+    return DecoratedBox(
       decoration: BoxDecoration(
-        color: scheme.errorContainer,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+        color: colors.container,
+        borderRadius: AppRadius.controlRadius,
+        border: Border.all(color: colors.solid.withValues(alpha: 0.35)),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.warning_amber_rounded, color: scheme.onErrorContainer),
-          const SizedBox(width: AppDimensions.spaceMd),
-          Expanded(
-            child: Text(
-              AppConstants.localDataWarning,
-              style: TextStyle(color: scheme.onErrorContainer),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.s12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.warning_amber_rounded, color: colors.onContainer),
+            AppSpacing.hGap12,
+            Expanded(
+              child: Text(
+                AppConstants.localDataWarning,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: colors.onContainer),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

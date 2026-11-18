@@ -4,15 +4,12 @@ import 'package:inventrix/features/payments/presentation/widgets/party_balance_c
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/router/route_names.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/suppliers/presentation/bloc/supplier_detail_cubit.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_detail_cubit.dart';
-import 'package:inventrix/shared/presentation/snackbar.dart';
-import 'package:inventrix/shared/presentation/widgets/confirmation_dialog.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Read-only supplier details with edit and archive actions.
 class SupplierDetailPage extends StatelessWidget {
@@ -34,14 +31,14 @@ class SupplierDetailPage extends StatelessWidget {
         final cubit = context.read<SupplierDetailCubit>();
         final item = state.supplier;
         return Scaffold(
-          appBar: AppBar(
-            title: Text(item?.name ?? 'Supplier'),
+          appBar: AppAppBar(
+            title: item?.name ?? 'Supplier',
             actions: [
               if (item != null) ...[
-                IconButton(
+                AppIconButton(
                   key: const Key('edit_supplier'),
                   tooltip: 'Edit',
-                  icon: const Icon(Icons.edit_outlined),
+                  icon: Icons.edit_outlined,
                   onPressed: () async {
                     await context.pushNamed(
                       RouteNames.supplierEdit,
@@ -50,14 +47,12 @@ class SupplierDetailPage extends StatelessWidget {
                     await cubit.load(item.id);
                   },
                 ),
-                IconButton(
+                AppIconButton(
                   key: const Key('toggle_archive_supplier'),
                   tooltip: item.isArchived ? 'Restore' : 'Archive',
-                  icon: Icon(
-                    item.isArchived
-                        ? Icons.unarchive_outlined
-                        : Icons.archive_outlined,
-                  ),
+                  icon: item.isArchived
+                      ? Icons.unarchive_outlined
+                      : Icons.archive_outlined,
                   onPressed: () async {
                     if (item.isArchived) {
                       await cubit.restore();
@@ -108,34 +103,85 @@ class _Details extends StatelessWidget {
   Widget build(BuildContext context) {
     final item = state.supplier!;
     const formatter = MoneyFormatter();
-    Widget row(String label, String? value) =>
-        ListTile(dense: true, title: Text(label), trailing: Text(value ?? '—'));
+    final theme = Theme.of(context);
+    final tokens = context.appColors;
     final address = [
       item.address,
       item.city,
       item.state,
       item.postalCode,
     ].whereType<String>().join(', ');
+    final facts = <(String, String?)>[
+      ('Phone', item.phone),
+      ('Email', item.email),
+      ('Address', address.isEmpty ? null : address),
+      ('Tax ID', item.taxId),
+      ('Opening balance', formatter.format(item.openingBalance)),
+    ];
     return ListView(
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
+      padding: AppSpacing.page,
       children: [
         if (item.isArchived)
           const Align(
             alignment: Alignment.centerLeft,
-            child: Chip(label: Text('Archived')),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: AppSpacing.s12),
+              child: AppBadge(label: 'Archived'),
+            ),
           ),
-        row('Phone', item.phone),
-        row('Email', item.email),
-        row('Address', address.isEmpty ? null : address),
-        row('Tax ID', item.taxId),
-        row('Opening balance', formatter.format(item.openingBalance)),
-        const Divider(),
+        AppCard(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.s16,
+            vertical: AppSpacing.s4,
+          ),
+          child: Column(
+            children: [
+              for (var i = 0; i < facts.length; i++)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.s12,
+                  ),
+                  decoration: BoxDecoration(
+                    border: i == facts.length - 1
+                        ? null
+                        : Border(bottom: BorderSide(color: tokens.divider)),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        facts[i].$1,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: tokens.textSecondary,
+                        ),
+                      ),
+                      AppSpacing.hGap16,
+                      Expanded(
+                        child: Text(
+                          facts[i].$2 ?? '—',
+                          textAlign: TextAlign.end,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+        AppSpacing.gap12,
         PartyBalanceCard(type: PartyType.supplier, partyId: item.id),
         if (item.notes != null) ...[
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(AppDimensions.spaceSm),
-            child: Text(item.notes!),
+          AppSpacing.gap12,
+          AppCard(
+            child: Text(
+              item.notes!,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: tokens.textSecondary,
+              ),
+            ),
           ),
         ],
       ],

@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/expenses/presentation/bloc/expense_form_cubit.dart';
-import 'package:inventrix/features/expenses/presentation/widgets/expense_formatters.dart';
 import 'package:inventrix/features/products/presentation/bloc/product_form_state.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
-import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
-import 'package:inventrix/shared/presentation/widgets/error_state.dart';
-import 'package:inventrix/shared/presentation/widgets/loading_indicator.dart';
+import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
 /// Create or edit an expense draft, optionally posting it right away. Pops
 /// with `true` after saving.
@@ -41,23 +40,6 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
     _reference.dispose();
     _notes.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickDate(
-    BuildContext context,
-    ExpenseFormCubit cubit,
-    DateTime? current,
-  ) async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: current ?? now,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(now.year + 1, 12, 31),
-    );
-    if (picked != null) {
-      cubit.setDate(picked);
-    }
   }
 
   void _submit(ExpenseFormCubit cubit, {required bool post}) => cubit.submit(
@@ -98,10 +80,8 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
       builder: (context, state) {
         final cubit = context.read<ExpenseFormCubit>();
         return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              widget.expenseId == null ? 'New expense' : 'Edit expense',
-            ),
+          appBar: AppAppBar(
+            title: widget.expenseId == null ? 'New expense' : 'Edit expense',
           ),
           body: switch (state.loadStatus) {
             FormLoadStatus.loading => const LoadingIndicator(),
@@ -131,116 +111,144 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
     final blocked = state.blockedReason;
     final saving = state.submitStatus == SubmitStatus.submitting;
     final theme = Theme.of(context);
+    final tokens = context.appColors;
+    final now = DateTime.now();
     final taxApplies =
         state.taxRateId != null &&
         state.taxRates.any((t) => t.id == state.taxRateId && !t.isExempt);
     Widget gap(Widget child) => Padding(
-      padding: const EdgeInsets.only(bottom: AppDimensions.spaceMd),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s16),
       child: child,
     );
+    Widget totalRow(
+      String label,
+      String value, {
+      bool strong = false,
+      Key? key,
+    }) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: strong
+                ? theme.textTheme.titleMedium
+                : theme.textTheme.bodyMedium?.copyWith(
+                    color: tokens.textSecondary,
+                  ),
+          ),
+          Text(
+            value,
+            key: key,
+            style: strong
+                ? context.appText.financialMedium
+                : context.appText.financialSmall,
+          ),
+        ],
+      ),
+    );
     final preview = state.preview;
+    final enabled = blocked == null;
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           maxWidth: AppDimensions.maxContentWidth,
         ),
         child: ListView(
-          padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: AppSpacing.page,
           children: [
             if (blocked != null)
               gap(
-                Text(
-                  blocked,
-                  key: const Key('expense_blocked'),
-                  style: TextStyle(color: theme.colorScheme.error),
+                AppCard(
+                  tone: AppTone.danger,
+                  child: Text(
+                    blocked,
+                    key: const Key('expense_blocked'),
+                    style: theme.textTheme.bodyMedium,
+                  ),
                 ),
               ),
+            const AppSectionHeader(
+              title: 'Expense',
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.s4,
+                0,
+                AppSpacing.s4,
+                AppSpacing.s8,
+              ),
+            ),
             gap(
-              TextField(
+              AppTextField(
                 key: const Key('expense_description'),
                 controller: _description,
-                enabled: blocked == null,
-                decoration: InputDecoration(
-                  labelText: 'What was it for? *',
-                  errorText: errors['description'],
-                  border: const OutlineInputBorder(),
-                ),
+                enabled: enabled,
+                label: 'What was it for? *',
+                errorText: errors['description'],
+                textCapitalization: TextCapitalization.sentences,
               ),
             ),
             gap(
-              DropdownButtonFormField<String>(
+              AppDropdown<String>(
                 key: const Key('expense_category'),
-                initialValue: state.categoryId,
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: 'Category *',
-                  errorText: errors['categoryId'],
-                  border: const OutlineInputBorder(),
-                ),
+                label: 'Category *',
+                value: state.categoryId,
+                errorText: errors['categoryId'],
                 items: [
                   for (final c in state.categories)
-                    DropdownMenuItem(value: c.id, child: Text(c.name)),
+                    AppDropdownItem(value: c.id, label: c.name),
                 ],
-                onChanged: blocked == null ? cubit.setCategory : null,
+                onChanged: enabled ? cubit.setCategory : null,
               ),
             ),
             gap(
-              InkWell(
+              AppDatePickerField(
                 key: const Key('expense_date'),
-                onTap: blocked != null
-                    ? null
-                    : () => _pickDate(context, cubit, state.expenseDate),
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: 'Date *',
-                    errorText: errors['expenseDate'],
-                    border: const OutlineInputBorder(),
-                    suffixIcon: const Icon(
-                      Icons.calendar_today_outlined,
-                      size: 18,
-                    ),
-                  ),
-                  child: Text(
-                    state.expenseDate == null
-                        ? '—'
-                        : formatExpenseDate(state.expenseDate!),
-                  ),
-                ),
+                label: 'Date *',
+                value: state.expenseDate,
+                first: DateTime(2000),
+                last: DateTime(now.year + 1, 12, 31),
+                errorText: errors['expenseDate'],
+                enabled: enabled,
+                onChanged: cubit.setDate,
+              ),
+            ),
+            const AppSectionHeader(
+              title: 'Amount',
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.s4,
+                AppSpacing.s8,
+                AppSpacing.s4,
+                AppSpacing.s8,
               ),
             ),
             gap(
-              TextField(
+              AppTextField(
                 key: const Key('expense_amount'),
                 controller: _amount,
-                enabled: blocked == null,
+                enabled: enabled,
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
                 onChanged: cubit.setAmount,
-                decoration: InputDecoration(
-                  labelText: 'Amount *',
-                  prefixText: '${state.currency?.currencyCode ?? ''} ',
-                  errorText: errors['amount'],
-                  border: const OutlineInputBorder(),
-                ),
+                label: 'Amount *',
+                prefixText: '${state.currency?.currencyCode ?? ''} ',
+                errorText: errors['amount'],
               ),
             ),
             gap(
-              DropdownButtonFormField<String?>(
+              AppDropdown<String?>(
                 key: const Key('expense_tax'),
-                initialValue: state.taxRateId,
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: 'Tax',
-                  errorText: errors['taxRateId'],
-                  border: const OutlineInputBorder(),
-                ),
+                label: 'Tax',
+                value: state.taxRateId,
+                errorText: errors['taxRateId'],
                 items: [
-                  const DropdownMenuItem<String?>(child: Text('No tax')),
+                  const AppDropdownItem<String?>(value: null, label: 'No tax'),
                   for (final t in state.taxRates)
-                    DropdownMenuItem<String?>(value: t.id, child: Text(t.name)),
+                    AppDropdownItem<String?>(value: t.id, label: t.name),
                 ],
-                onChanged: blocked == null ? cubit.setTaxRate : null,
+                onChanged: enabled ? cubit.setTaxRate : null,
               ),
             ),
             if (taxApplies)
@@ -250,139 +258,115 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Amount includes tax'),
                   value: state.amountIncludesTax,
-                  onChanged: blocked == null
+                  onChanged: enabled
                       ? (value) => cubit.setIncludesTax(value: value)
                       : null,
                 ),
               ),
             if (preview != null)
               gap(
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppDimensions.spaceMd),
-                    child: Column(
-                      children: [
-                        _row(theme, 'Net', formatter.format(preview.net)),
-                        _row(theme, 'Tax', formatter.format(preview.tax)),
-                        const Divider(),
-                        _row(
-                          theme,
-                          'Total',
-                          formatter.format(preview.total),
-                          strong: true,
-                          key: const Key('expense_total'),
-                        ),
-                      ],
-                    ),
+                AppCard(
+                  child: Column(
+                    children: [
+                      totalRow('Net', formatter.format(preview.net)),
+                      totalRow('Tax', formatter.format(preview.tax)),
+                      AppSpacing.gap8,
+                      Divider(height: 1, color: tokens.divider),
+                      AppSpacing.gap8,
+                      totalRow(
+                        'Total',
+                        formatter.format(preview.total),
+                        strong: true,
+                        key: const Key('expense_total'),
+                      ),
+                    ],
                   ),
                 ),
               ),
+            const AppSectionHeader(
+              title: 'Payment',
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.s4,
+                AppSpacing.s8,
+                AppSpacing.s4,
+                AppSpacing.s8,
+              ),
+            ),
             gap(
-              DropdownButtonFormField<String>(
+              AppDropdown<String>(
                 key: const Key('expense_method'),
-                initialValue: state.methodId,
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: 'Paid with *',
-                  errorText: errors['methodId'],
-                  border: const OutlineInputBorder(),
-                ),
+                label: 'Paid with *',
+                value: state.methodId,
+                errorText: errors['methodId'],
                 items: [
                   for (final m in state.methods)
-                    DropdownMenuItem(value: m.id, child: Text(m.name)),
+                    AppDropdownItem(value: m.id, label: m.name),
                 ],
-                onChanged: blocked == null ? cubit.setMethod : null,
+                onChanged: enabled ? cubit.setMethod : null,
               ),
             ),
             gap(
-              TextField(
+              AppTextField(
                 key: const Key('expense_payee'),
                 controller: _payee,
-                enabled: blocked == null,
-                decoration: InputDecoration(
-                  labelText: 'Paid to',
-                  errorText: errors['payee'],
-                  border: const OutlineInputBorder(),
-                ),
+                enabled: enabled,
+                label: 'Paid to',
+                errorText: errors['payee'],
+                textCapitalization: TextCapitalization.words,
               ),
             ),
             gap(
-              TextField(
+              AppTextField(
                 key: const Key('expense_reference'),
                 controller: _reference,
-                enabled: blocked == null,
-                decoration: InputDecoration(
-                  labelText: 'Receipt or reference no.',
-                  errorText: errors['reference'],
-                  border: const OutlineInputBorder(),
-                ),
+                enabled: enabled,
+                label: 'Receipt or reference no.',
+                errorText: errors['reference'],
               ),
             ),
             gap(
-              TextField(
+              AppTextField(
                 key: const Key('expense_notes'),
                 controller: _notes,
-                enabled: blocked == null,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  labelText: 'Notes',
-                  errorText: errors['notes'],
-                  border: const OutlineInputBorder(),
-                ),
+                enabled: enabled,
+                minLines: 2,
+                maxLines: 4,
+                label: 'Notes',
+                errorText: errors['notes'],
+                textCapitalization: TextCapitalization.sentences,
               ),
             ),
-            FilledButton(
+            AppButton(
               key: const Key('save_and_post_expense'),
+              label: 'Save and post',
+              icon: Icons.check,
+              expand: true,
+              loading: saving,
               onPressed: (saving || blocked != null)
                   ? null
                   : () => _submit(cubit, post: true),
-              child: saving
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Save and post'),
             ),
-            const SizedBox(height: AppDimensions.spaceSm),
-            OutlinedButton(
+            AppSpacing.gap8,
+            AppButton(
               key: const Key('save_expense_draft'),
+              label: 'Save as draft',
+              variant: AppButtonVariant.outlined,
+              expand: true,
               onPressed: (saving || blocked != null)
                   ? null
                   : () => _submit(cubit, post: false),
-              child: const Text('Save as draft'),
             ),
-            const SizedBox(height: AppDimensions.spaceSm),
+            AppSpacing.gap12,
             Text(
               'Only posted expenses count in reports. A posted expense '
               'cannot be edited; it can be voided with a reason. You can '
               'attach receipts after saving.',
-              style: theme.textTheme.bodySmall,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: tokens.textSecondary,
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _row(
-    ThemeData theme,
-    String label,
-    String value, {
-    bool strong = false,
-    Key? key,
-  }) {
-    final style = strong
-        ? theme.textTheme.titleMedium
-        : theme.textTheme.bodyMedium;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: style),
-          Text(value, key: key, style: style),
-        ],
       ),
     );
   }

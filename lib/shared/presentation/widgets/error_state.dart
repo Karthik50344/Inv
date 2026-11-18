@@ -1,38 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:inventrix/app/theme/app_dimensions.dart';
+import 'package:inventrix/app/theme/app_spacing.dart';
+import 'package:inventrix/app/theme/app_theme_extensions.dart';
+import 'package:inventrix/shared/presentation/widgets/app_button.dart';
 
-/// Error message with an optional retry button.
+/// Error placeholder with a message and, optionally, a retry button.
 class ErrorState extends StatelessWidget {
-  /// Creates an error state showing a user-safe [message].
+  /// Creates the placeholder.
   const ErrorState({required this.message, this.onRetry, super.key});
 
-  /// User-safe description of what went wrong.
+  /// What went wrong, in plain language.
   final String message;
 
-  /// Called when the user taps "Retry"; hides the button when null.
+  /// Called by the retry button; the button is hidden when null.
   final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final danger = context.appColors.danger;
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.spaceLg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline, size: 56, color: theme.colorScheme.error),
-            const SizedBox(height: AppDimensions.spaceMd),
-            Text(
-              message,
-              style: theme.textTheme.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
-            if (onRetry != null) ...[
-              const SizedBox(height: AppDimensions.spaceMd),
-              FilledButton(onPressed: onRetry, child: const Text('Retry')),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.s24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: danger.container,
+                  shape: BoxShape.circle,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.s20),
+                  child: Icon(
+                    Icons.error_outline,
+                    size: 32,
+                    color: danger.onContainer,
+                  ),
+                ),
+              ),
+              AppSpacing.gap16,
+              Text(
+                message,
+                style: theme.textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              if (onRetry != null) ...[
+                AppSpacing.gap16,
+                AppButton(
+                  label: 'Retry',
+                  icon: Icons.refresh,
+                  variant: AppButtonVariant.secondary,
+                  onPressed: onRetry,
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
