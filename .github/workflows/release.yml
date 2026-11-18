@@ -64,11 +64,31 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      # Gradle downloads its plugins from Maven Central, which sometimes
+      # answers GitHub's shared runners with "429 Too Many Requests". That is
+      # temporary, so only download/network failures are retried, waiting
+      # longer each time. A real compile error fails straight away.
       - name: Build release APK
-        run: >
-          flutter build apk --release
-          --build-name=${{ steps.version.outputs.name }}
-          --build-number=${{ github.run_number }}
+        run: |
+          set -o pipefail
+          for attempt in 1 2 3 4; do
+            if flutter build apk --release \
+                 --build-name=${{ steps.version.outputs.name }} \
+                 --build-number=${{ github.run_number }} 2>&1 | tee build.log; then
+              exit 0
+            fi
+            if ! grep -qE 'status code 429|Could not (GET|resolve|HEAD)|Connection (reset|timed out)|Read timed out' build.log; then
+              echo "::error::Build failed (not a download problem), not retrying."
+              exit 1
+            fi
+            if [ "$attempt" -lt 4 ]; then
+              wait=$((attempt * 60))
+              echo "::warning::Download failed on attempt $attempt. Retrying in ${wait}s..."
+              sleep "$wait"
+            fi
+          done
+          echo "::error::Build failed after 4 attempts."
+          exit 1
 
       - name: Name the APK
         run: |
