@@ -67,12 +67,21 @@ final class InventrixRuntime extends ChangeNotifier implements AppRuntime {
 
   @override
   Future<void> start() async {
+    // A start that follows [shutDown] in the same process is a restore
+    // starting the app again on the restored data (or on the old data after
+    // an abort). It is not a new launch after a crash, and at that moment the
+    // journal still says "swapping" until the restore commits. Running the
+    // crash recovery here would undo the restore that is in progress.
+    final restartInProcess = _phase == RuntimePhase.restarting;
     try {
-      // Before the database is opened: undo a restore that was interrupted.
-      await RecoverInterruptedRestore(
-        journal: FileRestoreJournalStore(getApplicationDocumentsDirectory),
-        swapper: FileRestoreSwapper(),
-      )();
+      if (!restartInProcess) {
+        // Before the database is opened: undo a restore that was
+        // interrupted by a crash or a killed app.
+        await RecoverInterruptedRestore(
+          journal: FileRestoreJournalStore(getApplicationDocumentsDirectory),
+          swapper: FileRestoreSwapper(),
+        )();
+      }
       await configureDependencies(locator: _locator, runtime: this);
       await _locator<AppDatabase>().initialize();
       try {
