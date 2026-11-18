@@ -15,6 +15,7 @@ final class AppPreferences extends Equatable {
     this.defaultTaxRateId,
     this.defaultPriceIncludesTax = false,
     this.backupReminderDays = 0,
+    this.introSeen = false,
   });
 
   /// Values offered for [backupReminderDays] (`0` switches reminders off).
@@ -48,6 +49,9 @@ final class AppPreferences extends Equatable {
   /// `0` means no reminder.
   final int backupReminderDays;
 
+  /// Whether the first-launch introduction was completed or skipped.
+  final bool introSeen;
+
   /// Copy with changes. Use the `clear...` flags to reset an optional id.
   AppPreferences copyWith({
     ThemePreference? theme,
@@ -61,6 +65,7 @@ final class AppPreferences extends Equatable {
     bool clearDefaultTaxRate = false,
     bool? defaultPriceIncludesTax,
     int? backupReminderDays,
+    bool? introSeen,
   }) => AppPreferences(
     theme: theme ?? this.theme,
     dateStyle: dateStyle ?? this.dateStyle,
@@ -77,6 +82,7 @@ final class AppPreferences extends Equatable {
     defaultPriceIncludesTax:
         defaultPriceIncludesTax ?? this.defaultPriceIncludesTax,
     backupReminderDays: backupReminderDays ?? this.backupReminderDays,
+    introSeen: introSeen ?? this.introSeen,
   );
 
   @override
@@ -90,5 +96,6 @@ final class AppPreferences extends Equatable {
     defaultTaxRateId,
     defaultPriceIncludesTax,
     backupReminderDays,
+    introSeen,
   ];
 }

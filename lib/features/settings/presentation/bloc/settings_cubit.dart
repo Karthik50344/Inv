@@ -250,6 +250,9 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> setBackupReminderDays(int days) =>
       _update((p) => p.copyWith(backupReminderDays: days));
 
+  /// Remembers that the introduction was completed or skipped.
+  Future<void> markIntroSeen() => _update((p) => p.copyWith(introSeen: true));
+
   Future<void> _update(
     AppPreferences Function(AppPreferences current) change,
   ) async {

@@ -6,8 +6,10 @@ import 'package:inventrix/app/di/register_core.dart';
 import 'package:inventrix/app/di/register_repositories.dart';
 import 'package:inventrix/app/di/register_usecases.dart';
 import 'package:inventrix/app/router/app_router.dart';
+import 'package:inventrix/app/router/route_paths.dart';
 import 'package:inventrix/core/database/app_database.dart';
 import 'package:inventrix/features/backup/domain/repositories/app_runtime.dart';
+import 'package:inventrix/features/settings/presentation/bloc/settings_cubit.dart';
 
 /// Global service locator.
 final GetIt getIt = GetIt.instance;
@@ -29,7 +31,14 @@ Future<void> configureDependencies({
   registerBlocs(target);
   registerBackup(target, runtime: runtime);
   target.registerLazySingleton<GoRouter>(
-    () => AppRouter.create(locator: target),
+    () => AppRouter.create(
+      locator: target,
+      // Settings are loaded before the router is first read, so a fresh
+      // install opens the introduction and every later launch the dashboard.
+      initialLocation: target<SettingsCubit>().state.preferences.introSeen
+          ? RoutePaths.dashboard
+          : RoutePaths.intro,
+    ),
   );
 }
 

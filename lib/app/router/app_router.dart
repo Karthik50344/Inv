@@ -36,6 +36,7 @@ import 'package:inventrix/features/expenses/presentation/pages/expense_form_page
 import 'package:inventrix/features/expenses/presentation/pages/expense_report_page.dart';
 import 'package:inventrix/features/expenses/presentation/pages/expenses_page.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_filter.dart';
+import 'package:inventrix/features/onboarding/presentation/pages/intro_page.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_status.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/inventory_bloc.dart';
 import 'package:inventrix/features/inventory/presentation/bloc/inventory_event.dart';
@@ -140,6 +141,11 @@ abstract final class AppRouter {
           NotFoundPage(location: state.uri.toString()),
       routes: [
         GoRoute(path: '/', redirect: (context, state) => RoutePaths.dashboard),
+        GoRoute(
+          path: RoutePaths.intro,
+          name: RouteNames.intro,
+          builder: (context, state) => const IntroPage(),
+        ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) =>
               AppShell(navigationShell: navigationShell),

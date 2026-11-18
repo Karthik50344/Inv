@@ -34,7 +34,8 @@ void main() {
     await pumpApp(tester);
     expect(find.byType(DashboardPage), findsOneWidget);
     expect(find.text('Welcome to Inventrix'), findsOneWidget);
-    expect(find.text(AppConstants.localDataWarning), findsOneWidget);
+    // The data notice moved to the introduction; it is not a dashboard banner.
+    expect(find.text(AppConstants.localDataWarning), findsNothing);
   });
 
   testWidgets('root path redirects to the dashboard', (tester) async {

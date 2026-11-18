@@ -18,7 +18,6 @@ import 'package:inventrix/features/reports/presentation/widgets/report_formatter
 import 'package:inventrix/features/reports/presentation/widgets/trend_bar_chart.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
 import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
-import 'package:inventrix/shared/presentation/widgets/local_data_warning_banner.dart';
 
 /// The dashboard: period figures, stock and balance alerts, charts and the
 /// latest documents. Provide a [DashboardBloc] above it.
@@ -83,8 +82,6 @@ class DashboardPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               AppSpacing.gap16,
-              const LocalDataWarningBanner(),
-              AppSpacing.gap24,
               EmptyState(
                 icon: Icons.insights_outlined,
                 title: 'No data yet',
@@ -210,15 +207,6 @@ class _Content extends StatelessWidget {
                 color: tokens.textSecondary,
               ),
             ),
-          ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.s16,
-              AppSpacing.s12,
-              AppSpacing.s16,
-              0,
-            ),
-            child: LocalDataWarningBanner(),
           ),
           _QuickActions(bloc: bloc),
           Padding(

@@ -1,5 +1,6 @@
 /// Names used with `context.goNamed(...)`.
 abstract final class RouteNames {
+  static const String intro = 'intro';
   static const String dashboard = 'dashboard';
   static const String products = 'products';
   static const String inventory = 'inventory';

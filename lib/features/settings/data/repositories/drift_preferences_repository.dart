@@ -28,6 +28,7 @@ final class DriftPreferencesRepository implements PreferencesRepository {
     SettingKeys.defaultTaxRateId,
     SettingKeys.defaultPriceIncludesTax,
     SettingKeys.backupReminderDays,
+    SettingKeys.introSeen,
   ];
 
   @override
@@ -52,6 +53,7 @@ final class DriftPreferencesRepository implements PreferencesRepository {
       backupReminderDays: AppPreferences.reminderChoices.contains(reminder)
           ? reminder!
           : 0,
+      introSeen: values[SettingKeys.introSeen] == 'true',
     );
   });
 
@@ -70,6 +72,7 @@ final class DriftPreferencesRepository implements PreferencesRepository {
         SettingKeys.defaultPriceIncludesTax:
             '${preferences.defaultPriceIncludesTax}',
         SettingKeys.backupReminderDays: '${preferences.backupReminderDays}',
+        SettingKeys.introSeen: '${preferences.introSeen}',
       };
       await _db.transaction(() async {
         for (final entry in entries.entries) {

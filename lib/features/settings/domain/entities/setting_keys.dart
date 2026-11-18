@@ -36,4 +36,7 @@ abstract final class SettingKeys {
 
   /// Days between backup reminders (`0` = off).
   static const String backupReminderDays = 'backup_reminder_days';
+
+  /// `true` once the first-launch introduction has been completed.
+  static const String introSeen = 'intro_seen';
 }

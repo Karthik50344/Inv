@@ -139,6 +139,18 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
         SettingsGroup(
+          title: 'Help',
+          children: [
+            SettingsTile(
+              key: const Key('settings_intro'),
+              icon: Icons.slideshow_outlined,
+              title: 'App introduction',
+              subtitle: 'See the welcome slides again',
+              onTap: () => context.pushNamed(RouteNames.intro),
+            ),
+          ],
+        ),
+        SettingsGroup(
           title: 'Data',
           children: [
             Padding(
