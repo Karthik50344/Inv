@@ -40,3 +40,20 @@ Extra SQL (idempotent): partial unique indexes on active category names and on e
 
 Tested by `migration_test.dart` (7 → 8 keeps data, seeds 8 categories, creates the guards; older upgrade tests also drop the new tables when simulating an old database) and `expense_schema_test.dart`.
 
+## Schema version 10 (tax model, Checkpoint A)
+Adds `tax_regimes`, `tax_jurisdictions`, `tax_categories`, `tax_profiles`, `tax_overrides`, `tax_rules`, `tax_components`, and two nullable columns on `products`: `tax_category_id`, `tax_override_id` (neither holds a tax amount). `onUpgrade(from < 10)` creates the tables, adds the columns only if missing (checked with `PRAGMA table_info`), runs `kSchemaExtraStatementsV10` (one default profile, rule owner immutable, product index), then `_carryOverLegacyTaxRates`.
+
+Carry-over: each `tax_rates` row becomes category `tc-<id>`; non-exempt rates also get rule `trl-<id>` (no jurisdiction, effective from 1970, percentage) and component `tcmp-<id>` (type `custom`, not recoverable), all in regime `tr-migrated` / profile `tp-migrated` (country code `XX` = unspecified). `products.tax_category_id` is filled from `tax_rate_id`; `tax_rate_id` and all invoices are untouched. Fixed ids + `INSERT OR IGNORE` make it re-runnable. A fresh install seeds no tax rules.
+
+Tests: `test/core/database/tax_schema_test.dart`. **`app_database.g.dart` must be regenerated** (`dart run build_runner build --delete-conflicting-outputs`).
+
+## Schema version 11 (classification and invoice tax snapshots, Checkpoint B)
+Adds `product_classifications` (unique per product + system + code, at most one primary via a partial unique index) and `invoice_item_tax_components` (per-component tax of a line; `document_type` is `sales` or `purchase`, `item_id` points at the item, so no foreign key). Adds six nullable columns to both `sales_invoice_items` and `purchase_invoice_items`: `tax_treatment`, `tax_category_id`, `tax_snapshot_json`, `classification_system`, `classification_code`, `classification_description`. Columns are added only if missing; `kSchemaExtraStatementsV11` is idempotent.
+
+Immutability: triggers allow insert/update/delete on `invoice_item_tax_components` only while the parent invoice is `draft`, the same rule as the invoice lines. Posted documents keep their snapshot; changing tax rules, categories or classifications never touches them. Lines created before v11 have null snapshot columns and keep the single-rate figures stored on the line.
+
+**`app_database.g.dart` must be regenerated.** Tests: `test/data/tax_snapshot_flow_test.dart`, `test/data/product_classification_repository_test.dart`.
+
+## Schema version 12 (hash-chained audit events, Checkpoint C)
+Adds `audit_events` (`seq` autoincrement gives chain order; unique `id` and `event_hash`; indexes on entity, type, time, correlation) with triggers refusing UPDATE and DELETE, and `audit_outbox` (events waiting after a failed write). `audit_logs` is untouched and stays readable. No data is migrated: the chain starts lazily with an `audit.chain_started` event on the first audited write, which records the number of legacy `audit_logs` rows. **`app_database.g.dart` must be regenerated.** Tests: `test/data/audit_event_repository_test.dart`.
+

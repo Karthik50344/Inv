@@ -1,4 +1,6 @@
 import 'package:drift/drift.dart';
+import 'package:inventrix/features/product_classification/domain/entities/product_classification.dart';
+import 'package:inventrix/features/taxation/domain/entities/line_tax_snapshot.dart';
 import 'package:inventrix/core/database/app_database.dart';
 import 'package:inventrix/core/utils/epoch.dart';
 import 'package:inventrix/shared/domain/value_objects/line_amounts.dart';
@@ -72,6 +74,16 @@ PurchaseLine lineFromRow(PurchaseInvoiceItemRow row, CurrencyConfig currency) =>
       ),
       taxRateBp: row.taxRateBp,
       taxName: row.taxName,
+      taxSnapshot: row.taxSnapshotJson == null
+          ? null
+          : LineTaxSnapshot.decode(row.taxSnapshotJson!),
+      classification: row.classificationCode == null
+          ? null
+          : ClassificationSnapshot(
+              system: row.classificationSystem ?? '',
+              code: row.classificationCode!,
+              description: row.classificationDescription,
+            ),
       amounts: LineAmounts(
         gross: currency.fromMinor(row.grossMinor),
         discount: currency.fromMinor(row.discountMinor),
@@ -130,6 +142,12 @@ PurchaseInvoiceItemsCompanion lineToCompanion(
   discountValue: Value(line.discount.storedValue),
   taxRateBp: Value(line.taxRateBp),
   taxName: Value(line.taxName),
+  taxTreatment: Value(line.taxSnapshot?.treatment),
+  taxCategoryId: Value(line.taxSnapshot?.taxCategoryId),
+  taxSnapshotJson: Value(line.taxSnapshot?.encode()),
+  classificationSystem: Value(line.classification?.system),
+  classificationCode: Value(line.classification?.code),
+  classificationDescription: Value(line.classification?.description),
   grossMinor: Value(line.gross.minorUnits),
   discountMinor: Value(line.discountAmount.minorUnits),
   netMinor: Value(line.net.minorUnits),

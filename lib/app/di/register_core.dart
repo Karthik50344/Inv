@@ -18,7 +18,10 @@ void registerCore(GetIt locator, {AppDatabase? database}) {
       dispose: (db) => db.close(),
     )
     ..registerLazySingleton<TransactionRunner>(
-      () => DriftTransactionRunner(locator<AppDatabase>()),
+      () => DriftTransactionRunner(
+        locator<AppDatabase>(),
+        ids: locator<IdGenerator>(),
+      ),
     )
     ..registerLazySingleton<Clock>(() => const SystemClock())
     ..registerLazySingleton<IdGenerator>(UuidIdGenerator.new);

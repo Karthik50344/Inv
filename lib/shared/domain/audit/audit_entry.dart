@@ -13,6 +13,10 @@ final class AuditEntry extends Equatable {
     required this.action,
     required this.summary,
     required this.occurredAt,
+    this.reason,
+    this.previousValues,
+    this.newValues,
+    this.metadata,
   });
 
   /// Unique id.
@@ -33,6 +37,18 @@ final class AuditEntry extends Equatable {
   /// When the action happened (UTC).
   final DateTime occurredAt;
 
+  /// Why it happened, when the user gave a reason.
+  final String? reason;
+
+  /// Values before the change (never secrets).
+  final Map<String, Object?>? previousValues;
+
+  /// Values after the change (never secrets).
+  final Map<String, Object?>? newValues;
+
+  /// Extra structured context.
+  final Map<String, Object?>? metadata;
+
   @override
   List<Object?> get props => [
     id,
@@ -41,5 +57,9 @@ final class AuditEntry extends Equatable {
     action,
     summary,
     occurredAt,
+    reason,
+    previousValues,
+    newValues,
+    metadata,
   ];
 }

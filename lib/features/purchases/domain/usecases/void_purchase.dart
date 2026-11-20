@@ -148,6 +148,9 @@ final class VoidPurchase {
           action: 'voided',
           summary: 'Voided ${invoice.displayNumber}: $trimmed',
           occurredAt: now,
+          reason: trimmed,
+          previousValues: const {'status': 'posted'},
+          newValues: const {'status': 'voided'},
         ),
       )).getOrThrow();
       return (await _purchases.getById(id)).getOrThrow();

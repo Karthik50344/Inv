@@ -54,6 +54,8 @@ final class CancelExpense {
         action: 'cancelled',
         summary: 'Expense draft cancelled: ${expense.description}',
         occurredAt: now,
+        previousValues: const {'status': 'draft'},
+        newValues: const {'status': 'cancelled'},
       ),
     )).getOrThrow();
     return (await _expenses.getById(id)).getOrThrow();

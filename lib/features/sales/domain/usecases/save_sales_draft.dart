@@ -128,6 +128,7 @@ final class SaveSalesDraft {
           lineNo: i + 1,
           lineId: _ids.newId(),
           currency: currency,
+          date: invoiceDate,
         );
         final line = built.valueOrNull;
         if (line != null) {

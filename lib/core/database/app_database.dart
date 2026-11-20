@@ -14,6 +14,17 @@ part 'app_database.g.dart';
     Categories,
     Units,
     TaxRates,
+    TaxRegimes,
+    TaxJurisdictions,
+    TaxCategories,
+    TaxProfiles,
+    TaxOverrides,
+    TaxRules,
+    TaxComponents,
+    ProductClassifications,
+    InvoiceItemTaxComponents,
+    AuditEvents,
+    AuditOutbox,
     Products,
     InventoryBalances,
     StockMovements,
@@ -45,7 +56,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Current schema version. Increment with every schema change and add a
   /// migration step plus a migration test.
-  static const int currentSchemaVersion = 9;
+  static const int currentSchemaVersion = 12;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -64,6 +75,9 @@ class AppDatabase extends _$AppDatabase {
         ...kSchemaExtraStatementsV7,
         ...kSchemaExtraStatementsV8,
         ...kSchemaExtraStatementsV9,
+        ...kSchemaExtraStatementsV10,
+        ...kSchemaExtraStatementsV11,
+        ...kSchemaExtraStatementsV12,
       ]) {
         await customStatement(statement);
       }
@@ -136,6 +150,56 @@ class AppDatabase extends _$AppDatabase {
           await customStatement(statement);
         }
       }
+      if (from < 10) {
+        await migrator.createTable(taxRegimes);
+        await migrator.createTable(taxJurisdictions);
+        await migrator.createTable(taxCategories);
+        await migrator.createTable(taxProfiles);
+        await migrator.createTable(taxOverrides);
+        await migrator.createTable(taxRules);
+        await migrator.createTable(taxComponents);
+        // Idempotent: a simulated older file may already have the columns.
+        if (!await _hasColumn('products', 'tax_category_id')) {
+          await migrator.addColumn(products, products.taxCategoryId);
+        }
+        if (!await _hasColumn('products', 'tax_override_id')) {
+          await migrator.addColumn(products, products.taxOverrideId);
+        }
+        for (final statement in kSchemaExtraStatementsV10) {
+          await customStatement(statement);
+        }
+        await _carryOverLegacyTaxRates();
+      }
+      if (from < 11) {
+        await migrator.createTable(productClassifications);
+        await migrator.createTable(invoiceItemTaxComponents);
+        await _addSnapshotColumns('sales_invoice_items', [
+          salesInvoiceItems.taxTreatment,
+          salesInvoiceItems.taxCategoryId,
+          salesInvoiceItems.taxSnapshotJson,
+          salesInvoiceItems.classificationSystem,
+          salesInvoiceItems.classificationCode,
+          salesInvoiceItems.classificationDescription,
+        ], migrator);
+        await _addSnapshotColumns('purchase_invoice_items', [
+          purchaseInvoiceItems.taxTreatment,
+          purchaseInvoiceItems.taxCategoryId,
+          purchaseInvoiceItems.taxSnapshotJson,
+          purchaseInvoiceItems.classificationSystem,
+          purchaseInvoiceItems.classificationCode,
+          purchaseInvoiceItems.classificationDescription,
+        ], migrator);
+        for (final statement in kSchemaExtraStatementsV11) {
+          await customStatement(statement);
+        }
+      }
+      if (from < 12) {
+        await migrator.createTable(auditEvents);
+        await migrator.createTable(auditOutbox);
+        for (final statement in kSchemaExtraStatementsV12) {
+          await customStatement(statement);
+        }
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -166,6 +230,111 @@ class AppDatabase extends _$AppDatabase {
   Future<List<String>> integrityCheck() async {
     final rows = await customSelect('PRAGMA integrity_check').get();
     return rows.map((row) => row.read<String>('integrity_check')).toList();
+  }
+
+  /// Adds each of [columns] to [table] unless it already exists (a
+  /// simulated older file may have them), so the upgrade is re-runnable.
+  Future<void> _addSnapshotColumns(
+    String table,
+    List<GeneratedColumn> columns,
+    Migrator migrator,
+  ) async {
+    final tableInfo = allTables.firstWhere((t) => t.actualTableName == table);
+    for (final column in columns) {
+      if (!await _hasColumn(table, column.name)) {
+        await migrator.addColumn(tableInfo, column);
+      }
+    }
+  }
+
+  Future<bool> _hasColumn(String table, String column) async {
+    final rows = await customSelect('PRAGMA table_info($table)').get();
+    return rows.any((row) => row.read<String>('name') == column);
+  }
+
+  /// 9 -> 10: turns every existing `tax_rates` row into a tax category with
+  /// one single-component rule, so products keep exactly the tax they had.
+  ///
+  /// Everything lands in a "Migrated tax rates" regime and default profile;
+  /// the rules have no jurisdiction (they apply everywhere), no dates limit
+  /// (effective from 1970) and are not recoverable. Fixed ids and
+  /// `INSERT OR IGNORE` make it safe to run twice. Existing invoices are not
+  /// touched: their items already hold their own tax figures.
+  Future<void> _carryOverLegacyTaxRates() async {
+    final now = DateTime.now().toUtc().millisecondsSinceEpoch;
+    final rates = await customSelect(
+      'SELECT id, name, rate_bp, is_exempt, archived_at FROM tax_rates',
+    ).get();
+    if (rates.isEmpty) {
+      return;
+    }
+    await customStatement(
+      'INSERT OR IGNORE INTO tax_regimes (id, name, country_code, '
+      'description, currency_code, is_active, created_at, updated_at) '
+      "VALUES ('tr-migrated', 'Migrated tax rates', 'XX', "
+      "'Rates carried over from earlier versions. They apply in every "
+      "location.', COALESCE((SELECT value FROM app_settings "
+      "WHERE key = 'currency_code'), 'INR'), 1, ?, ?)",
+      [now, now],
+    );
+    await customStatement(
+      'INSERT OR IGNORE INTO tax_profiles (id, name, regime_id, description, '
+      'is_default, default_tax_category_id, is_active, created_at, '
+      "updated_at) VALUES ('tp-migrated', 'Migrated tax rates', "
+      "'tr-migrated', 'Created from the tax rates you had before.', "
+      '1, NULL, 1, ?, ?)',
+      [now, now],
+    );
+    for (final rate in rates) {
+      final id = rate.read<String>('id');
+      final exempt = rate.read<int>('is_exempt') == 1;
+      final active = rate.readNullable<int>('archived_at') == null ? 1 : 0;
+      await customStatement(
+        'INSERT OR IGNORE INTO tax_categories (id, name, code, description, '
+        'default_tax_treatment, is_active, created_at, updated_at) '
+        'VALUES (?, ?, ?, NULL, ?, ?, ?, ?)',
+        [
+          'tc-$id',
+          rate.read<String>('name'),
+          'MIG-$id',
+          exempt ? 'exempt' : 'standard_rated',
+          active,
+          now,
+          now,
+        ],
+      );
+      if (!exempt) {
+        await customStatement(
+          'INSERT OR IGNORE INTO tax_rules (id, tax_profile_id, '
+          'tax_category_id, jurisdiction_id, transaction_type, '
+          'customer_tax_status, supply_type, supply_relation, '
+          'calculation_method, is_stackable, effective_from, '
+          'effective_until, priority, is_active, created_at, updated_at) '
+          "VALUES (?, 'tp-migrated', ?, NULL, NULL, NULL, NULL, 'any', "
+          "'percentage', 0, 0, NULL, 0, ?, ?, ?)",
+          ['trl-$id', 'tc-$id', active, now, now],
+        );
+        await customStatement(
+          'INSERT OR IGNORE INTO tax_components (id, tax_rule_id, name, '
+          'component_type, rate_basis_points, fixed_amount_minor, '
+          'calculation_order, is_compound, is_recoverable, is_active, '
+          "created_at, updated_at) VALUES (?, ?, ?, 'custom', ?, NULL, 1, "
+          '0, 0, 1, ?, ?)',
+          [
+            'tcmp-$id',
+            'trl-$id',
+            rate.read<String>('name'),
+            rate.read<int>('rate_bp'),
+            now,
+            now,
+          ],
+        );
+      }
+    }
+    await customStatement(
+      "UPDATE products SET tax_category_id = 'tc-' || tax_rate_id "
+      'WHERE tax_rate_id IS NOT NULL AND tax_category_id IS NULL',
+    );
   }
 
   /// Starter payment methods. Fixed ids and `INSERT OR IGNORE` make this safe

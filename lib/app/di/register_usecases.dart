@@ -45,7 +45,14 @@ import 'package:inventrix/features/products/domain/repositories/product_reposito
 import 'package:inventrix/features/products/domain/repositories/unit_repository.dart';
 import 'package:inventrix/features/products/domain/services/product_validator.dart';
 import 'package:inventrix/features/products/domain/usecases/add_common_units.dart';
+import 'package:inventrix/features/audit/domain/repositories/audit_event_repository.dart';
+import 'package:inventrix/features/audit/domain/services/audit_canonical.dart';
+import 'package:inventrix/features/audit/domain/usecases/verify_audit_chain.dart';
+import 'package:inventrix/features/product_classification/domain/repositories/product_classification_repository.dart';
+import 'package:inventrix/features/product_classification/domain/usecases/classification_use_cases.dart';
 import 'package:inventrix/features/products/domain/usecases/archive_product.dart';
+import 'package:inventrix/features/taxation/domain/repositories/tax_repository.dart';
+import 'package:inventrix/features/taxation/domain/services/tax_line_service.dart';
 import 'package:inventrix/features/products/domain/usecases/archive_unit.dart';
 import 'package:inventrix/features/products/domain/usecases/create_product.dart';
 import 'package:inventrix/features/products/domain/usecases/create_unit.dart';
@@ -251,6 +258,8 @@ void registerUseCases(GetIt g) {
         products: g<ProductRepository>(),
         ids: g<IdGenerator>(),
         clock: g<Clock>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
       ),
     )
     ..registerLazySingleton(
@@ -258,13 +267,79 @@ void registerUseCases(GetIt g) {
         validator: g<ProductValidator>(),
         products: g<ProductRepository>(),
         clock: g<Clock>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+        ids: g<IdGenerator>(),
       ),
     )
     ..registerLazySingleton(
-      () => ArchiveProduct(products: g<ProductRepository>(), clock: g<Clock>()),
+      () => ArchiveProduct(
+        products: g<ProductRepository>(),
+        clock: g<Clock>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+        ids: g<IdGenerator>(),
+      ),
     )
     ..registerLazySingleton(
-      () => RestoreProduct(products: g<ProductRepository>(), clock: g<Clock>()),
+      () => RestoreProduct(
+        products: g<ProductRepository>(),
+        clock: g<Clock>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+        ids: g<IdGenerator>(),
+      ),
+    )
+    // Audit
+    ..registerLazySingleton(
+      () => VerifyAuditChain(
+        repository: g<AuditEventRepository>(),
+        hasher: g<AuditHasher>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => CreateAuditCheckpoint(
+        repository: g<AuditEventRepository>(),
+        clock: g<Clock>(),
+      ),
+    )
+    // Tax and classification
+    ..registerLazySingleton(() => TaxLineService(repository: g<TaxRepository>()))
+    ..registerLazySingleton(
+      () => AddProductClassification(
+        repository: g<ProductClassificationRepository>(),
+        ids: g<IdGenerator>(),
+        clock: g<Clock>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => UpdateProductClassification(
+        repository: g<ProductClassificationRepository>(),
+        clock: g<Clock>(),
+        ids: g<IdGenerator>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => RemoveProductClassification(
+        g<ProductClassificationRepository>(),
+        clock: g<Clock>(),
+        ids: g<IdGenerator>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => SetPrimaryProductClassification(
+        g<ProductClassificationRepository>(),
+        clock: g<Clock>(),
+        ids: g<IdGenerator>(),
+        audit: g<AuditLogRepository>(),
+        transactions: g<TransactionRunner>(),
+      ),
     )
     // Inventory
     ..registerLazySingleton(
@@ -369,6 +444,8 @@ void registerUseCases(GetIt g) {
         products: g<ProductRepository>(),
         units: g<UnitRepository>(),
         taxRates: g<TaxRateRepository>(),
+        taxLines: g<TaxLineService>(),
+        classifications: g<ProductClassificationRepository>(),
       ),
     )
     ..registerLazySingleton(
@@ -431,6 +508,8 @@ void registerUseCases(GetIt g) {
         products: g<ProductRepository>(),
         units: g<UnitRepository>(),
         taxRates: g<TaxRateRepository>(),
+        taxLines: g<TaxLineService>(),
+        classifications: g<ProductClassificationRepository>(),
       ),
     )
     ..registerLazySingleton(

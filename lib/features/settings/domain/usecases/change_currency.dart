@@ -89,6 +89,14 @@ final class ChangeCurrency {
               '(${current.decimalPlaces} decimals) to '
               '${wanted.currencyCode} (${wanted.decimalPlaces} decimals).',
           occurredAt: _clock.now(),
+          previousValues: {
+            'currencyCode': current.currencyCode,
+            'decimalPlaces': current.decimalPlaces,
+          },
+          newValues: {
+            'currencyCode': wanted.currencyCode,
+            'decimalPlaces': wanted.decimalPlaces,
+          },
         ),
       )).getOrThrow();
       return wanted;

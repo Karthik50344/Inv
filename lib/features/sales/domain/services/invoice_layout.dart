@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:inventrix/features/sales/domain/entities/sales_invoice.dart';
+import 'package:inventrix/features/sales/domain/entities/sales_line.dart';
 import 'package:inventrix/features/settings/domain/entities/business_profile.dart';
 import 'package:inventrix/shared/domain/enums/document_status.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
@@ -65,6 +66,23 @@ final class InvoiceLayout extends Equatable {
       return '$whole.$text%';
     }
 
+    // The classification column appears only when some line has a code, so
+    // invoices of products without one print exactly as before.
+    final hasClassification = invoice.lines.any(
+      (l) => l.classification != null,
+    );
+    final onlyHsnSac = invoice.lines
+        .where((l) => l.classification != null)
+        .every((l) => l.classification!.system == 'hsn' ||
+            l.classification!.system == 'sac');
+    String classificationCell(SalesLine line) {
+      final c = line.classification;
+      if (c == null) {
+        return '-';
+      }
+      return onlyHsnSac ? c.code : c.label;
+    }
+
     final rows = <List<String>>[
       for (final line in invoice.lines)
         [
@@ -72,6 +90,7 @@ final class InvoiceLayout extends Equatable {
           line.sku.isEmpty
               ? line.productName
               : '${line.productName}\n${line.sku}',
+          if (hasClassification) classificationCell(line),
           '${line.quantity.toDecimalString()} ${line.unitSymbol}',
           line.priceIncludesTax
               ? '${money(line.unitPrice)} (incl. tax)'
@@ -106,9 +125,10 @@ final class InvoiceLayout extends Equatable {
         InvoiceField('Bill to', invoice.customerName),
         if (reference != null) InvoiceField('Reference', reference),
       ],
-      columns: const [
+      columns: [
         '#',
         'Item',
+        if (hasClassification) onlyHsnSac ? 'HSN/SAC' : 'Code',
         'Qty',
         'Rate',
         'Discount',
@@ -120,7 +140,7 @@ final class InvoiceLayout extends Equatable {
         InvoiceField('Subtotal', money(invoice.totals.gross)),
         if (invoice.totals.discount.isPositive)
           InvoiceField('Discount', '- ${money(invoice.totals.discount)}'),
-        InvoiceField('Tax', money(invoice.totals.tax)),
+        ..._taxTotals(invoice, money, percent),
       ],
       grandTotal: InvoiceField('Total', money(invoice.totals.total)),
       statusNote: status == DocumentStatus.voided
@@ -129,6 +149,55 @@ final class InvoiceLayout extends Equatable {
       notes: invoice.notes,
       fileName: _fileName(invoice),
     );
+  }
+
+  /// Tax rows of the totals block. Lines taxed by the configurable engine
+  /// are listed per component (for example CGST 9% and SGST 9%); otherwise
+  /// one `Tax` row is printed, exactly as before. Reverse-charge tax is
+  /// shown as information and is not part of the total.
+  static List<InvoiceField> _taxTotals(
+    SalesInvoice invoice,
+    String Function(Money) money,
+    String Function(int) percent,
+  ) {
+    final byComponent = <String, int>{};
+    final labels = <String, String>{};
+    var reverseCharge = 0;
+    for (final line in invoice.lines) {
+      final snapshot = line.taxSnapshot;
+      if (snapshot == null) {
+        continue;
+      }
+      reverseCharge += snapshot.reverseChargeTaxMinor;
+      for (final c in snapshot.components) {
+        if (snapshot.reverseChargeTaxMinor > 0) {
+          continue;
+        }
+        final key = '${c.name}|${c.rateBasisPoints}';
+        byComponent[key] = (byComponent[key] ?? 0) + c.amountMinor;
+        labels[key] = c.rateBasisPoints == null
+            ? c.name
+            : '${c.name} ${percent(c.rateBasisPoints!)}';
+      }
+    }
+    final tax = invoice.totals.tax;
+    Money minor(int value) => Money.fromMinor(
+      value,
+      currencyCode: tax.currencyCode,
+      decimalPlaces: tax.decimalPlaces,
+    );
+    return [
+      if (byComponent.isEmpty)
+        InvoiceField('Tax', money(tax))
+      else
+        for (final entry in byComponent.entries)
+          InvoiceField(labels[entry.key]!, money(minor(entry.value))),
+      if (reverseCharge > 0)
+        InvoiceField(
+          'Reverse charge tax (payable by buyer)',
+          money(minor(reverseCharge)),
+        ),
+    ];
   }
 
   static String _fileName(SalesInvoice invoice) {

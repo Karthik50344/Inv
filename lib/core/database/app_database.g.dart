@@ -2230,6 +2230,4469 @@ class TaxRatesCompanion extends UpdateCompanion<TaxRateRow> {
   }
 }
 
+class $TaxRegimesTable extends TaxRegimes
+    with TableInfo<$TaxRegimesTable, TaxRegimeRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaxRegimesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _countryCodeMeta = const VerificationMeta(
+    'countryCode',
+  );
+  @override
+  late final GeneratedColumn<String> countryCode = GeneratedColumn<String>(
+    'country_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    countryCode,
+    description,
+    currencyCode,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tax_regimes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaxRegimeRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('country_code')) {
+      context.handle(
+        _countryCodeMeta,
+        countryCode.isAcceptableOrUnknown(
+          data['country_code']!,
+          _countryCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_countryCodeMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyCodeMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaxRegimeRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaxRegimeRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      countryCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}country_code'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TaxRegimesTable createAlias(String alias) {
+    return $TaxRegimesTable(attachedDatabase, alias);
+  }
+}
+
+class TaxRegimeRow extends DataClass implements Insertable<TaxRegimeRow> {
+  final String id;
+  final String name;
+  final String countryCode;
+  final String? description;
+  final String currencyCode;
+  final bool isActive;
+  final int createdAt;
+  final int updatedAt;
+  const TaxRegimeRow({
+    required this.id,
+    required this.name,
+    required this.countryCode,
+    this.description,
+    required this.currencyCode,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['country_code'] = Variable<String>(countryCode);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['currency_code'] = Variable<String>(currencyCode);
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  TaxRegimesCompanion toCompanion(bool nullToAbsent) {
+    return TaxRegimesCompanion(
+      id: Value(id),
+      name: Value(name),
+      countryCode: Value(countryCode),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      currencyCode: Value(currencyCode),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TaxRegimeRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaxRegimeRow(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      countryCode: serializer.fromJson<String>(json['countryCode']),
+      description: serializer.fromJson<String?>(json['description']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'countryCode': serializer.toJson<String>(countryCode),
+      'description': serializer.toJson<String?>(description),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  TaxRegimeRow copyWith({
+    String? id,
+    String? name,
+    String? countryCode,
+    Value<String?> description = const Value.absent(),
+    String? currencyCode,
+    bool? isActive,
+    int? createdAt,
+    int? updatedAt,
+  }) => TaxRegimeRow(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    countryCode: countryCode ?? this.countryCode,
+    description: description.present ? description.value : this.description,
+    currencyCode: currencyCode ?? this.currencyCode,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TaxRegimeRow copyWithCompanion(TaxRegimesCompanion data) {
+    return TaxRegimeRow(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      countryCode: data.countryCode.present
+          ? data.countryCode.value
+          : this.countryCode,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxRegimeRow(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('countryCode: $countryCode, ')
+          ..write('description: $description, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    countryCode,
+    description,
+    currencyCode,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaxRegimeRow &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.countryCode == this.countryCode &&
+          other.description == this.description &&
+          other.currencyCode == this.currencyCode &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TaxRegimesCompanion extends UpdateCompanion<TaxRegimeRow> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> countryCode;
+  final Value<String?> description;
+  final Value<String> currencyCode;
+  final Value<bool> isActive;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const TaxRegimesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.countryCode = const Value.absent(),
+    this.description = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaxRegimesCompanion.insert({
+    required String id,
+    required String name,
+    required String countryCode,
+    this.description = const Value.absent(),
+    required String currencyCode,
+    this.isActive = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       countryCode = Value(countryCode),
+       currencyCode = Value(currencyCode),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<TaxRegimeRow> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? countryCode,
+    Expression<String>? description,
+    Expression<String>? currencyCode,
+    Expression<bool>? isActive,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (countryCode != null) 'country_code': countryCode,
+      if (description != null) 'description': description,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaxRegimesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? countryCode,
+    Value<String?>? description,
+    Value<String>? currencyCode,
+    Value<bool>? isActive,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return TaxRegimesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      countryCode: countryCode ?? this.countryCode,
+      description: description ?? this.description,
+      currencyCode: currencyCode ?? this.currencyCode,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (countryCode.present) {
+      map['country_code'] = Variable<String>(countryCode.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxRegimesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('countryCode: $countryCode, ')
+          ..write('description: $description, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaxJurisdictionsTable extends TaxJurisdictions
+    with TableInfo<$TaxJurisdictionsTable, TaxJurisdictionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaxJurisdictionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _regimeIdMeta = const VerificationMeta(
+    'regimeId',
+  );
+  @override
+  late final GeneratedColumn<String> regimeId = GeneratedColumn<String>(
+    'regime_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_regimes (id) ON DELETE RESTRICT',
+    ),
+  );
+  static const VerificationMeta _countryCodeMeta = const VerificationMeta(
+    'countryCode',
+  );
+  @override
+  late final GeneratedColumn<String> countryCode = GeneratedColumn<String>(
+    'country_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _regionCodeMeta = const VerificationMeta(
+    'regionCode',
+  );
+  @override
+  late final GeneratedColumn<String> regionCode = GeneratedColumn<String>(
+    'region_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _regionNameMeta = const VerificationMeta(
+    'regionName',
+  );
+  @override
+  late final GeneratedColumn<String> regionName = GeneratedColumn<String>(
+    'region_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _jurisdictionTypeMeta = const VerificationMeta(
+    'jurisdictionType',
+  );
+  @override
+  late final GeneratedColumn<String> jurisdictionType = GeneratedColumn<String>(
+    'jurisdiction_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _parentJurisdictionIdMeta =
+      const VerificationMeta('parentJurisdictionId');
+  @override
+  late final GeneratedColumn<String> parentJurisdictionId =
+      GeneratedColumn<String>(
+        'parent_jurisdiction_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES tax_jurisdictions (id) ON DELETE RESTRICT',
+        ),
+      );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    regimeId,
+    countryCode,
+    regionCode,
+    regionName,
+    jurisdictionType,
+    parentJurisdictionId,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tax_jurisdictions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaxJurisdictionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('regime_id')) {
+      context.handle(
+        _regimeIdMeta,
+        regimeId.isAcceptableOrUnknown(data['regime_id']!, _regimeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_regimeIdMeta);
+    }
+    if (data.containsKey('country_code')) {
+      context.handle(
+        _countryCodeMeta,
+        countryCode.isAcceptableOrUnknown(
+          data['country_code']!,
+          _countryCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_countryCodeMeta);
+    }
+    if (data.containsKey('region_code')) {
+      context.handle(
+        _regionCodeMeta,
+        regionCode.isAcceptableOrUnknown(data['region_code']!, _regionCodeMeta),
+      );
+    }
+    if (data.containsKey('region_name')) {
+      context.handle(
+        _regionNameMeta,
+        regionName.isAcceptableOrUnknown(data['region_name']!, _regionNameMeta),
+      );
+    }
+    if (data.containsKey('jurisdiction_type')) {
+      context.handle(
+        _jurisdictionTypeMeta,
+        jurisdictionType.isAcceptableOrUnknown(
+          data['jurisdiction_type']!,
+          _jurisdictionTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_jurisdictionTypeMeta);
+    }
+    if (data.containsKey('parent_jurisdiction_id')) {
+      context.handle(
+        _parentJurisdictionIdMeta,
+        parentJurisdictionId.isAcceptableOrUnknown(
+          data['parent_jurisdiction_id']!,
+          _parentJurisdictionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaxJurisdictionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaxJurisdictionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      regimeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}regime_id'],
+      )!,
+      countryCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}country_code'],
+      )!,
+      regionCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}region_code'],
+      ),
+      regionName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}region_name'],
+      ),
+      jurisdictionType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}jurisdiction_type'],
+      )!,
+      parentJurisdictionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parent_jurisdiction_id'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TaxJurisdictionsTable createAlias(String alias) {
+    return $TaxJurisdictionsTable(attachedDatabase, alias);
+  }
+}
+
+class TaxJurisdictionRow extends DataClass
+    implements Insertable<TaxJurisdictionRow> {
+  final String id;
+  final String regimeId;
+  final String countryCode;
+  final String? regionCode;
+  final String? regionName;
+  final String jurisdictionType;
+  final String? parentJurisdictionId;
+  final bool isActive;
+  final int createdAt;
+  final int updatedAt;
+  const TaxJurisdictionRow({
+    required this.id,
+    required this.regimeId,
+    required this.countryCode,
+    this.regionCode,
+    this.regionName,
+    required this.jurisdictionType,
+    this.parentJurisdictionId,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['regime_id'] = Variable<String>(regimeId);
+    map['country_code'] = Variable<String>(countryCode);
+    if (!nullToAbsent || regionCode != null) {
+      map['region_code'] = Variable<String>(regionCode);
+    }
+    if (!nullToAbsent || regionName != null) {
+      map['region_name'] = Variable<String>(regionName);
+    }
+    map['jurisdiction_type'] = Variable<String>(jurisdictionType);
+    if (!nullToAbsent || parentJurisdictionId != null) {
+      map['parent_jurisdiction_id'] = Variable<String>(parentJurisdictionId);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  TaxJurisdictionsCompanion toCompanion(bool nullToAbsent) {
+    return TaxJurisdictionsCompanion(
+      id: Value(id),
+      regimeId: Value(regimeId),
+      countryCode: Value(countryCode),
+      regionCode: regionCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(regionCode),
+      regionName: regionName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(regionName),
+      jurisdictionType: Value(jurisdictionType),
+      parentJurisdictionId: parentJurisdictionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(parentJurisdictionId),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TaxJurisdictionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaxJurisdictionRow(
+      id: serializer.fromJson<String>(json['id']),
+      regimeId: serializer.fromJson<String>(json['regimeId']),
+      countryCode: serializer.fromJson<String>(json['countryCode']),
+      regionCode: serializer.fromJson<String?>(json['regionCode']),
+      regionName: serializer.fromJson<String?>(json['regionName']),
+      jurisdictionType: serializer.fromJson<String>(json['jurisdictionType']),
+      parentJurisdictionId: serializer.fromJson<String?>(
+        json['parentJurisdictionId'],
+      ),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'regimeId': serializer.toJson<String>(regimeId),
+      'countryCode': serializer.toJson<String>(countryCode),
+      'regionCode': serializer.toJson<String?>(regionCode),
+      'regionName': serializer.toJson<String?>(regionName),
+      'jurisdictionType': serializer.toJson<String>(jurisdictionType),
+      'parentJurisdictionId': serializer.toJson<String?>(parentJurisdictionId),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  TaxJurisdictionRow copyWith({
+    String? id,
+    String? regimeId,
+    String? countryCode,
+    Value<String?> regionCode = const Value.absent(),
+    Value<String?> regionName = const Value.absent(),
+    String? jurisdictionType,
+    Value<String?> parentJurisdictionId = const Value.absent(),
+    bool? isActive,
+    int? createdAt,
+    int? updatedAt,
+  }) => TaxJurisdictionRow(
+    id: id ?? this.id,
+    regimeId: regimeId ?? this.regimeId,
+    countryCode: countryCode ?? this.countryCode,
+    regionCode: regionCode.present ? regionCode.value : this.regionCode,
+    regionName: regionName.present ? regionName.value : this.regionName,
+    jurisdictionType: jurisdictionType ?? this.jurisdictionType,
+    parentJurisdictionId: parentJurisdictionId.present
+        ? parentJurisdictionId.value
+        : this.parentJurisdictionId,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TaxJurisdictionRow copyWithCompanion(TaxJurisdictionsCompanion data) {
+    return TaxJurisdictionRow(
+      id: data.id.present ? data.id.value : this.id,
+      regimeId: data.regimeId.present ? data.regimeId.value : this.regimeId,
+      countryCode: data.countryCode.present
+          ? data.countryCode.value
+          : this.countryCode,
+      regionCode: data.regionCode.present
+          ? data.regionCode.value
+          : this.regionCode,
+      regionName: data.regionName.present
+          ? data.regionName.value
+          : this.regionName,
+      jurisdictionType: data.jurisdictionType.present
+          ? data.jurisdictionType.value
+          : this.jurisdictionType,
+      parentJurisdictionId: data.parentJurisdictionId.present
+          ? data.parentJurisdictionId.value
+          : this.parentJurisdictionId,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxJurisdictionRow(')
+          ..write('id: $id, ')
+          ..write('regimeId: $regimeId, ')
+          ..write('countryCode: $countryCode, ')
+          ..write('regionCode: $regionCode, ')
+          ..write('regionName: $regionName, ')
+          ..write('jurisdictionType: $jurisdictionType, ')
+          ..write('parentJurisdictionId: $parentJurisdictionId, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    regimeId,
+    countryCode,
+    regionCode,
+    regionName,
+    jurisdictionType,
+    parentJurisdictionId,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaxJurisdictionRow &&
+          other.id == this.id &&
+          other.regimeId == this.regimeId &&
+          other.countryCode == this.countryCode &&
+          other.regionCode == this.regionCode &&
+          other.regionName == this.regionName &&
+          other.jurisdictionType == this.jurisdictionType &&
+          other.parentJurisdictionId == this.parentJurisdictionId &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TaxJurisdictionsCompanion extends UpdateCompanion<TaxJurisdictionRow> {
+  final Value<String> id;
+  final Value<String> regimeId;
+  final Value<String> countryCode;
+  final Value<String?> regionCode;
+  final Value<String?> regionName;
+  final Value<String> jurisdictionType;
+  final Value<String?> parentJurisdictionId;
+  final Value<bool> isActive;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const TaxJurisdictionsCompanion({
+    this.id = const Value.absent(),
+    this.regimeId = const Value.absent(),
+    this.countryCode = const Value.absent(),
+    this.regionCode = const Value.absent(),
+    this.regionName = const Value.absent(),
+    this.jurisdictionType = const Value.absent(),
+    this.parentJurisdictionId = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaxJurisdictionsCompanion.insert({
+    required String id,
+    required String regimeId,
+    required String countryCode,
+    this.regionCode = const Value.absent(),
+    this.regionName = const Value.absent(),
+    required String jurisdictionType,
+    this.parentJurisdictionId = const Value.absent(),
+    this.isActive = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       regimeId = Value(regimeId),
+       countryCode = Value(countryCode),
+       jurisdictionType = Value(jurisdictionType),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<TaxJurisdictionRow> custom({
+    Expression<String>? id,
+    Expression<String>? regimeId,
+    Expression<String>? countryCode,
+    Expression<String>? regionCode,
+    Expression<String>? regionName,
+    Expression<String>? jurisdictionType,
+    Expression<String>? parentJurisdictionId,
+    Expression<bool>? isActive,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (regimeId != null) 'regime_id': regimeId,
+      if (countryCode != null) 'country_code': countryCode,
+      if (regionCode != null) 'region_code': regionCode,
+      if (regionName != null) 'region_name': regionName,
+      if (jurisdictionType != null) 'jurisdiction_type': jurisdictionType,
+      if (parentJurisdictionId != null)
+        'parent_jurisdiction_id': parentJurisdictionId,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaxJurisdictionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? regimeId,
+    Value<String>? countryCode,
+    Value<String?>? regionCode,
+    Value<String?>? regionName,
+    Value<String>? jurisdictionType,
+    Value<String?>? parentJurisdictionId,
+    Value<bool>? isActive,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return TaxJurisdictionsCompanion(
+      id: id ?? this.id,
+      regimeId: regimeId ?? this.regimeId,
+      countryCode: countryCode ?? this.countryCode,
+      regionCode: regionCode ?? this.regionCode,
+      regionName: regionName ?? this.regionName,
+      jurisdictionType: jurisdictionType ?? this.jurisdictionType,
+      parentJurisdictionId: parentJurisdictionId ?? this.parentJurisdictionId,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (regimeId.present) {
+      map['regime_id'] = Variable<String>(regimeId.value);
+    }
+    if (countryCode.present) {
+      map['country_code'] = Variable<String>(countryCode.value);
+    }
+    if (regionCode.present) {
+      map['region_code'] = Variable<String>(regionCode.value);
+    }
+    if (regionName.present) {
+      map['region_name'] = Variable<String>(regionName.value);
+    }
+    if (jurisdictionType.present) {
+      map['jurisdiction_type'] = Variable<String>(jurisdictionType.value);
+    }
+    if (parentJurisdictionId.present) {
+      map['parent_jurisdiction_id'] = Variable<String>(
+        parentJurisdictionId.value,
+      );
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxJurisdictionsCompanion(')
+          ..write('id: $id, ')
+          ..write('regimeId: $regimeId, ')
+          ..write('countryCode: $countryCode, ')
+          ..write('regionCode: $regionCode, ')
+          ..write('regionName: $regionName, ')
+          ..write('jurisdictionType: $jurisdictionType, ')
+          ..write('parentJurisdictionId: $parentJurisdictionId, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaxCategoriesTable extends TaxCategories
+    with TableInfo<$TaxCategoriesTable, TaxCategoryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaxCategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _defaultTaxTreatmentMeta =
+      const VerificationMeta('defaultTaxTreatment');
+  @override
+  late final GeneratedColumn<String> defaultTaxTreatment =
+      GeneratedColumn<String>(
+        'default_tax_treatment',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    code,
+    description,
+    defaultTaxTreatment,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tax_categories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaxCategoryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('default_tax_treatment')) {
+      context.handle(
+        _defaultTaxTreatmentMeta,
+        defaultTaxTreatment.isAcceptableOrUnknown(
+          data['default_tax_treatment']!,
+          _defaultTaxTreatmentMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_defaultTaxTreatmentMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {code},
+  ];
+  @override
+  TaxCategoryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaxCategoryRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      defaultTaxTreatment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}default_tax_treatment'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TaxCategoriesTable createAlias(String alias) {
+    return $TaxCategoriesTable(attachedDatabase, alias);
+  }
+}
+
+class TaxCategoryRow extends DataClass implements Insertable<TaxCategoryRow> {
+  final String id;
+  final String name;
+  final String code;
+  final String? description;
+  final String defaultTaxTreatment;
+  final bool isActive;
+  final int createdAt;
+  final int updatedAt;
+  const TaxCategoryRow({
+    required this.id,
+    required this.name,
+    required this.code,
+    this.description,
+    required this.defaultTaxTreatment,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['code'] = Variable<String>(code);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['default_tax_treatment'] = Variable<String>(defaultTaxTreatment);
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  TaxCategoriesCompanion toCompanion(bool nullToAbsent) {
+    return TaxCategoriesCompanion(
+      id: Value(id),
+      name: Value(name),
+      code: Value(code),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      defaultTaxTreatment: Value(defaultTaxTreatment),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TaxCategoryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaxCategoryRow(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      code: serializer.fromJson<String>(json['code']),
+      description: serializer.fromJson<String?>(json['description']),
+      defaultTaxTreatment: serializer.fromJson<String>(
+        json['defaultTaxTreatment'],
+      ),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'code': serializer.toJson<String>(code),
+      'description': serializer.toJson<String?>(description),
+      'defaultTaxTreatment': serializer.toJson<String>(defaultTaxTreatment),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  TaxCategoryRow copyWith({
+    String? id,
+    String? name,
+    String? code,
+    Value<String?> description = const Value.absent(),
+    String? defaultTaxTreatment,
+    bool? isActive,
+    int? createdAt,
+    int? updatedAt,
+  }) => TaxCategoryRow(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    code: code ?? this.code,
+    description: description.present ? description.value : this.description,
+    defaultTaxTreatment: defaultTaxTreatment ?? this.defaultTaxTreatment,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TaxCategoryRow copyWithCompanion(TaxCategoriesCompanion data) {
+    return TaxCategoryRow(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      code: data.code.present ? data.code.value : this.code,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      defaultTaxTreatment: data.defaultTaxTreatment.present
+          ? data.defaultTaxTreatment.value
+          : this.defaultTaxTreatment,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxCategoryRow(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('code: $code, ')
+          ..write('description: $description, ')
+          ..write('defaultTaxTreatment: $defaultTaxTreatment, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    code,
+    description,
+    defaultTaxTreatment,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaxCategoryRow &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.code == this.code &&
+          other.description == this.description &&
+          other.defaultTaxTreatment == this.defaultTaxTreatment &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TaxCategoriesCompanion extends UpdateCompanion<TaxCategoryRow> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> code;
+  final Value<String?> description;
+  final Value<String> defaultTaxTreatment;
+  final Value<bool> isActive;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const TaxCategoriesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.code = const Value.absent(),
+    this.description = const Value.absent(),
+    this.defaultTaxTreatment = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaxCategoriesCompanion.insert({
+    required String id,
+    required String name,
+    required String code,
+    this.description = const Value.absent(),
+    required String defaultTaxTreatment,
+    this.isActive = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       code = Value(code),
+       defaultTaxTreatment = Value(defaultTaxTreatment),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<TaxCategoryRow> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? code,
+    Expression<String>? description,
+    Expression<String>? defaultTaxTreatment,
+    Expression<bool>? isActive,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (code != null) 'code': code,
+      if (description != null) 'description': description,
+      if (defaultTaxTreatment != null)
+        'default_tax_treatment': defaultTaxTreatment,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaxCategoriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? code,
+    Value<String?>? description,
+    Value<String>? defaultTaxTreatment,
+    Value<bool>? isActive,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return TaxCategoriesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      code: code ?? this.code,
+      description: description ?? this.description,
+      defaultTaxTreatment: defaultTaxTreatment ?? this.defaultTaxTreatment,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (defaultTaxTreatment.present) {
+      map['default_tax_treatment'] = Variable<String>(
+        defaultTaxTreatment.value,
+      );
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxCategoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('code: $code, ')
+          ..write('description: $description, ')
+          ..write('defaultTaxTreatment: $defaultTaxTreatment, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaxProfilesTable extends TaxProfiles
+    with TableInfo<$TaxProfilesTable, TaxProfileRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaxProfilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _regimeIdMeta = const VerificationMeta(
+    'regimeId',
+  );
+  @override
+  late final GeneratedColumn<String> regimeId = GeneratedColumn<String>(
+    'regime_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_regimes (id) ON DELETE RESTRICT',
+    ),
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isDefaultMeta = const VerificationMeta(
+    'isDefault',
+  );
+  @override
+  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
+    'is_default',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_default" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _defaultTaxCategoryIdMeta =
+      const VerificationMeta('defaultTaxCategoryId');
+  @override
+  late final GeneratedColumn<String> defaultTaxCategoryId =
+      GeneratedColumn<String>(
+        'default_tax_category_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES tax_categories (id) ON DELETE RESTRICT',
+        ),
+      );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    regimeId,
+    description,
+    isDefault,
+    defaultTaxCategoryId,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tax_profiles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaxProfileRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('regime_id')) {
+      context.handle(
+        _regimeIdMeta,
+        regimeId.isAcceptableOrUnknown(data['regime_id']!, _regimeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_regimeIdMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_default')) {
+      context.handle(
+        _isDefaultMeta,
+        isDefault.isAcceptableOrUnknown(data['is_default']!, _isDefaultMeta),
+      );
+    }
+    if (data.containsKey('default_tax_category_id')) {
+      context.handle(
+        _defaultTaxCategoryIdMeta,
+        defaultTaxCategoryId.isAcceptableOrUnknown(
+          data['default_tax_category_id']!,
+          _defaultTaxCategoryIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaxProfileRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaxProfileRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      regimeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}regime_id'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      isDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_default'],
+      )!,
+      defaultTaxCategoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}default_tax_category_id'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TaxProfilesTable createAlias(String alias) {
+    return $TaxProfilesTable(attachedDatabase, alias);
+  }
+}
+
+class TaxProfileRow extends DataClass implements Insertable<TaxProfileRow> {
+  final String id;
+  final String name;
+  final String regimeId;
+  final String? description;
+  final bool isDefault;
+  final String? defaultTaxCategoryId;
+  final bool isActive;
+  final int createdAt;
+  final int updatedAt;
+  const TaxProfileRow({
+    required this.id,
+    required this.name,
+    required this.regimeId,
+    this.description,
+    required this.isDefault,
+    this.defaultTaxCategoryId,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['regime_id'] = Variable<String>(regimeId);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['is_default'] = Variable<bool>(isDefault);
+    if (!nullToAbsent || defaultTaxCategoryId != null) {
+      map['default_tax_category_id'] = Variable<String>(defaultTaxCategoryId);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  TaxProfilesCompanion toCompanion(bool nullToAbsent) {
+    return TaxProfilesCompanion(
+      id: Value(id),
+      name: Value(name),
+      regimeId: Value(regimeId),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      isDefault: Value(isDefault),
+      defaultTaxCategoryId: defaultTaxCategoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(defaultTaxCategoryId),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TaxProfileRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaxProfileRow(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      regimeId: serializer.fromJson<String>(json['regimeId']),
+      description: serializer.fromJson<String?>(json['description']),
+      isDefault: serializer.fromJson<bool>(json['isDefault']),
+      defaultTaxCategoryId: serializer.fromJson<String?>(
+        json['defaultTaxCategoryId'],
+      ),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'regimeId': serializer.toJson<String>(regimeId),
+      'description': serializer.toJson<String?>(description),
+      'isDefault': serializer.toJson<bool>(isDefault),
+      'defaultTaxCategoryId': serializer.toJson<String?>(defaultTaxCategoryId),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  TaxProfileRow copyWith({
+    String? id,
+    String? name,
+    String? regimeId,
+    Value<String?> description = const Value.absent(),
+    bool? isDefault,
+    Value<String?> defaultTaxCategoryId = const Value.absent(),
+    bool? isActive,
+    int? createdAt,
+    int? updatedAt,
+  }) => TaxProfileRow(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    regimeId: regimeId ?? this.regimeId,
+    description: description.present ? description.value : this.description,
+    isDefault: isDefault ?? this.isDefault,
+    defaultTaxCategoryId: defaultTaxCategoryId.present
+        ? defaultTaxCategoryId.value
+        : this.defaultTaxCategoryId,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TaxProfileRow copyWithCompanion(TaxProfilesCompanion data) {
+    return TaxProfileRow(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      regimeId: data.regimeId.present ? data.regimeId.value : this.regimeId,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
+      defaultTaxCategoryId: data.defaultTaxCategoryId.present
+          ? data.defaultTaxCategoryId.value
+          : this.defaultTaxCategoryId,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxProfileRow(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('regimeId: $regimeId, ')
+          ..write('description: $description, ')
+          ..write('isDefault: $isDefault, ')
+          ..write('defaultTaxCategoryId: $defaultTaxCategoryId, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    regimeId,
+    description,
+    isDefault,
+    defaultTaxCategoryId,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaxProfileRow &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.regimeId == this.regimeId &&
+          other.description == this.description &&
+          other.isDefault == this.isDefault &&
+          other.defaultTaxCategoryId == this.defaultTaxCategoryId &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TaxProfilesCompanion extends UpdateCompanion<TaxProfileRow> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> regimeId;
+  final Value<String?> description;
+  final Value<bool> isDefault;
+  final Value<String?> defaultTaxCategoryId;
+  final Value<bool> isActive;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const TaxProfilesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.regimeId = const Value.absent(),
+    this.description = const Value.absent(),
+    this.isDefault = const Value.absent(),
+    this.defaultTaxCategoryId = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaxProfilesCompanion.insert({
+    required String id,
+    required String name,
+    required String regimeId,
+    this.description = const Value.absent(),
+    this.isDefault = const Value.absent(),
+    this.defaultTaxCategoryId = const Value.absent(),
+    this.isActive = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       regimeId = Value(regimeId),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<TaxProfileRow> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? regimeId,
+    Expression<String>? description,
+    Expression<bool>? isDefault,
+    Expression<String>? defaultTaxCategoryId,
+    Expression<bool>? isActive,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (regimeId != null) 'regime_id': regimeId,
+      if (description != null) 'description': description,
+      if (isDefault != null) 'is_default': isDefault,
+      if (defaultTaxCategoryId != null)
+        'default_tax_category_id': defaultTaxCategoryId,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaxProfilesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? regimeId,
+    Value<String?>? description,
+    Value<bool>? isDefault,
+    Value<String?>? defaultTaxCategoryId,
+    Value<bool>? isActive,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return TaxProfilesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      regimeId: regimeId ?? this.regimeId,
+      description: description ?? this.description,
+      isDefault: isDefault ?? this.isDefault,
+      defaultTaxCategoryId: defaultTaxCategoryId ?? this.defaultTaxCategoryId,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (regimeId.present) {
+      map['regime_id'] = Variable<String>(regimeId.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (isDefault.present) {
+      map['is_default'] = Variable<bool>(isDefault.value);
+    }
+    if (defaultTaxCategoryId.present) {
+      map['default_tax_category_id'] = Variable<String>(
+        defaultTaxCategoryId.value,
+      );
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxProfilesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('regimeId: $regimeId, ')
+          ..write('description: $description, ')
+          ..write('isDefault: $isDefault, ')
+          ..write('defaultTaxCategoryId: $defaultTaxCategoryId, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaxOverridesTable extends TaxOverrides
+    with TableInfo<$TaxOverridesTable, TaxOverrideRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaxOverridesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taxCategoryIdMeta = const VerificationMeta(
+    'taxCategoryId',
+  );
+  @override
+  late final GeneratedColumn<String> taxCategoryId = GeneratedColumn<String>(
+    'tax_category_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_categories (id) ON DELETE RESTRICT',
+    ),
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    taxCategoryId,
+    reason,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tax_overrides';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaxOverrideRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('tax_category_id')) {
+      context.handle(
+        _taxCategoryIdMeta,
+        taxCategoryId.isAcceptableOrUnknown(
+          data['tax_category_id']!,
+          _taxCategoryIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_taxCategoryIdMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_reasonMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaxOverrideRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaxOverrideRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      taxCategoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_category_id'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TaxOverridesTable createAlias(String alias) {
+    return $TaxOverridesTable(attachedDatabase, alias);
+  }
+}
+
+class TaxOverrideRow extends DataClass implements Insertable<TaxOverrideRow> {
+  final String id;
+  final String name;
+  final String taxCategoryId;
+  final String reason;
+  final bool isActive;
+  final int createdAt;
+  final int updatedAt;
+  const TaxOverrideRow({
+    required this.id,
+    required this.name,
+    required this.taxCategoryId,
+    required this.reason,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['tax_category_id'] = Variable<String>(taxCategoryId);
+    map['reason'] = Variable<String>(reason);
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  TaxOverridesCompanion toCompanion(bool nullToAbsent) {
+    return TaxOverridesCompanion(
+      id: Value(id),
+      name: Value(name),
+      taxCategoryId: Value(taxCategoryId),
+      reason: Value(reason),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TaxOverrideRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaxOverrideRow(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      taxCategoryId: serializer.fromJson<String>(json['taxCategoryId']),
+      reason: serializer.fromJson<String>(json['reason']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'taxCategoryId': serializer.toJson<String>(taxCategoryId),
+      'reason': serializer.toJson<String>(reason),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  TaxOverrideRow copyWith({
+    String? id,
+    String? name,
+    String? taxCategoryId,
+    String? reason,
+    bool? isActive,
+    int? createdAt,
+    int? updatedAt,
+  }) => TaxOverrideRow(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    taxCategoryId: taxCategoryId ?? this.taxCategoryId,
+    reason: reason ?? this.reason,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TaxOverrideRow copyWithCompanion(TaxOverridesCompanion data) {
+    return TaxOverrideRow(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      taxCategoryId: data.taxCategoryId.present
+          ? data.taxCategoryId.value
+          : this.taxCategoryId,
+      reason: data.reason.present ? data.reason.value : this.reason,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxOverrideRow(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('reason: $reason, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    taxCategoryId,
+    reason,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaxOverrideRow &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.taxCategoryId == this.taxCategoryId &&
+          other.reason == this.reason &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TaxOverridesCompanion extends UpdateCompanion<TaxOverrideRow> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> taxCategoryId;
+  final Value<String> reason;
+  final Value<bool> isActive;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const TaxOverridesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.taxCategoryId = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaxOverridesCompanion.insert({
+    required String id,
+    required String name,
+    required String taxCategoryId,
+    required String reason,
+    this.isActive = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       taxCategoryId = Value(taxCategoryId),
+       reason = Value(reason),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<TaxOverrideRow> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? taxCategoryId,
+    Expression<String>? reason,
+    Expression<bool>? isActive,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (taxCategoryId != null) 'tax_category_id': taxCategoryId,
+      if (reason != null) 'reason': reason,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaxOverridesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? taxCategoryId,
+    Value<String>? reason,
+    Value<bool>? isActive,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return TaxOverridesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      taxCategoryId: taxCategoryId ?? this.taxCategoryId,
+      reason: reason ?? this.reason,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (taxCategoryId.present) {
+      map['tax_category_id'] = Variable<String>(taxCategoryId.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxOverridesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('reason: $reason, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaxRulesTable extends TaxRules
+    with TableInfo<$TaxRulesTable, TaxRuleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaxRulesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taxProfileIdMeta = const VerificationMeta(
+    'taxProfileId',
+  );
+  @override
+  late final GeneratedColumn<String> taxProfileId = GeneratedColumn<String>(
+    'tax_profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_profiles (id) ON DELETE RESTRICT',
+    ),
+  );
+  static const VerificationMeta _taxCategoryIdMeta = const VerificationMeta(
+    'taxCategoryId',
+  );
+  @override
+  late final GeneratedColumn<String> taxCategoryId = GeneratedColumn<String>(
+    'tax_category_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_categories (id) ON DELETE RESTRICT',
+    ),
+  );
+  static const VerificationMeta _jurisdictionIdMeta = const VerificationMeta(
+    'jurisdictionId',
+  );
+  @override
+  late final GeneratedColumn<String> jurisdictionId = GeneratedColumn<String>(
+    'jurisdiction_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_jurisdictions (id) ON DELETE RESTRICT',
+    ),
+  );
+  static const VerificationMeta _transactionTypeMeta = const VerificationMeta(
+    'transactionType',
+  );
+  @override
+  late final GeneratedColumn<String> transactionType = GeneratedColumn<String>(
+    'transaction_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _customerTaxStatusMeta = const VerificationMeta(
+    'customerTaxStatus',
+  );
+  @override
+  late final GeneratedColumn<String> customerTaxStatus =
+      GeneratedColumn<String>(
+        'customer_tax_status',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _supplyTypeMeta = const VerificationMeta(
+    'supplyType',
+  );
+  @override
+  late final GeneratedColumn<String> supplyType = GeneratedColumn<String>(
+    'supply_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _supplyRelationMeta = const VerificationMeta(
+    'supplyRelation',
+  );
+  @override
+  late final GeneratedColumn<String> supplyRelation = GeneratedColumn<String>(
+    'supply_relation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('any'),
+  );
+  static const VerificationMeta _calculationMethodMeta = const VerificationMeta(
+    'calculationMethod',
+  );
+  @override
+  late final GeneratedColumn<String> calculationMethod =
+      GeneratedColumn<String>(
+        'calculation_method',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _isStackableMeta = const VerificationMeta(
+    'isStackable',
+  );
+  @override
+  late final GeneratedColumn<bool> isStackable = GeneratedColumn<bool>(
+    'is_stackable',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_stackable" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _effectiveFromMeta = const VerificationMeta(
+    'effectiveFrom',
+  );
+  @override
+  late final GeneratedColumn<int> effectiveFrom = GeneratedColumn<int>(
+    'effective_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _effectiveUntilMeta = const VerificationMeta(
+    'effectiveUntil',
+  );
+  @override
+  late final GeneratedColumn<int> effectiveUntil = GeneratedColumn<int>(
+    'effective_until',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
+  @override
+  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
+    'priority',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    taxProfileId,
+    taxCategoryId,
+    jurisdictionId,
+    transactionType,
+    customerTaxStatus,
+    supplyType,
+    supplyRelation,
+    calculationMethod,
+    isStackable,
+    effectiveFrom,
+    effectiveUntil,
+    priority,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tax_rules';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaxRuleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('tax_profile_id')) {
+      context.handle(
+        _taxProfileIdMeta,
+        taxProfileId.isAcceptableOrUnknown(
+          data['tax_profile_id']!,
+          _taxProfileIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_taxProfileIdMeta);
+    }
+    if (data.containsKey('tax_category_id')) {
+      context.handle(
+        _taxCategoryIdMeta,
+        taxCategoryId.isAcceptableOrUnknown(
+          data['tax_category_id']!,
+          _taxCategoryIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_taxCategoryIdMeta);
+    }
+    if (data.containsKey('jurisdiction_id')) {
+      context.handle(
+        _jurisdictionIdMeta,
+        jurisdictionId.isAcceptableOrUnknown(
+          data['jurisdiction_id']!,
+          _jurisdictionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('transaction_type')) {
+      context.handle(
+        _transactionTypeMeta,
+        transactionType.isAcceptableOrUnknown(
+          data['transaction_type']!,
+          _transactionTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('customer_tax_status')) {
+      context.handle(
+        _customerTaxStatusMeta,
+        customerTaxStatus.isAcceptableOrUnknown(
+          data['customer_tax_status']!,
+          _customerTaxStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('supply_type')) {
+      context.handle(
+        _supplyTypeMeta,
+        supplyType.isAcceptableOrUnknown(data['supply_type']!, _supplyTypeMeta),
+      );
+    }
+    if (data.containsKey('supply_relation')) {
+      context.handle(
+        _supplyRelationMeta,
+        supplyRelation.isAcceptableOrUnknown(
+          data['supply_relation']!,
+          _supplyRelationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('calculation_method')) {
+      context.handle(
+        _calculationMethodMeta,
+        calculationMethod.isAcceptableOrUnknown(
+          data['calculation_method']!,
+          _calculationMethodMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_calculationMethodMeta);
+    }
+    if (data.containsKey('is_stackable')) {
+      context.handle(
+        _isStackableMeta,
+        isStackable.isAcceptableOrUnknown(
+          data['is_stackable']!,
+          _isStackableMeta,
+        ),
+      );
+    }
+    if (data.containsKey('effective_from')) {
+      context.handle(
+        _effectiveFromMeta,
+        effectiveFrom.isAcceptableOrUnknown(
+          data['effective_from']!,
+          _effectiveFromMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_effectiveFromMeta);
+    }
+    if (data.containsKey('effective_until')) {
+      context.handle(
+        _effectiveUntilMeta,
+        effectiveUntil.isAcceptableOrUnknown(
+          data['effective_until']!,
+          _effectiveUntilMeta,
+        ),
+      );
+    }
+    if (data.containsKey('priority')) {
+      context.handle(
+        _priorityMeta,
+        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaxRuleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaxRuleRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      taxProfileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_profile_id'],
+      )!,
+      taxCategoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_category_id'],
+      )!,
+      jurisdictionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}jurisdiction_id'],
+      ),
+      transactionType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transaction_type'],
+      ),
+      customerTaxStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}customer_tax_status'],
+      ),
+      supplyType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}supply_type'],
+      ),
+      supplyRelation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}supply_relation'],
+      )!,
+      calculationMethod: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}calculation_method'],
+      )!,
+      isStackable: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_stackable'],
+      )!,
+      effectiveFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}effective_from'],
+      )!,
+      effectiveUntil: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}effective_until'],
+      ),
+      priority: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}priority'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TaxRulesTable createAlias(String alias) {
+    return $TaxRulesTable(attachedDatabase, alias);
+  }
+}
+
+class TaxRuleRow extends DataClass implements Insertable<TaxRuleRow> {
+  final String id;
+  final String taxProfileId;
+  final String taxCategoryId;
+  final String? jurisdictionId;
+  final String? transactionType;
+  final String? customerTaxStatus;
+  final String? supplyType;
+  final String supplyRelation;
+  final String calculationMethod;
+  final bool isStackable;
+  final int effectiveFrom;
+  final int? effectiveUntil;
+  final int priority;
+  final bool isActive;
+  final int createdAt;
+  final int updatedAt;
+  const TaxRuleRow({
+    required this.id,
+    required this.taxProfileId,
+    required this.taxCategoryId,
+    this.jurisdictionId,
+    this.transactionType,
+    this.customerTaxStatus,
+    this.supplyType,
+    required this.supplyRelation,
+    required this.calculationMethod,
+    required this.isStackable,
+    required this.effectiveFrom,
+    this.effectiveUntil,
+    required this.priority,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['tax_profile_id'] = Variable<String>(taxProfileId);
+    map['tax_category_id'] = Variable<String>(taxCategoryId);
+    if (!nullToAbsent || jurisdictionId != null) {
+      map['jurisdiction_id'] = Variable<String>(jurisdictionId);
+    }
+    if (!nullToAbsent || transactionType != null) {
+      map['transaction_type'] = Variable<String>(transactionType);
+    }
+    if (!nullToAbsent || customerTaxStatus != null) {
+      map['customer_tax_status'] = Variable<String>(customerTaxStatus);
+    }
+    if (!nullToAbsent || supplyType != null) {
+      map['supply_type'] = Variable<String>(supplyType);
+    }
+    map['supply_relation'] = Variable<String>(supplyRelation);
+    map['calculation_method'] = Variable<String>(calculationMethod);
+    map['is_stackable'] = Variable<bool>(isStackable);
+    map['effective_from'] = Variable<int>(effectiveFrom);
+    if (!nullToAbsent || effectiveUntil != null) {
+      map['effective_until'] = Variable<int>(effectiveUntil);
+    }
+    map['priority'] = Variable<int>(priority);
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  TaxRulesCompanion toCompanion(bool nullToAbsent) {
+    return TaxRulesCompanion(
+      id: Value(id),
+      taxProfileId: Value(taxProfileId),
+      taxCategoryId: Value(taxCategoryId),
+      jurisdictionId: jurisdictionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jurisdictionId),
+      transactionType: transactionType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(transactionType),
+      customerTaxStatus: customerTaxStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customerTaxStatus),
+      supplyType: supplyType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(supplyType),
+      supplyRelation: Value(supplyRelation),
+      calculationMethod: Value(calculationMethod),
+      isStackable: Value(isStackable),
+      effectiveFrom: Value(effectiveFrom),
+      effectiveUntil: effectiveUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(effectiveUntil),
+      priority: Value(priority),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TaxRuleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaxRuleRow(
+      id: serializer.fromJson<String>(json['id']),
+      taxProfileId: serializer.fromJson<String>(json['taxProfileId']),
+      taxCategoryId: serializer.fromJson<String>(json['taxCategoryId']),
+      jurisdictionId: serializer.fromJson<String?>(json['jurisdictionId']),
+      transactionType: serializer.fromJson<String?>(json['transactionType']),
+      customerTaxStatus: serializer.fromJson<String?>(
+        json['customerTaxStatus'],
+      ),
+      supplyType: serializer.fromJson<String?>(json['supplyType']),
+      supplyRelation: serializer.fromJson<String>(json['supplyRelation']),
+      calculationMethod: serializer.fromJson<String>(json['calculationMethod']),
+      isStackable: serializer.fromJson<bool>(json['isStackable']),
+      effectiveFrom: serializer.fromJson<int>(json['effectiveFrom']),
+      effectiveUntil: serializer.fromJson<int?>(json['effectiveUntil']),
+      priority: serializer.fromJson<int>(json['priority']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'taxProfileId': serializer.toJson<String>(taxProfileId),
+      'taxCategoryId': serializer.toJson<String>(taxCategoryId),
+      'jurisdictionId': serializer.toJson<String?>(jurisdictionId),
+      'transactionType': serializer.toJson<String?>(transactionType),
+      'customerTaxStatus': serializer.toJson<String?>(customerTaxStatus),
+      'supplyType': serializer.toJson<String?>(supplyType),
+      'supplyRelation': serializer.toJson<String>(supplyRelation),
+      'calculationMethod': serializer.toJson<String>(calculationMethod),
+      'isStackable': serializer.toJson<bool>(isStackable),
+      'effectiveFrom': serializer.toJson<int>(effectiveFrom),
+      'effectiveUntil': serializer.toJson<int?>(effectiveUntil),
+      'priority': serializer.toJson<int>(priority),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  TaxRuleRow copyWith({
+    String? id,
+    String? taxProfileId,
+    String? taxCategoryId,
+    Value<String?> jurisdictionId = const Value.absent(),
+    Value<String?> transactionType = const Value.absent(),
+    Value<String?> customerTaxStatus = const Value.absent(),
+    Value<String?> supplyType = const Value.absent(),
+    String? supplyRelation,
+    String? calculationMethod,
+    bool? isStackable,
+    int? effectiveFrom,
+    Value<int?> effectiveUntil = const Value.absent(),
+    int? priority,
+    bool? isActive,
+    int? createdAt,
+    int? updatedAt,
+  }) => TaxRuleRow(
+    id: id ?? this.id,
+    taxProfileId: taxProfileId ?? this.taxProfileId,
+    taxCategoryId: taxCategoryId ?? this.taxCategoryId,
+    jurisdictionId: jurisdictionId.present
+        ? jurisdictionId.value
+        : this.jurisdictionId,
+    transactionType: transactionType.present
+        ? transactionType.value
+        : this.transactionType,
+    customerTaxStatus: customerTaxStatus.present
+        ? customerTaxStatus.value
+        : this.customerTaxStatus,
+    supplyType: supplyType.present ? supplyType.value : this.supplyType,
+    supplyRelation: supplyRelation ?? this.supplyRelation,
+    calculationMethod: calculationMethod ?? this.calculationMethod,
+    isStackable: isStackable ?? this.isStackable,
+    effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+    effectiveUntil: effectiveUntil.present
+        ? effectiveUntil.value
+        : this.effectiveUntil,
+    priority: priority ?? this.priority,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TaxRuleRow copyWithCompanion(TaxRulesCompanion data) {
+    return TaxRuleRow(
+      id: data.id.present ? data.id.value : this.id,
+      taxProfileId: data.taxProfileId.present
+          ? data.taxProfileId.value
+          : this.taxProfileId,
+      taxCategoryId: data.taxCategoryId.present
+          ? data.taxCategoryId.value
+          : this.taxCategoryId,
+      jurisdictionId: data.jurisdictionId.present
+          ? data.jurisdictionId.value
+          : this.jurisdictionId,
+      transactionType: data.transactionType.present
+          ? data.transactionType.value
+          : this.transactionType,
+      customerTaxStatus: data.customerTaxStatus.present
+          ? data.customerTaxStatus.value
+          : this.customerTaxStatus,
+      supplyType: data.supplyType.present
+          ? data.supplyType.value
+          : this.supplyType,
+      supplyRelation: data.supplyRelation.present
+          ? data.supplyRelation.value
+          : this.supplyRelation,
+      calculationMethod: data.calculationMethod.present
+          ? data.calculationMethod.value
+          : this.calculationMethod,
+      isStackable: data.isStackable.present
+          ? data.isStackable.value
+          : this.isStackable,
+      effectiveFrom: data.effectiveFrom.present
+          ? data.effectiveFrom.value
+          : this.effectiveFrom,
+      effectiveUntil: data.effectiveUntil.present
+          ? data.effectiveUntil.value
+          : this.effectiveUntil,
+      priority: data.priority.present ? data.priority.value : this.priority,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxRuleRow(')
+          ..write('id: $id, ')
+          ..write('taxProfileId: $taxProfileId, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('jurisdictionId: $jurisdictionId, ')
+          ..write('transactionType: $transactionType, ')
+          ..write('customerTaxStatus: $customerTaxStatus, ')
+          ..write('supplyType: $supplyType, ')
+          ..write('supplyRelation: $supplyRelation, ')
+          ..write('calculationMethod: $calculationMethod, ')
+          ..write('isStackable: $isStackable, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveUntil: $effectiveUntil, ')
+          ..write('priority: $priority, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    taxProfileId,
+    taxCategoryId,
+    jurisdictionId,
+    transactionType,
+    customerTaxStatus,
+    supplyType,
+    supplyRelation,
+    calculationMethod,
+    isStackable,
+    effectiveFrom,
+    effectiveUntil,
+    priority,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaxRuleRow &&
+          other.id == this.id &&
+          other.taxProfileId == this.taxProfileId &&
+          other.taxCategoryId == this.taxCategoryId &&
+          other.jurisdictionId == this.jurisdictionId &&
+          other.transactionType == this.transactionType &&
+          other.customerTaxStatus == this.customerTaxStatus &&
+          other.supplyType == this.supplyType &&
+          other.supplyRelation == this.supplyRelation &&
+          other.calculationMethod == this.calculationMethod &&
+          other.isStackable == this.isStackable &&
+          other.effectiveFrom == this.effectiveFrom &&
+          other.effectiveUntil == this.effectiveUntil &&
+          other.priority == this.priority &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TaxRulesCompanion extends UpdateCompanion<TaxRuleRow> {
+  final Value<String> id;
+  final Value<String> taxProfileId;
+  final Value<String> taxCategoryId;
+  final Value<String?> jurisdictionId;
+  final Value<String?> transactionType;
+  final Value<String?> customerTaxStatus;
+  final Value<String?> supplyType;
+  final Value<String> supplyRelation;
+  final Value<String> calculationMethod;
+  final Value<bool> isStackable;
+  final Value<int> effectiveFrom;
+  final Value<int?> effectiveUntil;
+  final Value<int> priority;
+  final Value<bool> isActive;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const TaxRulesCompanion({
+    this.id = const Value.absent(),
+    this.taxProfileId = const Value.absent(),
+    this.taxCategoryId = const Value.absent(),
+    this.jurisdictionId = const Value.absent(),
+    this.transactionType = const Value.absent(),
+    this.customerTaxStatus = const Value.absent(),
+    this.supplyType = const Value.absent(),
+    this.supplyRelation = const Value.absent(),
+    this.calculationMethod = const Value.absent(),
+    this.isStackable = const Value.absent(),
+    this.effectiveFrom = const Value.absent(),
+    this.effectiveUntil = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaxRulesCompanion.insert({
+    required String id,
+    required String taxProfileId,
+    required String taxCategoryId,
+    this.jurisdictionId = const Value.absent(),
+    this.transactionType = const Value.absent(),
+    this.customerTaxStatus = const Value.absent(),
+    this.supplyType = const Value.absent(),
+    this.supplyRelation = const Value.absent(),
+    required String calculationMethod,
+    this.isStackable = const Value.absent(),
+    required int effectiveFrom,
+    this.effectiveUntil = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.isActive = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       taxProfileId = Value(taxProfileId),
+       taxCategoryId = Value(taxCategoryId),
+       calculationMethod = Value(calculationMethod),
+       effectiveFrom = Value(effectiveFrom),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<TaxRuleRow> custom({
+    Expression<String>? id,
+    Expression<String>? taxProfileId,
+    Expression<String>? taxCategoryId,
+    Expression<String>? jurisdictionId,
+    Expression<String>? transactionType,
+    Expression<String>? customerTaxStatus,
+    Expression<String>? supplyType,
+    Expression<String>? supplyRelation,
+    Expression<String>? calculationMethod,
+    Expression<bool>? isStackable,
+    Expression<int>? effectiveFrom,
+    Expression<int>? effectiveUntil,
+    Expression<int>? priority,
+    Expression<bool>? isActive,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (taxProfileId != null) 'tax_profile_id': taxProfileId,
+      if (taxCategoryId != null) 'tax_category_id': taxCategoryId,
+      if (jurisdictionId != null) 'jurisdiction_id': jurisdictionId,
+      if (transactionType != null) 'transaction_type': transactionType,
+      if (customerTaxStatus != null) 'customer_tax_status': customerTaxStatus,
+      if (supplyType != null) 'supply_type': supplyType,
+      if (supplyRelation != null) 'supply_relation': supplyRelation,
+      if (calculationMethod != null) 'calculation_method': calculationMethod,
+      if (isStackable != null) 'is_stackable': isStackable,
+      if (effectiveFrom != null) 'effective_from': effectiveFrom,
+      if (effectiveUntil != null) 'effective_until': effectiveUntil,
+      if (priority != null) 'priority': priority,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaxRulesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? taxProfileId,
+    Value<String>? taxCategoryId,
+    Value<String?>? jurisdictionId,
+    Value<String?>? transactionType,
+    Value<String?>? customerTaxStatus,
+    Value<String?>? supplyType,
+    Value<String>? supplyRelation,
+    Value<String>? calculationMethod,
+    Value<bool>? isStackable,
+    Value<int>? effectiveFrom,
+    Value<int?>? effectiveUntil,
+    Value<int>? priority,
+    Value<bool>? isActive,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return TaxRulesCompanion(
+      id: id ?? this.id,
+      taxProfileId: taxProfileId ?? this.taxProfileId,
+      taxCategoryId: taxCategoryId ?? this.taxCategoryId,
+      jurisdictionId: jurisdictionId ?? this.jurisdictionId,
+      transactionType: transactionType ?? this.transactionType,
+      customerTaxStatus: customerTaxStatus ?? this.customerTaxStatus,
+      supplyType: supplyType ?? this.supplyType,
+      supplyRelation: supplyRelation ?? this.supplyRelation,
+      calculationMethod: calculationMethod ?? this.calculationMethod,
+      isStackable: isStackable ?? this.isStackable,
+      effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+      effectiveUntil: effectiveUntil ?? this.effectiveUntil,
+      priority: priority ?? this.priority,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (taxProfileId.present) {
+      map['tax_profile_id'] = Variable<String>(taxProfileId.value);
+    }
+    if (taxCategoryId.present) {
+      map['tax_category_id'] = Variable<String>(taxCategoryId.value);
+    }
+    if (jurisdictionId.present) {
+      map['jurisdiction_id'] = Variable<String>(jurisdictionId.value);
+    }
+    if (transactionType.present) {
+      map['transaction_type'] = Variable<String>(transactionType.value);
+    }
+    if (customerTaxStatus.present) {
+      map['customer_tax_status'] = Variable<String>(customerTaxStatus.value);
+    }
+    if (supplyType.present) {
+      map['supply_type'] = Variable<String>(supplyType.value);
+    }
+    if (supplyRelation.present) {
+      map['supply_relation'] = Variable<String>(supplyRelation.value);
+    }
+    if (calculationMethod.present) {
+      map['calculation_method'] = Variable<String>(calculationMethod.value);
+    }
+    if (isStackable.present) {
+      map['is_stackable'] = Variable<bool>(isStackable.value);
+    }
+    if (effectiveFrom.present) {
+      map['effective_from'] = Variable<int>(effectiveFrom.value);
+    }
+    if (effectiveUntil.present) {
+      map['effective_until'] = Variable<int>(effectiveUntil.value);
+    }
+    if (priority.present) {
+      map['priority'] = Variable<int>(priority.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxRulesCompanion(')
+          ..write('id: $id, ')
+          ..write('taxProfileId: $taxProfileId, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('jurisdictionId: $jurisdictionId, ')
+          ..write('transactionType: $transactionType, ')
+          ..write('customerTaxStatus: $customerTaxStatus, ')
+          ..write('supplyType: $supplyType, ')
+          ..write('supplyRelation: $supplyRelation, ')
+          ..write('calculationMethod: $calculationMethod, ')
+          ..write('isStackable: $isStackable, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveUntil: $effectiveUntil, ')
+          ..write('priority: $priority, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaxComponentsTable extends TaxComponents
+    with TableInfo<$TaxComponentsTable, TaxComponentRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaxComponentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taxRuleIdMeta = const VerificationMeta(
+    'taxRuleId',
+  );
+  @override
+  late final GeneratedColumn<String> taxRuleId = GeneratedColumn<String>(
+    'tax_rule_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_rules (id) ON DELETE RESTRICT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _componentTypeMeta = const VerificationMeta(
+    'componentType',
+  );
+  @override
+  late final GeneratedColumn<String> componentType = GeneratedColumn<String>(
+    'component_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rateBasisPointsMeta = const VerificationMeta(
+    'rateBasisPoints',
+  );
+  @override
+  late final GeneratedColumn<int> rateBasisPoints = GeneratedColumn<int>(
+    'rate_basis_points',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _fixedAmountMinorMeta = const VerificationMeta(
+    'fixedAmountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> fixedAmountMinor = GeneratedColumn<int>(
+    'fixed_amount_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _calculationOrderMeta = const VerificationMeta(
+    'calculationOrder',
+  );
+  @override
+  late final GeneratedColumn<int> calculationOrder = GeneratedColumn<int>(
+    'calculation_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isCompoundMeta = const VerificationMeta(
+    'isCompound',
+  );
+  @override
+  late final GeneratedColumn<bool> isCompound = GeneratedColumn<bool>(
+    'is_compound',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_compound" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isRecoverableMeta = const VerificationMeta(
+    'isRecoverable',
+  );
+  @override
+  late final GeneratedColumn<bool> isRecoverable = GeneratedColumn<bool>(
+    'is_recoverable',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_recoverable" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    taxRuleId,
+    name,
+    componentType,
+    rateBasisPoints,
+    fixedAmountMinor,
+    calculationOrder,
+    isCompound,
+    isRecoverable,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tax_components';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaxComponentRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('tax_rule_id')) {
+      context.handle(
+        _taxRuleIdMeta,
+        taxRuleId.isAcceptableOrUnknown(data['tax_rule_id']!, _taxRuleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taxRuleIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('component_type')) {
+      context.handle(
+        _componentTypeMeta,
+        componentType.isAcceptableOrUnknown(
+          data['component_type']!,
+          _componentTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_componentTypeMeta);
+    }
+    if (data.containsKey('rate_basis_points')) {
+      context.handle(
+        _rateBasisPointsMeta,
+        rateBasisPoints.isAcceptableOrUnknown(
+          data['rate_basis_points']!,
+          _rateBasisPointsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fixed_amount_minor')) {
+      context.handle(
+        _fixedAmountMinorMeta,
+        fixedAmountMinor.isAcceptableOrUnknown(
+          data['fixed_amount_minor']!,
+          _fixedAmountMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('calculation_order')) {
+      context.handle(
+        _calculationOrderMeta,
+        calculationOrder.isAcceptableOrUnknown(
+          data['calculation_order']!,
+          _calculationOrderMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_calculationOrderMeta);
+    }
+    if (data.containsKey('is_compound')) {
+      context.handle(
+        _isCompoundMeta,
+        isCompound.isAcceptableOrUnknown(data['is_compound']!, _isCompoundMeta),
+      );
+    }
+    if (data.containsKey('is_recoverable')) {
+      context.handle(
+        _isRecoverableMeta,
+        isRecoverable.isAcceptableOrUnknown(
+          data['is_recoverable']!,
+          _isRecoverableMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaxComponentRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaxComponentRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      taxRuleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_rule_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      componentType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}component_type'],
+      )!,
+      rateBasisPoints: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rate_basis_points'],
+      )!,
+      fixedAmountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fixed_amount_minor'],
+      ),
+      calculationOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}calculation_order'],
+      )!,
+      isCompound: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_compound'],
+      )!,
+      isRecoverable: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_recoverable'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TaxComponentsTable createAlias(String alias) {
+    return $TaxComponentsTable(attachedDatabase, alias);
+  }
+}
+
+class TaxComponentRow extends DataClass implements Insertable<TaxComponentRow> {
+  final String id;
+  final String taxRuleId;
+  final String name;
+  final String componentType;
+  final int rateBasisPoints;
+  final int? fixedAmountMinor;
+  final int calculationOrder;
+  final bool isCompound;
+  final bool isRecoverable;
+  final bool isActive;
+  final int createdAt;
+  final int updatedAt;
+  const TaxComponentRow({
+    required this.id,
+    required this.taxRuleId,
+    required this.name,
+    required this.componentType,
+    required this.rateBasisPoints,
+    this.fixedAmountMinor,
+    required this.calculationOrder,
+    required this.isCompound,
+    required this.isRecoverable,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['tax_rule_id'] = Variable<String>(taxRuleId);
+    map['name'] = Variable<String>(name);
+    map['component_type'] = Variable<String>(componentType);
+    map['rate_basis_points'] = Variable<int>(rateBasisPoints);
+    if (!nullToAbsent || fixedAmountMinor != null) {
+      map['fixed_amount_minor'] = Variable<int>(fixedAmountMinor);
+    }
+    map['calculation_order'] = Variable<int>(calculationOrder);
+    map['is_compound'] = Variable<bool>(isCompound);
+    map['is_recoverable'] = Variable<bool>(isRecoverable);
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  TaxComponentsCompanion toCompanion(bool nullToAbsent) {
+    return TaxComponentsCompanion(
+      id: Value(id),
+      taxRuleId: Value(taxRuleId),
+      name: Value(name),
+      componentType: Value(componentType),
+      rateBasisPoints: Value(rateBasisPoints),
+      fixedAmountMinor: fixedAmountMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fixedAmountMinor),
+      calculationOrder: Value(calculationOrder),
+      isCompound: Value(isCompound),
+      isRecoverable: Value(isRecoverable),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TaxComponentRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaxComponentRow(
+      id: serializer.fromJson<String>(json['id']),
+      taxRuleId: serializer.fromJson<String>(json['taxRuleId']),
+      name: serializer.fromJson<String>(json['name']),
+      componentType: serializer.fromJson<String>(json['componentType']),
+      rateBasisPoints: serializer.fromJson<int>(json['rateBasisPoints']),
+      fixedAmountMinor: serializer.fromJson<int?>(json['fixedAmountMinor']),
+      calculationOrder: serializer.fromJson<int>(json['calculationOrder']),
+      isCompound: serializer.fromJson<bool>(json['isCompound']),
+      isRecoverable: serializer.fromJson<bool>(json['isRecoverable']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'taxRuleId': serializer.toJson<String>(taxRuleId),
+      'name': serializer.toJson<String>(name),
+      'componentType': serializer.toJson<String>(componentType),
+      'rateBasisPoints': serializer.toJson<int>(rateBasisPoints),
+      'fixedAmountMinor': serializer.toJson<int?>(fixedAmountMinor),
+      'calculationOrder': serializer.toJson<int>(calculationOrder),
+      'isCompound': serializer.toJson<bool>(isCompound),
+      'isRecoverable': serializer.toJson<bool>(isRecoverable),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  TaxComponentRow copyWith({
+    String? id,
+    String? taxRuleId,
+    String? name,
+    String? componentType,
+    int? rateBasisPoints,
+    Value<int?> fixedAmountMinor = const Value.absent(),
+    int? calculationOrder,
+    bool? isCompound,
+    bool? isRecoverable,
+    bool? isActive,
+    int? createdAt,
+    int? updatedAt,
+  }) => TaxComponentRow(
+    id: id ?? this.id,
+    taxRuleId: taxRuleId ?? this.taxRuleId,
+    name: name ?? this.name,
+    componentType: componentType ?? this.componentType,
+    rateBasisPoints: rateBasisPoints ?? this.rateBasisPoints,
+    fixedAmountMinor: fixedAmountMinor.present
+        ? fixedAmountMinor.value
+        : this.fixedAmountMinor,
+    calculationOrder: calculationOrder ?? this.calculationOrder,
+    isCompound: isCompound ?? this.isCompound,
+    isRecoverable: isRecoverable ?? this.isRecoverable,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TaxComponentRow copyWithCompanion(TaxComponentsCompanion data) {
+    return TaxComponentRow(
+      id: data.id.present ? data.id.value : this.id,
+      taxRuleId: data.taxRuleId.present ? data.taxRuleId.value : this.taxRuleId,
+      name: data.name.present ? data.name.value : this.name,
+      componentType: data.componentType.present
+          ? data.componentType.value
+          : this.componentType,
+      rateBasisPoints: data.rateBasisPoints.present
+          ? data.rateBasisPoints.value
+          : this.rateBasisPoints,
+      fixedAmountMinor: data.fixedAmountMinor.present
+          ? data.fixedAmountMinor.value
+          : this.fixedAmountMinor,
+      calculationOrder: data.calculationOrder.present
+          ? data.calculationOrder.value
+          : this.calculationOrder,
+      isCompound: data.isCompound.present
+          ? data.isCompound.value
+          : this.isCompound,
+      isRecoverable: data.isRecoverable.present
+          ? data.isRecoverable.value
+          : this.isRecoverable,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxComponentRow(')
+          ..write('id: $id, ')
+          ..write('taxRuleId: $taxRuleId, ')
+          ..write('name: $name, ')
+          ..write('componentType: $componentType, ')
+          ..write('rateBasisPoints: $rateBasisPoints, ')
+          ..write('fixedAmountMinor: $fixedAmountMinor, ')
+          ..write('calculationOrder: $calculationOrder, ')
+          ..write('isCompound: $isCompound, ')
+          ..write('isRecoverable: $isRecoverable, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    taxRuleId,
+    name,
+    componentType,
+    rateBasisPoints,
+    fixedAmountMinor,
+    calculationOrder,
+    isCompound,
+    isRecoverable,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaxComponentRow &&
+          other.id == this.id &&
+          other.taxRuleId == this.taxRuleId &&
+          other.name == this.name &&
+          other.componentType == this.componentType &&
+          other.rateBasisPoints == this.rateBasisPoints &&
+          other.fixedAmountMinor == this.fixedAmountMinor &&
+          other.calculationOrder == this.calculationOrder &&
+          other.isCompound == this.isCompound &&
+          other.isRecoverable == this.isRecoverable &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TaxComponentsCompanion extends UpdateCompanion<TaxComponentRow> {
+  final Value<String> id;
+  final Value<String> taxRuleId;
+  final Value<String> name;
+  final Value<String> componentType;
+  final Value<int> rateBasisPoints;
+  final Value<int?> fixedAmountMinor;
+  final Value<int> calculationOrder;
+  final Value<bool> isCompound;
+  final Value<bool> isRecoverable;
+  final Value<bool> isActive;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const TaxComponentsCompanion({
+    this.id = const Value.absent(),
+    this.taxRuleId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.componentType = const Value.absent(),
+    this.rateBasisPoints = const Value.absent(),
+    this.fixedAmountMinor = const Value.absent(),
+    this.calculationOrder = const Value.absent(),
+    this.isCompound = const Value.absent(),
+    this.isRecoverable = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaxComponentsCompanion.insert({
+    required String id,
+    required String taxRuleId,
+    required String name,
+    required String componentType,
+    this.rateBasisPoints = const Value.absent(),
+    this.fixedAmountMinor = const Value.absent(),
+    required int calculationOrder,
+    this.isCompound = const Value.absent(),
+    this.isRecoverable = const Value.absent(),
+    this.isActive = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       taxRuleId = Value(taxRuleId),
+       name = Value(name),
+       componentType = Value(componentType),
+       calculationOrder = Value(calculationOrder),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<TaxComponentRow> custom({
+    Expression<String>? id,
+    Expression<String>? taxRuleId,
+    Expression<String>? name,
+    Expression<String>? componentType,
+    Expression<int>? rateBasisPoints,
+    Expression<int>? fixedAmountMinor,
+    Expression<int>? calculationOrder,
+    Expression<bool>? isCompound,
+    Expression<bool>? isRecoverable,
+    Expression<bool>? isActive,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (taxRuleId != null) 'tax_rule_id': taxRuleId,
+      if (name != null) 'name': name,
+      if (componentType != null) 'component_type': componentType,
+      if (rateBasisPoints != null) 'rate_basis_points': rateBasisPoints,
+      if (fixedAmountMinor != null) 'fixed_amount_minor': fixedAmountMinor,
+      if (calculationOrder != null) 'calculation_order': calculationOrder,
+      if (isCompound != null) 'is_compound': isCompound,
+      if (isRecoverable != null) 'is_recoverable': isRecoverable,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaxComponentsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? taxRuleId,
+    Value<String>? name,
+    Value<String>? componentType,
+    Value<int>? rateBasisPoints,
+    Value<int?>? fixedAmountMinor,
+    Value<int>? calculationOrder,
+    Value<bool>? isCompound,
+    Value<bool>? isRecoverable,
+    Value<bool>? isActive,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return TaxComponentsCompanion(
+      id: id ?? this.id,
+      taxRuleId: taxRuleId ?? this.taxRuleId,
+      name: name ?? this.name,
+      componentType: componentType ?? this.componentType,
+      rateBasisPoints: rateBasisPoints ?? this.rateBasisPoints,
+      fixedAmountMinor: fixedAmountMinor ?? this.fixedAmountMinor,
+      calculationOrder: calculationOrder ?? this.calculationOrder,
+      isCompound: isCompound ?? this.isCompound,
+      isRecoverable: isRecoverable ?? this.isRecoverable,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (taxRuleId.present) {
+      map['tax_rule_id'] = Variable<String>(taxRuleId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (componentType.present) {
+      map['component_type'] = Variable<String>(componentType.value);
+    }
+    if (rateBasisPoints.present) {
+      map['rate_basis_points'] = Variable<int>(rateBasisPoints.value);
+    }
+    if (fixedAmountMinor.present) {
+      map['fixed_amount_minor'] = Variable<int>(fixedAmountMinor.value);
+    }
+    if (calculationOrder.present) {
+      map['calculation_order'] = Variable<int>(calculationOrder.value);
+    }
+    if (isCompound.present) {
+      map['is_compound'] = Variable<bool>(isCompound.value);
+    }
+    if (isRecoverable.present) {
+      map['is_recoverable'] = Variable<bool>(isRecoverable.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxComponentsCompanion(')
+          ..write('id: $id, ')
+          ..write('taxRuleId: $taxRuleId, ')
+          ..write('name: $name, ')
+          ..write('componentType: $componentType, ')
+          ..write('rateBasisPoints: $rateBasisPoints, ')
+          ..write('fixedAmountMinor: $fixedAmountMinor, ')
+          ..write('calculationOrder: $calculationOrder, ')
+          ..write('isCompound: $isCompound, ')
+          ..write('isRecoverable: $isRecoverable, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ProductsTable extends Products
     with TableInfo<$ProductsTable, ProductRow> {
   @override
@@ -2363,6 +6826,34 @@ class $ProductsTable extends Products
       'REFERENCES tax_rates (id) ON DELETE RESTRICT',
     ),
   );
+  static const VerificationMeta _taxCategoryIdMeta = const VerificationMeta(
+    'taxCategoryId',
+  );
+  @override
+  late final GeneratedColumn<String> taxCategoryId = GeneratedColumn<String>(
+    'tax_category_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_categories (id) ON DELETE RESTRICT',
+    ),
+  );
+  static const VerificationMeta _taxOverrideIdMeta = const VerificationMeta(
+    'taxOverrideId',
+  );
+  @override
+  late final GeneratedColumn<String> taxOverrideId = GeneratedColumn<String>(
+    'tax_override_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_overrides (id) ON DELETE RESTRICT',
+    ),
+  );
   static const VerificationMeta _reorderLevelMilliMeta = const VerificationMeta(
     'reorderLevelMilli',
   );
@@ -2432,6 +6923,8 @@ class $ProductsTable extends Products
     sellingPriceMinor,
     priceIncludesTax,
     taxRateId,
+    taxCategoryId,
+    taxOverrideId,
     reorderLevelMilli,
     imagePath,
     archivedAt,
@@ -2537,6 +7030,24 @@ class $ProductsTable extends Products
         taxRateId.isAcceptableOrUnknown(data['tax_rate_id']!, _taxRateIdMeta),
       );
     }
+    if (data.containsKey('tax_category_id')) {
+      context.handle(
+        _taxCategoryIdMeta,
+        taxCategoryId.isAcceptableOrUnknown(
+          data['tax_category_id']!,
+          _taxCategoryIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tax_override_id')) {
+      context.handle(
+        _taxOverrideIdMeta,
+        taxOverrideId.isAcceptableOrUnknown(
+          data['tax_override_id']!,
+          _taxOverrideIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('reorder_level_milli')) {
       context.handle(
         _reorderLevelMilliMeta,
@@ -2633,6 +7144,14 @@ class $ProductsTable extends Products
         DriftSqlType.string,
         data['${effectivePrefix}tax_rate_id'],
       ),
+      taxCategoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_category_id'],
+      ),
+      taxOverrideId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_override_id'],
+      ),
       reorderLevelMilli: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}reorder_level_milli'],
@@ -2674,6 +7193,11 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
   final int sellingPriceMinor;
   final bool priceIncludesTax;
   final String? taxRateId;
+
+  /// Configurable tax model (schema v10): the product's tax category and an
+  /// optional explicit override. Neither holds a tax amount.
+  final String? taxCategoryId;
+  final String? taxOverrideId;
   final int reorderLevelMilli;
   final String? imagePath;
   final int? archivedAt;
@@ -2691,6 +7215,8 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
     required this.sellingPriceMinor,
     required this.priceIncludesTax,
     this.taxRateId,
+    this.taxCategoryId,
+    this.taxOverrideId,
     required this.reorderLevelMilli,
     this.imagePath,
     this.archivedAt,
@@ -2718,6 +7244,12 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
     map['price_includes_tax'] = Variable<bool>(priceIncludesTax);
     if (!nullToAbsent || taxRateId != null) {
       map['tax_rate_id'] = Variable<String>(taxRateId);
+    }
+    if (!nullToAbsent || taxCategoryId != null) {
+      map['tax_category_id'] = Variable<String>(taxCategoryId);
+    }
+    if (!nullToAbsent || taxOverrideId != null) {
+      map['tax_override_id'] = Variable<String>(taxOverrideId);
     }
     map['reorder_level_milli'] = Variable<int>(reorderLevelMilli);
     if (!nullToAbsent || imagePath != null) {
@@ -2752,6 +7284,12 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
       taxRateId: taxRateId == null && nullToAbsent
           ? const Value.absent()
           : Value(taxRateId),
+      taxCategoryId: taxCategoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxCategoryId),
+      taxOverrideId: taxOverrideId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxOverrideId),
       reorderLevelMilli: Value(reorderLevelMilli),
       imagePath: imagePath == null && nullToAbsent
           ? const Value.absent()
@@ -2781,6 +7319,8 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
       sellingPriceMinor: serializer.fromJson<int>(json['sellingPriceMinor']),
       priceIncludesTax: serializer.fromJson<bool>(json['priceIncludesTax']),
       taxRateId: serializer.fromJson<String?>(json['taxRateId']),
+      taxCategoryId: serializer.fromJson<String?>(json['taxCategoryId']),
+      taxOverrideId: serializer.fromJson<String?>(json['taxOverrideId']),
       reorderLevelMilli: serializer.fromJson<int>(json['reorderLevelMilli']),
       imagePath: serializer.fromJson<String?>(json['imagePath']),
       archivedAt: serializer.fromJson<int?>(json['archivedAt']),
@@ -2803,6 +7343,8 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
       'sellingPriceMinor': serializer.toJson<int>(sellingPriceMinor),
       'priceIncludesTax': serializer.toJson<bool>(priceIncludesTax),
       'taxRateId': serializer.toJson<String?>(taxRateId),
+      'taxCategoryId': serializer.toJson<String?>(taxCategoryId),
+      'taxOverrideId': serializer.toJson<String?>(taxOverrideId),
       'reorderLevelMilli': serializer.toJson<int>(reorderLevelMilli),
       'imagePath': serializer.toJson<String?>(imagePath),
       'archivedAt': serializer.toJson<int?>(archivedAt),
@@ -2823,6 +7365,8 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
     int? sellingPriceMinor,
     bool? priceIncludesTax,
     Value<String?> taxRateId = const Value.absent(),
+    Value<String?> taxCategoryId = const Value.absent(),
+    Value<String?> taxOverrideId = const Value.absent(),
     int? reorderLevelMilli,
     Value<String?> imagePath = const Value.absent(),
     Value<int?> archivedAt = const Value.absent(),
@@ -2840,6 +7384,12 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
     sellingPriceMinor: sellingPriceMinor ?? this.sellingPriceMinor,
     priceIncludesTax: priceIncludesTax ?? this.priceIncludesTax,
     taxRateId: taxRateId.present ? taxRateId.value : this.taxRateId,
+    taxCategoryId: taxCategoryId.present
+        ? taxCategoryId.value
+        : this.taxCategoryId,
+    taxOverrideId: taxOverrideId.present
+        ? taxOverrideId.value
+        : this.taxOverrideId,
     reorderLevelMilli: reorderLevelMilli ?? this.reorderLevelMilli,
     imagePath: imagePath.present ? imagePath.value : this.imagePath,
     archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
@@ -2869,6 +7419,12 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
           ? data.priceIncludesTax.value
           : this.priceIncludesTax,
       taxRateId: data.taxRateId.present ? data.taxRateId.value : this.taxRateId,
+      taxCategoryId: data.taxCategoryId.present
+          ? data.taxCategoryId.value
+          : this.taxCategoryId,
+      taxOverrideId: data.taxOverrideId.present
+          ? data.taxOverrideId.value
+          : this.taxOverrideId,
       reorderLevelMilli: data.reorderLevelMilli.present
           ? data.reorderLevelMilli.value
           : this.reorderLevelMilli,
@@ -2895,6 +7451,8 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
           ..write('sellingPriceMinor: $sellingPriceMinor, ')
           ..write('priceIncludesTax: $priceIncludesTax, ')
           ..write('taxRateId: $taxRateId, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('taxOverrideId: $taxOverrideId, ')
           ..write('reorderLevelMilli: $reorderLevelMilli, ')
           ..write('imagePath: $imagePath, ')
           ..write('archivedAt: $archivedAt, ')
@@ -2917,6 +7475,8 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
     sellingPriceMinor,
     priceIncludesTax,
     taxRateId,
+    taxCategoryId,
+    taxOverrideId,
     reorderLevelMilli,
     imagePath,
     archivedAt,
@@ -2938,6 +7498,8 @@ class ProductRow extends DataClass implements Insertable<ProductRow> {
           other.sellingPriceMinor == this.sellingPriceMinor &&
           other.priceIncludesTax == this.priceIncludesTax &&
           other.taxRateId == this.taxRateId &&
+          other.taxCategoryId == this.taxCategoryId &&
+          other.taxOverrideId == this.taxOverrideId &&
           other.reorderLevelMilli == this.reorderLevelMilli &&
           other.imagePath == this.imagePath &&
           other.archivedAt == this.archivedAt &&
@@ -2957,6 +7519,8 @@ class ProductsCompanion extends UpdateCompanion<ProductRow> {
   final Value<int> sellingPriceMinor;
   final Value<bool> priceIncludesTax;
   final Value<String?> taxRateId;
+  final Value<String?> taxCategoryId;
+  final Value<String?> taxOverrideId;
   final Value<int> reorderLevelMilli;
   final Value<String?> imagePath;
   final Value<int?> archivedAt;
@@ -2975,6 +7539,8 @@ class ProductsCompanion extends UpdateCompanion<ProductRow> {
     this.sellingPriceMinor = const Value.absent(),
     this.priceIncludesTax = const Value.absent(),
     this.taxRateId = const Value.absent(),
+    this.taxCategoryId = const Value.absent(),
+    this.taxOverrideId = const Value.absent(),
     this.reorderLevelMilli = const Value.absent(),
     this.imagePath = const Value.absent(),
     this.archivedAt = const Value.absent(),
@@ -2994,6 +7560,8 @@ class ProductsCompanion extends UpdateCompanion<ProductRow> {
     required int sellingPriceMinor,
     this.priceIncludesTax = const Value.absent(),
     this.taxRateId = const Value.absent(),
+    this.taxCategoryId = const Value.absent(),
+    this.taxOverrideId = const Value.absent(),
     required int reorderLevelMilli,
     this.imagePath = const Value.absent(),
     this.archivedAt = const Value.absent(),
@@ -3021,6 +7589,8 @@ class ProductsCompanion extends UpdateCompanion<ProductRow> {
     Expression<int>? sellingPriceMinor,
     Expression<bool>? priceIncludesTax,
     Expression<String>? taxRateId,
+    Expression<String>? taxCategoryId,
+    Expression<String>? taxOverrideId,
     Expression<int>? reorderLevelMilli,
     Expression<String>? imagePath,
     Expression<int>? archivedAt,
@@ -3041,6 +7611,8 @@ class ProductsCompanion extends UpdateCompanion<ProductRow> {
       if (sellingPriceMinor != null) 'selling_price_minor': sellingPriceMinor,
       if (priceIncludesTax != null) 'price_includes_tax': priceIncludesTax,
       if (taxRateId != null) 'tax_rate_id': taxRateId,
+      if (taxCategoryId != null) 'tax_category_id': taxCategoryId,
+      if (taxOverrideId != null) 'tax_override_id': taxOverrideId,
       if (reorderLevelMilli != null) 'reorder_level_milli': reorderLevelMilli,
       if (imagePath != null) 'image_path': imagePath,
       if (archivedAt != null) 'archived_at': archivedAt,
@@ -3062,6 +7634,8 @@ class ProductsCompanion extends UpdateCompanion<ProductRow> {
     Value<int>? sellingPriceMinor,
     Value<bool>? priceIncludesTax,
     Value<String?>? taxRateId,
+    Value<String?>? taxCategoryId,
+    Value<String?>? taxOverrideId,
     Value<int>? reorderLevelMilli,
     Value<String?>? imagePath,
     Value<int?>? archivedAt,
@@ -3081,6 +7655,8 @@ class ProductsCompanion extends UpdateCompanion<ProductRow> {
       sellingPriceMinor: sellingPriceMinor ?? this.sellingPriceMinor,
       priceIncludesTax: priceIncludesTax ?? this.priceIncludesTax,
       taxRateId: taxRateId ?? this.taxRateId,
+      taxCategoryId: taxCategoryId ?? this.taxCategoryId,
+      taxOverrideId: taxOverrideId ?? this.taxOverrideId,
       reorderLevelMilli: reorderLevelMilli ?? this.reorderLevelMilli,
       imagePath: imagePath ?? this.imagePath,
       archivedAt: archivedAt ?? this.archivedAt,
@@ -3126,6 +7702,12 @@ class ProductsCompanion extends UpdateCompanion<ProductRow> {
     if (taxRateId.present) {
       map['tax_rate_id'] = Variable<String>(taxRateId.value);
     }
+    if (taxCategoryId.present) {
+      map['tax_category_id'] = Variable<String>(taxCategoryId.value);
+    }
+    if (taxOverrideId.present) {
+      map['tax_override_id'] = Variable<String>(taxOverrideId.value);
+    }
     if (reorderLevelMilli.present) {
       map['reorder_level_milli'] = Variable<int>(reorderLevelMilli.value);
     }
@@ -3161,11 +7743,3031 @@ class ProductsCompanion extends UpdateCompanion<ProductRow> {
           ..write('sellingPriceMinor: $sellingPriceMinor, ')
           ..write('priceIncludesTax: $priceIncludesTax, ')
           ..write('taxRateId: $taxRateId, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('taxOverrideId: $taxOverrideId, ')
           ..write('reorderLevelMilli: $reorderLevelMilli, ')
           ..write('imagePath: $imagePath, ')
           ..write('archivedAt: $archivedAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProductClassificationsTable extends ProductClassifications
+    with TableInfo<$ProductClassificationsTable, ProductClassificationRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProductClassificationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productIdMeta = const VerificationMeta(
+    'productId',
+  );
+  @override
+  late final GeneratedColumn<String> productId = GeneratedColumn<String>(
+    'product_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES products (id) ON DELETE RESTRICT',
+    ),
+  );
+  static const VerificationMeta _classificationSystemMeta =
+      const VerificationMeta('classificationSystem');
+  @override
+  late final GeneratedColumn<String> classificationSystem =
+      GeneratedColumn<String>(
+        'classification_system',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _classificationCodeMeta =
+      const VerificationMeta('classificationCode');
+  @override
+  late final GeneratedColumn<String> classificationCode =
+      GeneratedColumn<String>(
+        'classification_code',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _classificationDescriptionMeta =
+      const VerificationMeta('classificationDescription');
+  @override
+  late final GeneratedColumn<String> classificationDescription =
+      GeneratedColumn<String>(
+        'classification_description',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _countryCodeMeta = const VerificationMeta(
+    'countryCode',
+  );
+  @override
+  late final GeneratedColumn<String> countryCode = GeneratedColumn<String>(
+    'country_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _classificationTypeMeta =
+      const VerificationMeta('classificationType');
+  @override
+  late final GeneratedColumn<String> classificationType =
+      GeneratedColumn<String>(
+        'classification_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _isPrimaryMeta = const VerificationMeta(
+    'isPrimary',
+  );
+  @override
+  late final GeneratedColumn<bool> isPrimary = GeneratedColumn<bool>(
+    'is_primary',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_primary" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    productId,
+    classificationSystem,
+    classificationCode,
+    classificationDescription,
+    countryCode,
+    classificationType,
+    isPrimary,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'product_classifications';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProductClassificationRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('product_id')) {
+      context.handle(
+        _productIdMeta,
+        productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_productIdMeta);
+    }
+    if (data.containsKey('classification_system')) {
+      context.handle(
+        _classificationSystemMeta,
+        classificationSystem.isAcceptableOrUnknown(
+          data['classification_system']!,
+          _classificationSystemMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_classificationSystemMeta);
+    }
+    if (data.containsKey('classification_code')) {
+      context.handle(
+        _classificationCodeMeta,
+        classificationCode.isAcceptableOrUnknown(
+          data['classification_code']!,
+          _classificationCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_classificationCodeMeta);
+    }
+    if (data.containsKey('classification_description')) {
+      context.handle(
+        _classificationDescriptionMeta,
+        classificationDescription.isAcceptableOrUnknown(
+          data['classification_description']!,
+          _classificationDescriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('country_code')) {
+      context.handle(
+        _countryCodeMeta,
+        countryCode.isAcceptableOrUnknown(
+          data['country_code']!,
+          _countryCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('classification_type')) {
+      context.handle(
+        _classificationTypeMeta,
+        classificationType.isAcceptableOrUnknown(
+          data['classification_type']!,
+          _classificationTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_classificationTypeMeta);
+    }
+    if (data.containsKey('is_primary')) {
+      context.handle(
+        _isPrimaryMeta,
+        isPrimary.isAcceptableOrUnknown(data['is_primary']!, _isPrimaryMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {productId, classificationSystem, classificationCode},
+  ];
+  @override
+  ProductClassificationRow map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProductClassificationRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      productId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_id'],
+      )!,
+      classificationSystem: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_system'],
+      )!,
+      classificationCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_code'],
+      )!,
+      classificationDescription: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_description'],
+      ),
+      countryCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}country_code'],
+      ),
+      classificationType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_type'],
+      )!,
+      isPrimary: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_primary'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ProductClassificationsTable createAlias(String alias) {
+    return $ProductClassificationsTable(attachedDatabase, alias);
+  }
+}
+
+class ProductClassificationRow extends DataClass
+    implements Insertable<ProductClassificationRow> {
+  final String id;
+  final String productId;
+  final String classificationSystem;
+  final String classificationCode;
+  final String? classificationDescription;
+  final String? countryCode;
+  final String classificationType;
+  final bool isPrimary;
+  final int createdAt;
+  final int updatedAt;
+  const ProductClassificationRow({
+    required this.id,
+    required this.productId,
+    required this.classificationSystem,
+    required this.classificationCode,
+    this.classificationDescription,
+    this.countryCode,
+    required this.classificationType,
+    required this.isPrimary,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['product_id'] = Variable<String>(productId);
+    map['classification_system'] = Variable<String>(classificationSystem);
+    map['classification_code'] = Variable<String>(classificationCode);
+    if (!nullToAbsent || classificationDescription != null) {
+      map['classification_description'] = Variable<String>(
+        classificationDescription,
+      );
+    }
+    if (!nullToAbsent || countryCode != null) {
+      map['country_code'] = Variable<String>(countryCode);
+    }
+    map['classification_type'] = Variable<String>(classificationType);
+    map['is_primary'] = Variable<bool>(isPrimary);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  ProductClassificationsCompanion toCompanion(bool nullToAbsent) {
+    return ProductClassificationsCompanion(
+      id: Value(id),
+      productId: Value(productId),
+      classificationSystem: Value(classificationSystem),
+      classificationCode: Value(classificationCode),
+      classificationDescription:
+          classificationDescription == null && nullToAbsent
+          ? const Value.absent()
+          : Value(classificationDescription),
+      countryCode: countryCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(countryCode),
+      classificationType: Value(classificationType),
+      isPrimary: Value(isPrimary),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ProductClassificationRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProductClassificationRow(
+      id: serializer.fromJson<String>(json['id']),
+      productId: serializer.fromJson<String>(json['productId']),
+      classificationSystem: serializer.fromJson<String>(
+        json['classificationSystem'],
+      ),
+      classificationCode: serializer.fromJson<String>(
+        json['classificationCode'],
+      ),
+      classificationDescription: serializer.fromJson<String?>(
+        json['classificationDescription'],
+      ),
+      countryCode: serializer.fromJson<String?>(json['countryCode']),
+      classificationType: serializer.fromJson<String>(
+        json['classificationType'],
+      ),
+      isPrimary: serializer.fromJson<bool>(json['isPrimary']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'productId': serializer.toJson<String>(productId),
+      'classificationSystem': serializer.toJson<String>(classificationSystem),
+      'classificationCode': serializer.toJson<String>(classificationCode),
+      'classificationDescription': serializer.toJson<String?>(
+        classificationDescription,
+      ),
+      'countryCode': serializer.toJson<String?>(countryCode),
+      'classificationType': serializer.toJson<String>(classificationType),
+      'isPrimary': serializer.toJson<bool>(isPrimary),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  ProductClassificationRow copyWith({
+    String? id,
+    String? productId,
+    String? classificationSystem,
+    String? classificationCode,
+    Value<String?> classificationDescription = const Value.absent(),
+    Value<String?> countryCode = const Value.absent(),
+    String? classificationType,
+    bool? isPrimary,
+    int? createdAt,
+    int? updatedAt,
+  }) => ProductClassificationRow(
+    id: id ?? this.id,
+    productId: productId ?? this.productId,
+    classificationSystem: classificationSystem ?? this.classificationSystem,
+    classificationCode: classificationCode ?? this.classificationCode,
+    classificationDescription: classificationDescription.present
+        ? classificationDescription.value
+        : this.classificationDescription,
+    countryCode: countryCode.present ? countryCode.value : this.countryCode,
+    classificationType: classificationType ?? this.classificationType,
+    isPrimary: isPrimary ?? this.isPrimary,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ProductClassificationRow copyWithCompanion(
+    ProductClassificationsCompanion data,
+  ) {
+    return ProductClassificationRow(
+      id: data.id.present ? data.id.value : this.id,
+      productId: data.productId.present ? data.productId.value : this.productId,
+      classificationSystem: data.classificationSystem.present
+          ? data.classificationSystem.value
+          : this.classificationSystem,
+      classificationCode: data.classificationCode.present
+          ? data.classificationCode.value
+          : this.classificationCode,
+      classificationDescription: data.classificationDescription.present
+          ? data.classificationDescription.value
+          : this.classificationDescription,
+      countryCode: data.countryCode.present
+          ? data.countryCode.value
+          : this.countryCode,
+      classificationType: data.classificationType.present
+          ? data.classificationType.value
+          : this.classificationType,
+      isPrimary: data.isPrimary.present ? data.isPrimary.value : this.isPrimary,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProductClassificationRow(')
+          ..write('id: $id, ')
+          ..write('productId: $productId, ')
+          ..write('classificationSystem: $classificationSystem, ')
+          ..write('classificationCode: $classificationCode, ')
+          ..write('classificationDescription: $classificationDescription, ')
+          ..write('countryCode: $countryCode, ')
+          ..write('classificationType: $classificationType, ')
+          ..write('isPrimary: $isPrimary, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    productId,
+    classificationSystem,
+    classificationCode,
+    classificationDescription,
+    countryCode,
+    classificationType,
+    isPrimary,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProductClassificationRow &&
+          other.id == this.id &&
+          other.productId == this.productId &&
+          other.classificationSystem == this.classificationSystem &&
+          other.classificationCode == this.classificationCode &&
+          other.classificationDescription == this.classificationDescription &&
+          other.countryCode == this.countryCode &&
+          other.classificationType == this.classificationType &&
+          other.isPrimary == this.isPrimary &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ProductClassificationsCompanion
+    extends UpdateCompanion<ProductClassificationRow> {
+  final Value<String> id;
+  final Value<String> productId;
+  final Value<String> classificationSystem;
+  final Value<String> classificationCode;
+  final Value<String?> classificationDescription;
+  final Value<String?> countryCode;
+  final Value<String> classificationType;
+  final Value<bool> isPrimary;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const ProductClassificationsCompanion({
+    this.id = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.classificationSystem = const Value.absent(),
+    this.classificationCode = const Value.absent(),
+    this.classificationDescription = const Value.absent(),
+    this.countryCode = const Value.absent(),
+    this.classificationType = const Value.absent(),
+    this.isPrimary = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProductClassificationsCompanion.insert({
+    required String id,
+    required String productId,
+    required String classificationSystem,
+    required String classificationCode,
+    this.classificationDescription = const Value.absent(),
+    this.countryCode = const Value.absent(),
+    required String classificationType,
+    this.isPrimary = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       productId = Value(productId),
+       classificationSystem = Value(classificationSystem),
+       classificationCode = Value(classificationCode),
+       classificationType = Value(classificationType),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<ProductClassificationRow> custom({
+    Expression<String>? id,
+    Expression<String>? productId,
+    Expression<String>? classificationSystem,
+    Expression<String>? classificationCode,
+    Expression<String>? classificationDescription,
+    Expression<String>? countryCode,
+    Expression<String>? classificationType,
+    Expression<bool>? isPrimary,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (productId != null) 'product_id': productId,
+      if (classificationSystem != null)
+        'classification_system': classificationSystem,
+      if (classificationCode != null) 'classification_code': classificationCode,
+      if (classificationDescription != null)
+        'classification_description': classificationDescription,
+      if (countryCode != null) 'country_code': countryCode,
+      if (classificationType != null) 'classification_type': classificationType,
+      if (isPrimary != null) 'is_primary': isPrimary,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProductClassificationsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? productId,
+    Value<String>? classificationSystem,
+    Value<String>? classificationCode,
+    Value<String?>? classificationDescription,
+    Value<String?>? countryCode,
+    Value<String>? classificationType,
+    Value<bool>? isPrimary,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ProductClassificationsCompanion(
+      id: id ?? this.id,
+      productId: productId ?? this.productId,
+      classificationSystem: classificationSystem ?? this.classificationSystem,
+      classificationCode: classificationCode ?? this.classificationCode,
+      classificationDescription:
+          classificationDescription ?? this.classificationDescription,
+      countryCode: countryCode ?? this.countryCode,
+      classificationType: classificationType ?? this.classificationType,
+      isPrimary: isPrimary ?? this.isPrimary,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (productId.present) {
+      map['product_id'] = Variable<String>(productId.value);
+    }
+    if (classificationSystem.present) {
+      map['classification_system'] = Variable<String>(
+        classificationSystem.value,
+      );
+    }
+    if (classificationCode.present) {
+      map['classification_code'] = Variable<String>(classificationCode.value);
+    }
+    if (classificationDescription.present) {
+      map['classification_description'] = Variable<String>(
+        classificationDescription.value,
+      );
+    }
+    if (countryCode.present) {
+      map['country_code'] = Variable<String>(countryCode.value);
+    }
+    if (classificationType.present) {
+      map['classification_type'] = Variable<String>(classificationType.value);
+    }
+    if (isPrimary.present) {
+      map['is_primary'] = Variable<bool>(isPrimary.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProductClassificationsCompanion(')
+          ..write('id: $id, ')
+          ..write('productId: $productId, ')
+          ..write('classificationSystem: $classificationSystem, ')
+          ..write('classificationCode: $classificationCode, ')
+          ..write('classificationDescription: $classificationDescription, ')
+          ..write('countryCode: $countryCode, ')
+          ..write('classificationType: $classificationType, ')
+          ..write('isPrimary: $isPrimary, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $InvoiceItemTaxComponentsTable extends InvoiceItemTaxComponents
+    with TableInfo<$InvoiceItemTaxComponentsTable, InvoiceItemTaxComponentRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InvoiceItemTaxComponentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _documentTypeMeta = const VerificationMeta(
+    'documentType',
+  );
+  @override
+  late final GeneratedColumn<String> documentType = GeneratedColumn<String>(
+    'document_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _componentNoMeta = const VerificationMeta(
+    'componentNo',
+  );
+  @override
+  late final GeneratedColumn<int> componentNo = GeneratedColumn<int>(
+    'component_no',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ruleIdMeta = const VerificationMeta('ruleId');
+  @override
+  late final GeneratedColumn<String> ruleId = GeneratedColumn<String>(
+    'rule_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _componentIdMeta = const VerificationMeta(
+    'componentId',
+  );
+  @override
+  late final GeneratedColumn<String> componentId = GeneratedColumn<String>(
+    'component_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _componentTypeMeta = const VerificationMeta(
+    'componentType',
+  );
+  @override
+  late final GeneratedColumn<String> componentType = GeneratedColumn<String>(
+    'component_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _calculationMethodMeta = const VerificationMeta(
+    'calculationMethod',
+  );
+  @override
+  late final GeneratedColumn<String> calculationMethod =
+      GeneratedColumn<String>(
+        'calculation_method',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _rateBasisPointsMeta = const VerificationMeta(
+    'rateBasisPoints',
+  );
+  @override
+  late final GeneratedColumn<int> rateBasisPoints = GeneratedColumn<int>(
+    'rate_basis_points',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fixedAmountMinorMeta = const VerificationMeta(
+    'fixedAmountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> fixedAmountMinor = GeneratedColumn<int>(
+    'fixed_amount_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _taxableMinorMeta = const VerificationMeta(
+    'taxableMinor',
+  );
+  @override
+  late final GeneratedColumn<int> taxableMinor = GeneratedColumn<int>(
+    'taxable_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMinorMeta = const VerificationMeta(
+    'amountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinor = GeneratedColumn<int>(
+    'amount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isCompoundMeta = const VerificationMeta(
+    'isCompound',
+  );
+  @override
+  late final GeneratedColumn<bool> isCompound = GeneratedColumn<bool>(
+    'is_compound',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_compound" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _isRecoverableMeta = const VerificationMeta(
+    'isRecoverable',
+  );
+  @override
+  late final GeneratedColumn<bool> isRecoverable = GeneratedColumn<bool>(
+    'is_recoverable',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_recoverable" IN (0, 1))',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    documentType,
+    itemId,
+    componentNo,
+    ruleId,
+    componentId,
+    name,
+    componentType,
+    calculationMethod,
+    rateBasisPoints,
+    fixedAmountMinor,
+    taxableMinor,
+    amountMinor,
+    isCompound,
+    isRecoverable,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'invoice_item_tax_components';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InvoiceItemTaxComponentRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('document_type')) {
+      context.handle(
+        _documentTypeMeta,
+        documentType.isAcceptableOrUnknown(
+          data['document_type']!,
+          _documentTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_documentTypeMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('component_no')) {
+      context.handle(
+        _componentNoMeta,
+        componentNo.isAcceptableOrUnknown(
+          data['component_no']!,
+          _componentNoMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_componentNoMeta);
+    }
+    if (data.containsKey('rule_id')) {
+      context.handle(
+        _ruleIdMeta,
+        ruleId.isAcceptableOrUnknown(data['rule_id']!, _ruleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ruleIdMeta);
+    }
+    if (data.containsKey('component_id')) {
+      context.handle(
+        _componentIdMeta,
+        componentId.isAcceptableOrUnknown(
+          data['component_id']!,
+          _componentIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_componentIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('component_type')) {
+      context.handle(
+        _componentTypeMeta,
+        componentType.isAcceptableOrUnknown(
+          data['component_type']!,
+          _componentTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_componentTypeMeta);
+    }
+    if (data.containsKey('calculation_method')) {
+      context.handle(
+        _calculationMethodMeta,
+        calculationMethod.isAcceptableOrUnknown(
+          data['calculation_method']!,
+          _calculationMethodMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_calculationMethodMeta);
+    }
+    if (data.containsKey('rate_basis_points')) {
+      context.handle(
+        _rateBasisPointsMeta,
+        rateBasisPoints.isAcceptableOrUnknown(
+          data['rate_basis_points']!,
+          _rateBasisPointsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fixed_amount_minor')) {
+      context.handle(
+        _fixedAmountMinorMeta,
+        fixedAmountMinor.isAcceptableOrUnknown(
+          data['fixed_amount_minor']!,
+          _fixedAmountMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('taxable_minor')) {
+      context.handle(
+        _taxableMinorMeta,
+        taxableMinor.isAcceptableOrUnknown(
+          data['taxable_minor']!,
+          _taxableMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_taxableMinorMeta);
+    }
+    if (data.containsKey('amount_minor')) {
+      context.handle(
+        _amountMinorMeta,
+        amountMinor.isAcceptableOrUnknown(
+          data['amount_minor']!,
+          _amountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMinorMeta);
+    }
+    if (data.containsKey('is_compound')) {
+      context.handle(
+        _isCompoundMeta,
+        isCompound.isAcceptableOrUnknown(data['is_compound']!, _isCompoundMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_isCompoundMeta);
+    }
+    if (data.containsKey('is_recoverable')) {
+      context.handle(
+        _isRecoverableMeta,
+        isRecoverable.isAcceptableOrUnknown(
+          data['is_recoverable']!,
+          _isRecoverableMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_isRecoverableMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {documentType, itemId, componentNo},
+  ];
+  @override
+  InvoiceItemTaxComponentRow map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InvoiceItemTaxComponentRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      documentType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_type'],
+      )!,
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_id'],
+      )!,
+      componentNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}component_no'],
+      )!,
+      ruleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rule_id'],
+      )!,
+      componentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}component_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      componentType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}component_type'],
+      )!,
+      calculationMethod: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}calculation_method'],
+      )!,
+      rateBasisPoints: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rate_basis_points'],
+      ),
+      fixedAmountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fixed_amount_minor'],
+      ),
+      taxableMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}taxable_minor'],
+      )!,
+      amountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor'],
+      )!,
+      isCompound: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_compound'],
+      )!,
+      isRecoverable: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_recoverable'],
+      )!,
+    );
+  }
+
+  @override
+  $InvoiceItemTaxComponentsTable createAlias(String alias) {
+    return $InvoiceItemTaxComponentsTable(attachedDatabase, alias);
+  }
+}
+
+class InvoiceItemTaxComponentRow extends DataClass
+    implements Insertable<InvoiceItemTaxComponentRow> {
+  final String id;
+  final String documentType;
+  final String itemId;
+  final int componentNo;
+  final String ruleId;
+  final String componentId;
+  final String name;
+  final String componentType;
+  final String calculationMethod;
+  final int? rateBasisPoints;
+  final int? fixedAmountMinor;
+  final int taxableMinor;
+  final int amountMinor;
+  final bool isCompound;
+  final bool isRecoverable;
+  const InvoiceItemTaxComponentRow({
+    required this.id,
+    required this.documentType,
+    required this.itemId,
+    required this.componentNo,
+    required this.ruleId,
+    required this.componentId,
+    required this.name,
+    required this.componentType,
+    required this.calculationMethod,
+    this.rateBasisPoints,
+    this.fixedAmountMinor,
+    required this.taxableMinor,
+    required this.amountMinor,
+    required this.isCompound,
+    required this.isRecoverable,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['document_type'] = Variable<String>(documentType);
+    map['item_id'] = Variable<String>(itemId);
+    map['component_no'] = Variable<int>(componentNo);
+    map['rule_id'] = Variable<String>(ruleId);
+    map['component_id'] = Variable<String>(componentId);
+    map['name'] = Variable<String>(name);
+    map['component_type'] = Variable<String>(componentType);
+    map['calculation_method'] = Variable<String>(calculationMethod);
+    if (!nullToAbsent || rateBasisPoints != null) {
+      map['rate_basis_points'] = Variable<int>(rateBasisPoints);
+    }
+    if (!nullToAbsent || fixedAmountMinor != null) {
+      map['fixed_amount_minor'] = Variable<int>(fixedAmountMinor);
+    }
+    map['taxable_minor'] = Variable<int>(taxableMinor);
+    map['amount_minor'] = Variable<int>(amountMinor);
+    map['is_compound'] = Variable<bool>(isCompound);
+    map['is_recoverable'] = Variable<bool>(isRecoverable);
+    return map;
+  }
+
+  InvoiceItemTaxComponentsCompanion toCompanion(bool nullToAbsent) {
+    return InvoiceItemTaxComponentsCompanion(
+      id: Value(id),
+      documentType: Value(documentType),
+      itemId: Value(itemId),
+      componentNo: Value(componentNo),
+      ruleId: Value(ruleId),
+      componentId: Value(componentId),
+      name: Value(name),
+      componentType: Value(componentType),
+      calculationMethod: Value(calculationMethod),
+      rateBasisPoints: rateBasisPoints == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rateBasisPoints),
+      fixedAmountMinor: fixedAmountMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fixedAmountMinor),
+      taxableMinor: Value(taxableMinor),
+      amountMinor: Value(amountMinor),
+      isCompound: Value(isCompound),
+      isRecoverable: Value(isRecoverable),
+    );
+  }
+
+  factory InvoiceItemTaxComponentRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InvoiceItemTaxComponentRow(
+      id: serializer.fromJson<String>(json['id']),
+      documentType: serializer.fromJson<String>(json['documentType']),
+      itemId: serializer.fromJson<String>(json['itemId']),
+      componentNo: serializer.fromJson<int>(json['componentNo']),
+      ruleId: serializer.fromJson<String>(json['ruleId']),
+      componentId: serializer.fromJson<String>(json['componentId']),
+      name: serializer.fromJson<String>(json['name']),
+      componentType: serializer.fromJson<String>(json['componentType']),
+      calculationMethod: serializer.fromJson<String>(json['calculationMethod']),
+      rateBasisPoints: serializer.fromJson<int?>(json['rateBasisPoints']),
+      fixedAmountMinor: serializer.fromJson<int?>(json['fixedAmountMinor']),
+      taxableMinor: serializer.fromJson<int>(json['taxableMinor']),
+      amountMinor: serializer.fromJson<int>(json['amountMinor']),
+      isCompound: serializer.fromJson<bool>(json['isCompound']),
+      isRecoverable: serializer.fromJson<bool>(json['isRecoverable']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'documentType': serializer.toJson<String>(documentType),
+      'itemId': serializer.toJson<String>(itemId),
+      'componentNo': serializer.toJson<int>(componentNo),
+      'ruleId': serializer.toJson<String>(ruleId),
+      'componentId': serializer.toJson<String>(componentId),
+      'name': serializer.toJson<String>(name),
+      'componentType': serializer.toJson<String>(componentType),
+      'calculationMethod': serializer.toJson<String>(calculationMethod),
+      'rateBasisPoints': serializer.toJson<int?>(rateBasisPoints),
+      'fixedAmountMinor': serializer.toJson<int?>(fixedAmountMinor),
+      'taxableMinor': serializer.toJson<int>(taxableMinor),
+      'amountMinor': serializer.toJson<int>(amountMinor),
+      'isCompound': serializer.toJson<bool>(isCompound),
+      'isRecoverable': serializer.toJson<bool>(isRecoverable),
+    };
+  }
+
+  InvoiceItemTaxComponentRow copyWith({
+    String? id,
+    String? documentType,
+    String? itemId,
+    int? componentNo,
+    String? ruleId,
+    String? componentId,
+    String? name,
+    String? componentType,
+    String? calculationMethod,
+    Value<int?> rateBasisPoints = const Value.absent(),
+    Value<int?> fixedAmountMinor = const Value.absent(),
+    int? taxableMinor,
+    int? amountMinor,
+    bool? isCompound,
+    bool? isRecoverable,
+  }) => InvoiceItemTaxComponentRow(
+    id: id ?? this.id,
+    documentType: documentType ?? this.documentType,
+    itemId: itemId ?? this.itemId,
+    componentNo: componentNo ?? this.componentNo,
+    ruleId: ruleId ?? this.ruleId,
+    componentId: componentId ?? this.componentId,
+    name: name ?? this.name,
+    componentType: componentType ?? this.componentType,
+    calculationMethod: calculationMethod ?? this.calculationMethod,
+    rateBasisPoints: rateBasisPoints.present
+        ? rateBasisPoints.value
+        : this.rateBasisPoints,
+    fixedAmountMinor: fixedAmountMinor.present
+        ? fixedAmountMinor.value
+        : this.fixedAmountMinor,
+    taxableMinor: taxableMinor ?? this.taxableMinor,
+    amountMinor: amountMinor ?? this.amountMinor,
+    isCompound: isCompound ?? this.isCompound,
+    isRecoverable: isRecoverable ?? this.isRecoverable,
+  );
+  InvoiceItemTaxComponentRow copyWithCompanion(
+    InvoiceItemTaxComponentsCompanion data,
+  ) {
+    return InvoiceItemTaxComponentRow(
+      id: data.id.present ? data.id.value : this.id,
+      documentType: data.documentType.present
+          ? data.documentType.value
+          : this.documentType,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      componentNo: data.componentNo.present
+          ? data.componentNo.value
+          : this.componentNo,
+      ruleId: data.ruleId.present ? data.ruleId.value : this.ruleId,
+      componentId: data.componentId.present
+          ? data.componentId.value
+          : this.componentId,
+      name: data.name.present ? data.name.value : this.name,
+      componentType: data.componentType.present
+          ? data.componentType.value
+          : this.componentType,
+      calculationMethod: data.calculationMethod.present
+          ? data.calculationMethod.value
+          : this.calculationMethod,
+      rateBasisPoints: data.rateBasisPoints.present
+          ? data.rateBasisPoints.value
+          : this.rateBasisPoints,
+      fixedAmountMinor: data.fixedAmountMinor.present
+          ? data.fixedAmountMinor.value
+          : this.fixedAmountMinor,
+      taxableMinor: data.taxableMinor.present
+          ? data.taxableMinor.value
+          : this.taxableMinor,
+      amountMinor: data.amountMinor.present
+          ? data.amountMinor.value
+          : this.amountMinor,
+      isCompound: data.isCompound.present
+          ? data.isCompound.value
+          : this.isCompound,
+      isRecoverable: data.isRecoverable.present
+          ? data.isRecoverable.value
+          : this.isRecoverable,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InvoiceItemTaxComponentRow(')
+          ..write('id: $id, ')
+          ..write('documentType: $documentType, ')
+          ..write('itemId: $itemId, ')
+          ..write('componentNo: $componentNo, ')
+          ..write('ruleId: $ruleId, ')
+          ..write('componentId: $componentId, ')
+          ..write('name: $name, ')
+          ..write('componentType: $componentType, ')
+          ..write('calculationMethod: $calculationMethod, ')
+          ..write('rateBasisPoints: $rateBasisPoints, ')
+          ..write('fixedAmountMinor: $fixedAmountMinor, ')
+          ..write('taxableMinor: $taxableMinor, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('isCompound: $isCompound, ')
+          ..write('isRecoverable: $isRecoverable')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    documentType,
+    itemId,
+    componentNo,
+    ruleId,
+    componentId,
+    name,
+    componentType,
+    calculationMethod,
+    rateBasisPoints,
+    fixedAmountMinor,
+    taxableMinor,
+    amountMinor,
+    isCompound,
+    isRecoverable,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InvoiceItemTaxComponentRow &&
+          other.id == this.id &&
+          other.documentType == this.documentType &&
+          other.itemId == this.itemId &&
+          other.componentNo == this.componentNo &&
+          other.ruleId == this.ruleId &&
+          other.componentId == this.componentId &&
+          other.name == this.name &&
+          other.componentType == this.componentType &&
+          other.calculationMethod == this.calculationMethod &&
+          other.rateBasisPoints == this.rateBasisPoints &&
+          other.fixedAmountMinor == this.fixedAmountMinor &&
+          other.taxableMinor == this.taxableMinor &&
+          other.amountMinor == this.amountMinor &&
+          other.isCompound == this.isCompound &&
+          other.isRecoverable == this.isRecoverable);
+}
+
+class InvoiceItemTaxComponentsCompanion
+    extends UpdateCompanion<InvoiceItemTaxComponentRow> {
+  final Value<String> id;
+  final Value<String> documentType;
+  final Value<String> itemId;
+  final Value<int> componentNo;
+  final Value<String> ruleId;
+  final Value<String> componentId;
+  final Value<String> name;
+  final Value<String> componentType;
+  final Value<String> calculationMethod;
+  final Value<int?> rateBasisPoints;
+  final Value<int?> fixedAmountMinor;
+  final Value<int> taxableMinor;
+  final Value<int> amountMinor;
+  final Value<bool> isCompound;
+  final Value<bool> isRecoverable;
+  final Value<int> rowid;
+  const InvoiceItemTaxComponentsCompanion({
+    this.id = const Value.absent(),
+    this.documentType = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.componentNo = const Value.absent(),
+    this.ruleId = const Value.absent(),
+    this.componentId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.componentType = const Value.absent(),
+    this.calculationMethod = const Value.absent(),
+    this.rateBasisPoints = const Value.absent(),
+    this.fixedAmountMinor = const Value.absent(),
+    this.taxableMinor = const Value.absent(),
+    this.amountMinor = const Value.absent(),
+    this.isCompound = const Value.absent(),
+    this.isRecoverable = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InvoiceItemTaxComponentsCompanion.insert({
+    required String id,
+    required String documentType,
+    required String itemId,
+    required int componentNo,
+    required String ruleId,
+    required String componentId,
+    required String name,
+    required String componentType,
+    required String calculationMethod,
+    this.rateBasisPoints = const Value.absent(),
+    this.fixedAmountMinor = const Value.absent(),
+    required int taxableMinor,
+    required int amountMinor,
+    required bool isCompound,
+    required bool isRecoverable,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       documentType = Value(documentType),
+       itemId = Value(itemId),
+       componentNo = Value(componentNo),
+       ruleId = Value(ruleId),
+       componentId = Value(componentId),
+       name = Value(name),
+       componentType = Value(componentType),
+       calculationMethod = Value(calculationMethod),
+       taxableMinor = Value(taxableMinor),
+       amountMinor = Value(amountMinor),
+       isCompound = Value(isCompound),
+       isRecoverable = Value(isRecoverable);
+  static Insertable<InvoiceItemTaxComponentRow> custom({
+    Expression<String>? id,
+    Expression<String>? documentType,
+    Expression<String>? itemId,
+    Expression<int>? componentNo,
+    Expression<String>? ruleId,
+    Expression<String>? componentId,
+    Expression<String>? name,
+    Expression<String>? componentType,
+    Expression<String>? calculationMethod,
+    Expression<int>? rateBasisPoints,
+    Expression<int>? fixedAmountMinor,
+    Expression<int>? taxableMinor,
+    Expression<int>? amountMinor,
+    Expression<bool>? isCompound,
+    Expression<bool>? isRecoverable,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (documentType != null) 'document_type': documentType,
+      if (itemId != null) 'item_id': itemId,
+      if (componentNo != null) 'component_no': componentNo,
+      if (ruleId != null) 'rule_id': ruleId,
+      if (componentId != null) 'component_id': componentId,
+      if (name != null) 'name': name,
+      if (componentType != null) 'component_type': componentType,
+      if (calculationMethod != null) 'calculation_method': calculationMethod,
+      if (rateBasisPoints != null) 'rate_basis_points': rateBasisPoints,
+      if (fixedAmountMinor != null) 'fixed_amount_minor': fixedAmountMinor,
+      if (taxableMinor != null) 'taxable_minor': taxableMinor,
+      if (amountMinor != null) 'amount_minor': amountMinor,
+      if (isCompound != null) 'is_compound': isCompound,
+      if (isRecoverable != null) 'is_recoverable': isRecoverable,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InvoiceItemTaxComponentsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? documentType,
+    Value<String>? itemId,
+    Value<int>? componentNo,
+    Value<String>? ruleId,
+    Value<String>? componentId,
+    Value<String>? name,
+    Value<String>? componentType,
+    Value<String>? calculationMethod,
+    Value<int?>? rateBasisPoints,
+    Value<int?>? fixedAmountMinor,
+    Value<int>? taxableMinor,
+    Value<int>? amountMinor,
+    Value<bool>? isCompound,
+    Value<bool>? isRecoverable,
+    Value<int>? rowid,
+  }) {
+    return InvoiceItemTaxComponentsCompanion(
+      id: id ?? this.id,
+      documentType: documentType ?? this.documentType,
+      itemId: itemId ?? this.itemId,
+      componentNo: componentNo ?? this.componentNo,
+      ruleId: ruleId ?? this.ruleId,
+      componentId: componentId ?? this.componentId,
+      name: name ?? this.name,
+      componentType: componentType ?? this.componentType,
+      calculationMethod: calculationMethod ?? this.calculationMethod,
+      rateBasisPoints: rateBasisPoints ?? this.rateBasisPoints,
+      fixedAmountMinor: fixedAmountMinor ?? this.fixedAmountMinor,
+      taxableMinor: taxableMinor ?? this.taxableMinor,
+      amountMinor: amountMinor ?? this.amountMinor,
+      isCompound: isCompound ?? this.isCompound,
+      isRecoverable: isRecoverable ?? this.isRecoverable,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (documentType.present) {
+      map['document_type'] = Variable<String>(documentType.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
+    }
+    if (componentNo.present) {
+      map['component_no'] = Variable<int>(componentNo.value);
+    }
+    if (ruleId.present) {
+      map['rule_id'] = Variable<String>(ruleId.value);
+    }
+    if (componentId.present) {
+      map['component_id'] = Variable<String>(componentId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (componentType.present) {
+      map['component_type'] = Variable<String>(componentType.value);
+    }
+    if (calculationMethod.present) {
+      map['calculation_method'] = Variable<String>(calculationMethod.value);
+    }
+    if (rateBasisPoints.present) {
+      map['rate_basis_points'] = Variable<int>(rateBasisPoints.value);
+    }
+    if (fixedAmountMinor.present) {
+      map['fixed_amount_minor'] = Variable<int>(fixedAmountMinor.value);
+    }
+    if (taxableMinor.present) {
+      map['taxable_minor'] = Variable<int>(taxableMinor.value);
+    }
+    if (amountMinor.present) {
+      map['amount_minor'] = Variable<int>(amountMinor.value);
+    }
+    if (isCompound.present) {
+      map['is_compound'] = Variable<bool>(isCompound.value);
+    }
+    if (isRecoverable.present) {
+      map['is_recoverable'] = Variable<bool>(isRecoverable.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InvoiceItemTaxComponentsCompanion(')
+          ..write('id: $id, ')
+          ..write('documentType: $documentType, ')
+          ..write('itemId: $itemId, ')
+          ..write('componentNo: $componentNo, ')
+          ..write('ruleId: $ruleId, ')
+          ..write('componentId: $componentId, ')
+          ..write('name: $name, ')
+          ..write('componentType: $componentType, ')
+          ..write('calculationMethod: $calculationMethod, ')
+          ..write('rateBasisPoints: $rateBasisPoints, ')
+          ..write('fixedAmountMinor: $fixedAmountMinor, ')
+          ..write('taxableMinor: $taxableMinor, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('isCompound: $isCompound, ')
+          ..write('isRecoverable: $isRecoverable, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AuditEventsTable extends AuditEvents
+    with TableInfo<$AuditEventsTable, AuditEventRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AuditEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _seqMeta = const VerificationMeta('seq');
+  @override
+  late final GeneratedColumn<int> seq = GeneratedColumn<int>(
+    'seq',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _eventTypeMeta = const VerificationMeta(
+    'eventType',
+  );
+  @override
+  late final GeneratedColumn<String> eventType = GeneratedColumn<String>(
+    'event_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
+    'entityType',
+  );
+  @override
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityIdMeta = const VerificationMeta(
+    'entityId',
+  );
+  @override
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+    'entity_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actionMeta = const VerificationMeta('action');
+  @override
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+    'action',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actorTypeMeta = const VerificationMeta(
+    'actorType',
+  );
+  @override
+  late final GeneratedColumn<String> actorType = GeneratedColumn<String>(
+    'actor_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actorIdMeta = const VerificationMeta(
+    'actorId',
+  );
+  @override
+  late final GeneratedColumn<String> actorId = GeneratedColumn<String>(
+    'actor_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _actorDisplayNameMeta = const VerificationMeta(
+    'actorDisplayName',
+  );
+  @override
+  late final GeneratedColumn<String> actorDisplayName = GeneratedColumn<String>(
+    'actor_display_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _occurredAtUtcMeta = const VerificationMeta(
+    'occurredAtUtc',
+  );
+  @override
+  late final GeneratedColumn<int> occurredAtUtc = GeneratedColumn<int>(
+    'occurred_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _correlationIdMeta = const VerificationMeta(
+    'correlationId',
+  );
+  @override
+  late final GeneratedColumn<String> correlationId = GeneratedColumn<String>(
+    'correlation_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _previousValuesMeta = const VerificationMeta(
+    'previousValues',
+  );
+  @override
+  late final GeneratedColumn<String> previousValues = GeneratedColumn<String>(
+    'previous_values',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _newValuesMeta = const VerificationMeta(
+    'newValues',
+  );
+  @override
+  late final GeneratedColumn<String> newValues = GeneratedColumn<String>(
+    'new_values',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _metadataMeta = const VerificationMeta(
+    'metadata',
+  );
+  @override
+  late final GeneratedColumn<String> metadata = GeneratedColumn<String>(
+    'metadata',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _previousEventHashMeta = const VerificationMeta(
+    'previousEventHash',
+  );
+  @override
+  late final GeneratedColumn<String> previousEventHash =
+      GeneratedColumn<String>(
+        'previous_event_hash',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _eventHashMeta = const VerificationMeta(
+    'eventHash',
+  );
+  @override
+  late final GeneratedColumn<String> eventHash = GeneratedColumn<String>(
+    'event_hash',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _schemaVersionMeta = const VerificationMeta(
+    'schemaVersion',
+  );
+  @override
+  late final GeneratedColumn<int> schemaVersion = GeneratedColumn<int>(
+    'schema_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    seq,
+    id,
+    eventType,
+    entityType,
+    entityId,
+    action,
+    actorType,
+    actorId,
+    actorDisplayName,
+    occurredAtUtc,
+    reason,
+    source,
+    correlationId,
+    previousValues,
+    newValues,
+    metadata,
+    previousEventHash,
+    eventHash,
+    schemaVersion,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'audit_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AuditEventRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('seq')) {
+      context.handle(
+        _seqMeta,
+        seq.isAcceptableOrUnknown(data['seq']!, _seqMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('event_type')) {
+      context.handle(
+        _eventTypeMeta,
+        eventType.isAcceptableOrUnknown(data['event_type']!, _eventTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_eventTypeMeta);
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+        _entityTypeMeta,
+        entityType.isAcceptableOrUnknown(data['entity_type']!, _entityTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityTypeMeta);
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(
+        _entityIdMeta,
+        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    if (data.containsKey('action')) {
+      context.handle(
+        _actionMeta,
+        action.isAcceptableOrUnknown(data['action']!, _actionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_actionMeta);
+    }
+    if (data.containsKey('actor_type')) {
+      context.handle(
+        _actorTypeMeta,
+        actorType.isAcceptableOrUnknown(data['actor_type']!, _actorTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_actorTypeMeta);
+    }
+    if (data.containsKey('actor_id')) {
+      context.handle(
+        _actorIdMeta,
+        actorId.isAcceptableOrUnknown(data['actor_id']!, _actorIdMeta),
+      );
+    }
+    if (data.containsKey('actor_display_name')) {
+      context.handle(
+        _actorDisplayNameMeta,
+        actorDisplayName.isAcceptableOrUnknown(
+          data['actor_display_name']!,
+          _actorDisplayNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_actorDisplayNameMeta);
+    }
+    if (data.containsKey('occurred_at_utc')) {
+      context.handle(
+        _occurredAtUtcMeta,
+        occurredAtUtc.isAcceptableOrUnknown(
+          data['occurred_at_utc']!,
+          _occurredAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_occurredAtUtcMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('correlation_id')) {
+      context.handle(
+        _correlationIdMeta,
+        correlationId.isAcceptableOrUnknown(
+          data['correlation_id']!,
+          _correlationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_correlationIdMeta);
+    }
+    if (data.containsKey('previous_values')) {
+      context.handle(
+        _previousValuesMeta,
+        previousValues.isAcceptableOrUnknown(
+          data['previous_values']!,
+          _previousValuesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('new_values')) {
+      context.handle(
+        _newValuesMeta,
+        newValues.isAcceptableOrUnknown(data['new_values']!, _newValuesMeta),
+      );
+    }
+    if (data.containsKey('metadata')) {
+      context.handle(
+        _metadataMeta,
+        metadata.isAcceptableOrUnknown(data['metadata']!, _metadataMeta),
+      );
+    }
+    if (data.containsKey('previous_event_hash')) {
+      context.handle(
+        _previousEventHashMeta,
+        previousEventHash.isAcceptableOrUnknown(
+          data['previous_event_hash']!,
+          _previousEventHashMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_previousEventHashMeta);
+    }
+    if (data.containsKey('event_hash')) {
+      context.handle(
+        _eventHashMeta,
+        eventHash.isAcceptableOrUnknown(data['event_hash']!, _eventHashMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_eventHashMeta);
+    }
+    if (data.containsKey('schema_version')) {
+      context.handle(
+        _schemaVersionMeta,
+        schemaVersion.isAcceptableOrUnknown(
+          data['schema_version']!,
+          _schemaVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_schemaVersionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {seq};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {id},
+    {eventHash},
+  ];
+  @override
+  AuditEventRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AuditEventRow(
+      seq: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}seq'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      eventType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_type'],
+      )!,
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_type'],
+      )!,
+      entityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_id'],
+      )!,
+      action: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}action'],
+      )!,
+      actorType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}actor_type'],
+      )!,
+      actorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}actor_id'],
+      ),
+      actorDisplayName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}actor_display_name'],
+      )!,
+      occurredAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}occurred_at_utc'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      ),
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      correlationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}correlation_id'],
+      )!,
+      previousValues: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}previous_values'],
+      ),
+      newValues: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}new_values'],
+      ),
+      metadata: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}metadata'],
+      ),
+      previousEventHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}previous_event_hash'],
+      )!,
+      eventHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_hash'],
+      )!,
+      schemaVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}schema_version'],
+      )!,
+    );
+  }
+
+  @override
+  $AuditEventsTable createAlias(String alias) {
+    return $AuditEventsTable(attachedDatabase, alias);
+  }
+}
+
+class AuditEventRow extends DataClass implements Insertable<AuditEventRow> {
+  final int seq;
+  final String id;
+  final String eventType;
+  final String entityType;
+  final String entityId;
+  final String action;
+  final String actorType;
+  final String? actorId;
+  final String actorDisplayName;
+  final int occurredAtUtc;
+  final String? reason;
+  final String source;
+  final String correlationId;
+  final String? previousValues;
+  final String? newValues;
+  final String? metadata;
+  final String previousEventHash;
+  final String eventHash;
+  final int schemaVersion;
+  const AuditEventRow({
+    required this.seq,
+    required this.id,
+    required this.eventType,
+    required this.entityType,
+    required this.entityId,
+    required this.action,
+    required this.actorType,
+    this.actorId,
+    required this.actorDisplayName,
+    required this.occurredAtUtc,
+    this.reason,
+    required this.source,
+    required this.correlationId,
+    this.previousValues,
+    this.newValues,
+    this.metadata,
+    required this.previousEventHash,
+    required this.eventHash,
+    required this.schemaVersion,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['seq'] = Variable<int>(seq);
+    map['id'] = Variable<String>(id);
+    map['event_type'] = Variable<String>(eventType);
+    map['entity_type'] = Variable<String>(entityType);
+    map['entity_id'] = Variable<String>(entityId);
+    map['action'] = Variable<String>(action);
+    map['actor_type'] = Variable<String>(actorType);
+    if (!nullToAbsent || actorId != null) {
+      map['actor_id'] = Variable<String>(actorId);
+    }
+    map['actor_display_name'] = Variable<String>(actorDisplayName);
+    map['occurred_at_utc'] = Variable<int>(occurredAtUtc);
+    if (!nullToAbsent || reason != null) {
+      map['reason'] = Variable<String>(reason);
+    }
+    map['source'] = Variable<String>(source);
+    map['correlation_id'] = Variable<String>(correlationId);
+    if (!nullToAbsent || previousValues != null) {
+      map['previous_values'] = Variable<String>(previousValues);
+    }
+    if (!nullToAbsent || newValues != null) {
+      map['new_values'] = Variable<String>(newValues);
+    }
+    if (!nullToAbsent || metadata != null) {
+      map['metadata'] = Variable<String>(metadata);
+    }
+    map['previous_event_hash'] = Variable<String>(previousEventHash);
+    map['event_hash'] = Variable<String>(eventHash);
+    map['schema_version'] = Variable<int>(schemaVersion);
+    return map;
+  }
+
+  AuditEventsCompanion toCompanion(bool nullToAbsent) {
+    return AuditEventsCompanion(
+      seq: Value(seq),
+      id: Value(id),
+      eventType: Value(eventType),
+      entityType: Value(entityType),
+      entityId: Value(entityId),
+      action: Value(action),
+      actorType: Value(actorType),
+      actorId: actorId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(actorId),
+      actorDisplayName: Value(actorDisplayName),
+      occurredAtUtc: Value(occurredAtUtc),
+      reason: reason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reason),
+      source: Value(source),
+      correlationId: Value(correlationId),
+      previousValues: previousValues == null && nullToAbsent
+          ? const Value.absent()
+          : Value(previousValues),
+      newValues: newValues == null && nullToAbsent
+          ? const Value.absent()
+          : Value(newValues),
+      metadata: metadata == null && nullToAbsent
+          ? const Value.absent()
+          : Value(metadata),
+      previousEventHash: Value(previousEventHash),
+      eventHash: Value(eventHash),
+      schemaVersion: Value(schemaVersion),
+    );
+  }
+
+  factory AuditEventRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AuditEventRow(
+      seq: serializer.fromJson<int>(json['seq']),
+      id: serializer.fromJson<String>(json['id']),
+      eventType: serializer.fromJson<String>(json['eventType']),
+      entityType: serializer.fromJson<String>(json['entityType']),
+      entityId: serializer.fromJson<String>(json['entityId']),
+      action: serializer.fromJson<String>(json['action']),
+      actorType: serializer.fromJson<String>(json['actorType']),
+      actorId: serializer.fromJson<String?>(json['actorId']),
+      actorDisplayName: serializer.fromJson<String>(json['actorDisplayName']),
+      occurredAtUtc: serializer.fromJson<int>(json['occurredAtUtc']),
+      reason: serializer.fromJson<String?>(json['reason']),
+      source: serializer.fromJson<String>(json['source']),
+      correlationId: serializer.fromJson<String>(json['correlationId']),
+      previousValues: serializer.fromJson<String?>(json['previousValues']),
+      newValues: serializer.fromJson<String?>(json['newValues']),
+      metadata: serializer.fromJson<String?>(json['metadata']),
+      previousEventHash: serializer.fromJson<String>(json['previousEventHash']),
+      eventHash: serializer.fromJson<String>(json['eventHash']),
+      schemaVersion: serializer.fromJson<int>(json['schemaVersion']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'seq': serializer.toJson<int>(seq),
+      'id': serializer.toJson<String>(id),
+      'eventType': serializer.toJson<String>(eventType),
+      'entityType': serializer.toJson<String>(entityType),
+      'entityId': serializer.toJson<String>(entityId),
+      'action': serializer.toJson<String>(action),
+      'actorType': serializer.toJson<String>(actorType),
+      'actorId': serializer.toJson<String?>(actorId),
+      'actorDisplayName': serializer.toJson<String>(actorDisplayName),
+      'occurredAtUtc': serializer.toJson<int>(occurredAtUtc),
+      'reason': serializer.toJson<String?>(reason),
+      'source': serializer.toJson<String>(source),
+      'correlationId': serializer.toJson<String>(correlationId),
+      'previousValues': serializer.toJson<String?>(previousValues),
+      'newValues': serializer.toJson<String?>(newValues),
+      'metadata': serializer.toJson<String?>(metadata),
+      'previousEventHash': serializer.toJson<String>(previousEventHash),
+      'eventHash': serializer.toJson<String>(eventHash),
+      'schemaVersion': serializer.toJson<int>(schemaVersion),
+    };
+  }
+
+  AuditEventRow copyWith({
+    int? seq,
+    String? id,
+    String? eventType,
+    String? entityType,
+    String? entityId,
+    String? action,
+    String? actorType,
+    Value<String?> actorId = const Value.absent(),
+    String? actorDisplayName,
+    int? occurredAtUtc,
+    Value<String?> reason = const Value.absent(),
+    String? source,
+    String? correlationId,
+    Value<String?> previousValues = const Value.absent(),
+    Value<String?> newValues = const Value.absent(),
+    Value<String?> metadata = const Value.absent(),
+    String? previousEventHash,
+    String? eventHash,
+    int? schemaVersion,
+  }) => AuditEventRow(
+    seq: seq ?? this.seq,
+    id: id ?? this.id,
+    eventType: eventType ?? this.eventType,
+    entityType: entityType ?? this.entityType,
+    entityId: entityId ?? this.entityId,
+    action: action ?? this.action,
+    actorType: actorType ?? this.actorType,
+    actorId: actorId.present ? actorId.value : this.actorId,
+    actorDisplayName: actorDisplayName ?? this.actorDisplayName,
+    occurredAtUtc: occurredAtUtc ?? this.occurredAtUtc,
+    reason: reason.present ? reason.value : this.reason,
+    source: source ?? this.source,
+    correlationId: correlationId ?? this.correlationId,
+    previousValues: previousValues.present
+        ? previousValues.value
+        : this.previousValues,
+    newValues: newValues.present ? newValues.value : this.newValues,
+    metadata: metadata.present ? metadata.value : this.metadata,
+    previousEventHash: previousEventHash ?? this.previousEventHash,
+    eventHash: eventHash ?? this.eventHash,
+    schemaVersion: schemaVersion ?? this.schemaVersion,
+  );
+  AuditEventRow copyWithCompanion(AuditEventsCompanion data) {
+    return AuditEventRow(
+      seq: data.seq.present ? data.seq.value : this.seq,
+      id: data.id.present ? data.id.value : this.id,
+      eventType: data.eventType.present ? data.eventType.value : this.eventType,
+      entityType: data.entityType.present
+          ? data.entityType.value
+          : this.entityType,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      action: data.action.present ? data.action.value : this.action,
+      actorType: data.actorType.present ? data.actorType.value : this.actorType,
+      actorId: data.actorId.present ? data.actorId.value : this.actorId,
+      actorDisplayName: data.actorDisplayName.present
+          ? data.actorDisplayName.value
+          : this.actorDisplayName,
+      occurredAtUtc: data.occurredAtUtc.present
+          ? data.occurredAtUtc.value
+          : this.occurredAtUtc,
+      reason: data.reason.present ? data.reason.value : this.reason,
+      source: data.source.present ? data.source.value : this.source,
+      correlationId: data.correlationId.present
+          ? data.correlationId.value
+          : this.correlationId,
+      previousValues: data.previousValues.present
+          ? data.previousValues.value
+          : this.previousValues,
+      newValues: data.newValues.present ? data.newValues.value : this.newValues,
+      metadata: data.metadata.present ? data.metadata.value : this.metadata,
+      previousEventHash: data.previousEventHash.present
+          ? data.previousEventHash.value
+          : this.previousEventHash,
+      eventHash: data.eventHash.present ? data.eventHash.value : this.eventHash,
+      schemaVersion: data.schemaVersion.present
+          ? data.schemaVersion.value
+          : this.schemaVersion,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditEventRow(')
+          ..write('seq: $seq, ')
+          ..write('id: $id, ')
+          ..write('eventType: $eventType, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityId: $entityId, ')
+          ..write('action: $action, ')
+          ..write('actorType: $actorType, ')
+          ..write('actorId: $actorId, ')
+          ..write('actorDisplayName: $actorDisplayName, ')
+          ..write('occurredAtUtc: $occurredAtUtc, ')
+          ..write('reason: $reason, ')
+          ..write('source: $source, ')
+          ..write('correlationId: $correlationId, ')
+          ..write('previousValues: $previousValues, ')
+          ..write('newValues: $newValues, ')
+          ..write('metadata: $metadata, ')
+          ..write('previousEventHash: $previousEventHash, ')
+          ..write('eventHash: $eventHash, ')
+          ..write('schemaVersion: $schemaVersion')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    seq,
+    id,
+    eventType,
+    entityType,
+    entityId,
+    action,
+    actorType,
+    actorId,
+    actorDisplayName,
+    occurredAtUtc,
+    reason,
+    source,
+    correlationId,
+    previousValues,
+    newValues,
+    metadata,
+    previousEventHash,
+    eventHash,
+    schemaVersion,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AuditEventRow &&
+          other.seq == this.seq &&
+          other.id == this.id &&
+          other.eventType == this.eventType &&
+          other.entityType == this.entityType &&
+          other.entityId == this.entityId &&
+          other.action == this.action &&
+          other.actorType == this.actorType &&
+          other.actorId == this.actorId &&
+          other.actorDisplayName == this.actorDisplayName &&
+          other.occurredAtUtc == this.occurredAtUtc &&
+          other.reason == this.reason &&
+          other.source == this.source &&
+          other.correlationId == this.correlationId &&
+          other.previousValues == this.previousValues &&
+          other.newValues == this.newValues &&
+          other.metadata == this.metadata &&
+          other.previousEventHash == this.previousEventHash &&
+          other.eventHash == this.eventHash &&
+          other.schemaVersion == this.schemaVersion);
+}
+
+class AuditEventsCompanion extends UpdateCompanion<AuditEventRow> {
+  final Value<int> seq;
+  final Value<String> id;
+  final Value<String> eventType;
+  final Value<String> entityType;
+  final Value<String> entityId;
+  final Value<String> action;
+  final Value<String> actorType;
+  final Value<String?> actorId;
+  final Value<String> actorDisplayName;
+  final Value<int> occurredAtUtc;
+  final Value<String?> reason;
+  final Value<String> source;
+  final Value<String> correlationId;
+  final Value<String?> previousValues;
+  final Value<String?> newValues;
+  final Value<String?> metadata;
+  final Value<String> previousEventHash;
+  final Value<String> eventHash;
+  final Value<int> schemaVersion;
+  const AuditEventsCompanion({
+    this.seq = const Value.absent(),
+    this.id = const Value.absent(),
+    this.eventType = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.action = const Value.absent(),
+    this.actorType = const Value.absent(),
+    this.actorId = const Value.absent(),
+    this.actorDisplayName = const Value.absent(),
+    this.occurredAtUtc = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.source = const Value.absent(),
+    this.correlationId = const Value.absent(),
+    this.previousValues = const Value.absent(),
+    this.newValues = const Value.absent(),
+    this.metadata = const Value.absent(),
+    this.previousEventHash = const Value.absent(),
+    this.eventHash = const Value.absent(),
+    this.schemaVersion = const Value.absent(),
+  });
+  AuditEventsCompanion.insert({
+    this.seq = const Value.absent(),
+    required String id,
+    required String eventType,
+    required String entityType,
+    required String entityId,
+    required String action,
+    required String actorType,
+    this.actorId = const Value.absent(),
+    required String actorDisplayName,
+    required int occurredAtUtc,
+    this.reason = const Value.absent(),
+    required String source,
+    required String correlationId,
+    this.previousValues = const Value.absent(),
+    this.newValues = const Value.absent(),
+    this.metadata = const Value.absent(),
+    required String previousEventHash,
+    required String eventHash,
+    required int schemaVersion,
+  }) : id = Value(id),
+       eventType = Value(eventType),
+       entityType = Value(entityType),
+       entityId = Value(entityId),
+       action = Value(action),
+       actorType = Value(actorType),
+       actorDisplayName = Value(actorDisplayName),
+       occurredAtUtc = Value(occurredAtUtc),
+       source = Value(source),
+       correlationId = Value(correlationId),
+       previousEventHash = Value(previousEventHash),
+       eventHash = Value(eventHash),
+       schemaVersion = Value(schemaVersion);
+  static Insertable<AuditEventRow> custom({
+    Expression<int>? seq,
+    Expression<String>? id,
+    Expression<String>? eventType,
+    Expression<String>? entityType,
+    Expression<String>? entityId,
+    Expression<String>? action,
+    Expression<String>? actorType,
+    Expression<String>? actorId,
+    Expression<String>? actorDisplayName,
+    Expression<int>? occurredAtUtc,
+    Expression<String>? reason,
+    Expression<String>? source,
+    Expression<String>? correlationId,
+    Expression<String>? previousValues,
+    Expression<String>? newValues,
+    Expression<String>? metadata,
+    Expression<String>? previousEventHash,
+    Expression<String>? eventHash,
+    Expression<int>? schemaVersion,
+  }) {
+    return RawValuesInsertable({
+      if (seq != null) 'seq': seq,
+      if (id != null) 'id': id,
+      if (eventType != null) 'event_type': eventType,
+      if (entityType != null) 'entity_type': entityType,
+      if (entityId != null) 'entity_id': entityId,
+      if (action != null) 'action': action,
+      if (actorType != null) 'actor_type': actorType,
+      if (actorId != null) 'actor_id': actorId,
+      if (actorDisplayName != null) 'actor_display_name': actorDisplayName,
+      if (occurredAtUtc != null) 'occurred_at_utc': occurredAtUtc,
+      if (reason != null) 'reason': reason,
+      if (source != null) 'source': source,
+      if (correlationId != null) 'correlation_id': correlationId,
+      if (previousValues != null) 'previous_values': previousValues,
+      if (newValues != null) 'new_values': newValues,
+      if (metadata != null) 'metadata': metadata,
+      if (previousEventHash != null) 'previous_event_hash': previousEventHash,
+      if (eventHash != null) 'event_hash': eventHash,
+      if (schemaVersion != null) 'schema_version': schemaVersion,
+    });
+  }
+
+  AuditEventsCompanion copyWith({
+    Value<int>? seq,
+    Value<String>? id,
+    Value<String>? eventType,
+    Value<String>? entityType,
+    Value<String>? entityId,
+    Value<String>? action,
+    Value<String>? actorType,
+    Value<String?>? actorId,
+    Value<String>? actorDisplayName,
+    Value<int>? occurredAtUtc,
+    Value<String?>? reason,
+    Value<String>? source,
+    Value<String>? correlationId,
+    Value<String?>? previousValues,
+    Value<String?>? newValues,
+    Value<String?>? metadata,
+    Value<String>? previousEventHash,
+    Value<String>? eventHash,
+    Value<int>? schemaVersion,
+  }) {
+    return AuditEventsCompanion(
+      seq: seq ?? this.seq,
+      id: id ?? this.id,
+      eventType: eventType ?? this.eventType,
+      entityType: entityType ?? this.entityType,
+      entityId: entityId ?? this.entityId,
+      action: action ?? this.action,
+      actorType: actorType ?? this.actorType,
+      actorId: actorId ?? this.actorId,
+      actorDisplayName: actorDisplayName ?? this.actorDisplayName,
+      occurredAtUtc: occurredAtUtc ?? this.occurredAtUtc,
+      reason: reason ?? this.reason,
+      source: source ?? this.source,
+      correlationId: correlationId ?? this.correlationId,
+      previousValues: previousValues ?? this.previousValues,
+      newValues: newValues ?? this.newValues,
+      metadata: metadata ?? this.metadata,
+      previousEventHash: previousEventHash ?? this.previousEventHash,
+      eventHash: eventHash ?? this.eventHash,
+      schemaVersion: schemaVersion ?? this.schemaVersion,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (seq.present) {
+      map['seq'] = Variable<int>(seq.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (eventType.present) {
+      map['event_type'] = Variable<String>(eventType.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<String>(entityType.value);
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<String>(entityId.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<String>(action.value);
+    }
+    if (actorType.present) {
+      map['actor_type'] = Variable<String>(actorType.value);
+    }
+    if (actorId.present) {
+      map['actor_id'] = Variable<String>(actorId.value);
+    }
+    if (actorDisplayName.present) {
+      map['actor_display_name'] = Variable<String>(actorDisplayName.value);
+    }
+    if (occurredAtUtc.present) {
+      map['occurred_at_utc'] = Variable<int>(occurredAtUtc.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (correlationId.present) {
+      map['correlation_id'] = Variable<String>(correlationId.value);
+    }
+    if (previousValues.present) {
+      map['previous_values'] = Variable<String>(previousValues.value);
+    }
+    if (newValues.present) {
+      map['new_values'] = Variable<String>(newValues.value);
+    }
+    if (metadata.present) {
+      map['metadata'] = Variable<String>(metadata.value);
+    }
+    if (previousEventHash.present) {
+      map['previous_event_hash'] = Variable<String>(previousEventHash.value);
+    }
+    if (eventHash.present) {
+      map['event_hash'] = Variable<String>(eventHash.value);
+    }
+    if (schemaVersion.present) {
+      map['schema_version'] = Variable<int>(schemaVersion.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditEventsCompanion(')
+          ..write('seq: $seq, ')
+          ..write('id: $id, ')
+          ..write('eventType: $eventType, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityId: $entityId, ')
+          ..write('action: $action, ')
+          ..write('actorType: $actorType, ')
+          ..write('actorId: $actorId, ')
+          ..write('actorDisplayName: $actorDisplayName, ')
+          ..write('occurredAtUtc: $occurredAtUtc, ')
+          ..write('reason: $reason, ')
+          ..write('source: $source, ')
+          ..write('correlationId: $correlationId, ')
+          ..write('previousValues: $previousValues, ')
+          ..write('newValues: $newValues, ')
+          ..write('metadata: $metadata, ')
+          ..write('previousEventHash: $previousEventHash, ')
+          ..write('eventHash: $eventHash, ')
+          ..write('schemaVersion: $schemaVersion')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AuditOutboxTable extends AuditOutbox
+    with TableInfo<$AuditOutboxTable, AuditOutboxRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AuditOutboxTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta(
+    'attempts',
+  );
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    payload,
+    createdAt,
+    attempts,
+    lastError,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'audit_outbox';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AuditOutboxRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(
+        _attemptsMeta,
+        attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AuditOutboxRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AuditOutboxRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+    );
+  }
+
+  @override
+  $AuditOutboxTable createAlias(String alias) {
+    return $AuditOutboxTable(attachedDatabase, alias);
+  }
+}
+
+class AuditOutboxRow extends DataClass implements Insertable<AuditOutboxRow> {
+  final String id;
+  final String payload;
+  final int createdAt;
+  final int attempts;
+  final String? lastError;
+  const AuditOutboxRow({
+    required this.id,
+    required this.payload,
+    required this.createdAt,
+    required this.attempts,
+    this.lastError,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['payload'] = Variable<String>(payload);
+    map['created_at'] = Variable<int>(createdAt);
+    map['attempts'] = Variable<int>(attempts);
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    return map;
+  }
+
+  AuditOutboxCompanion toCompanion(bool nullToAbsent) {
+    return AuditOutboxCompanion(
+      id: Value(id),
+      payload: Value(payload),
+      createdAt: Value(createdAt),
+      attempts: Value(attempts),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+    );
+  }
+
+  factory AuditOutboxRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AuditOutboxRow(
+      id: serializer.fromJson<String>(json['id']),
+      payload: serializer.fromJson<String>(json['payload']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'payload': serializer.toJson<String>(payload),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'attempts': serializer.toJson<int>(attempts),
+      'lastError': serializer.toJson<String?>(lastError),
+    };
+  }
+
+  AuditOutboxRow copyWith({
+    String? id,
+    String? payload,
+    int? createdAt,
+    int? attempts,
+    Value<String?> lastError = const Value.absent(),
+  }) => AuditOutboxRow(
+    id: id ?? this.id,
+    payload: payload ?? this.payload,
+    createdAt: createdAt ?? this.createdAt,
+    attempts: attempts ?? this.attempts,
+    lastError: lastError.present ? lastError.value : this.lastError,
+  );
+  AuditOutboxRow copyWithCompanion(AuditOutboxCompanion data) {
+    return AuditOutboxRow(
+      id: data.id.present ? data.id.value : this.id,
+      payload: data.payload.present ? data.payload.value : this.payload,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditOutboxRow(')
+          ..write('id: $id, ')
+          ..write('payload: $payload, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastError: $lastError')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, payload, createdAt, attempts, lastError);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AuditOutboxRow &&
+          other.id == this.id &&
+          other.payload == this.payload &&
+          other.createdAt == this.createdAt &&
+          other.attempts == this.attempts &&
+          other.lastError == this.lastError);
+}
+
+class AuditOutboxCompanion extends UpdateCompanion<AuditOutboxRow> {
+  final Value<String> id;
+  final Value<String> payload;
+  final Value<int> createdAt;
+  final Value<int> attempts;
+  final Value<String?> lastError;
+  final Value<int> rowid;
+  const AuditOutboxCompanion({
+    this.id = const Value.absent(),
+    this.payload = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AuditOutboxCompanion.insert({
+    required String id,
+    required String payload,
+    required int createdAt,
+    this.attempts = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       payload = Value(payload),
+       createdAt = Value(createdAt);
+  static Insertable<AuditOutboxRow> custom({
+    Expression<String>? id,
+    Expression<String>? payload,
+    Expression<int>? createdAt,
+    Expression<int>? attempts,
+    Expression<String>? lastError,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (payload != null) 'payload': payload,
+      if (createdAt != null) 'created_at': createdAt,
+      if (attempts != null) 'attempts': attempts,
+      if (lastError != null) 'last_error': lastError,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AuditOutboxCompanion copyWith({
+    Value<String>? id,
+    Value<String>? payload,
+    Value<int>? createdAt,
+    Value<int>? attempts,
+    Value<String?>? lastError,
+    Value<int>? rowid,
+  }) {
+    return AuditOutboxCompanion(
+      id: id ?? this.id,
+      payload: payload ?? this.payload,
+      createdAt: createdAt ?? this.createdAt,
+      attempts: attempts ?? this.attempts,
+      lastError: lastError ?? this.lastError,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditOutboxCompanion(')
+          ..write('id: $id, ')
+          ..write('payload: $payload, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastError: $lastError, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8009,6 +15611,72 @@ class $PurchaseInvoiceItemsTable extends PurchaseInvoiceItems
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL CHECK (total_minor >= 0)',
   );
+  static const VerificationMeta _taxTreatmentMeta = const VerificationMeta(
+    'taxTreatment',
+  );
+  @override
+  late final GeneratedColumn<String> taxTreatment = GeneratedColumn<String>(
+    'tax_treatment',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _taxCategoryIdMeta = const VerificationMeta(
+    'taxCategoryId',
+  );
+  @override
+  late final GeneratedColumn<String> taxCategoryId = GeneratedColumn<String>(
+    'tax_category_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _taxSnapshotJsonMeta = const VerificationMeta(
+    'taxSnapshotJson',
+  );
+  @override
+  late final GeneratedColumn<String> taxSnapshotJson = GeneratedColumn<String>(
+    'tax_snapshot_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _classificationSystemMeta =
+      const VerificationMeta('classificationSystem');
+  @override
+  late final GeneratedColumn<String> classificationSystem =
+      GeneratedColumn<String>(
+        'classification_system',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _classificationCodeMeta =
+      const VerificationMeta('classificationCode');
+  @override
+  late final GeneratedColumn<String> classificationCode =
+      GeneratedColumn<String>(
+        'classification_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _classificationDescriptionMeta =
+      const VerificationMeta('classificationDescription');
+  @override
+  late final GeneratedColumn<String> classificationDescription =
+      GeneratedColumn<String>(
+        'classification_description',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -8031,6 +15699,12 @@ class $PurchaseInvoiceItemsTable extends PurchaseInvoiceItems
     netMinor,
     taxMinor,
     totalMinor,
+    taxTreatment,
+    taxCategoryId,
+    taxSnapshotJson,
+    classificationSystem,
+    classificationCode,
+    classificationDescription,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -8223,6 +15897,60 @@ class $PurchaseInvoiceItemsTable extends PurchaseInvoiceItems
     } else if (isInserting) {
       context.missing(_totalMinorMeta);
     }
+    if (data.containsKey('tax_treatment')) {
+      context.handle(
+        _taxTreatmentMeta,
+        taxTreatment.isAcceptableOrUnknown(
+          data['tax_treatment']!,
+          _taxTreatmentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tax_category_id')) {
+      context.handle(
+        _taxCategoryIdMeta,
+        taxCategoryId.isAcceptableOrUnknown(
+          data['tax_category_id']!,
+          _taxCategoryIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tax_snapshot_json')) {
+      context.handle(
+        _taxSnapshotJsonMeta,
+        taxSnapshotJson.isAcceptableOrUnknown(
+          data['tax_snapshot_json']!,
+          _taxSnapshotJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('classification_system')) {
+      context.handle(
+        _classificationSystemMeta,
+        classificationSystem.isAcceptableOrUnknown(
+          data['classification_system']!,
+          _classificationSystemMeta,
+        ),
+      );
+    }
+    if (data.containsKey('classification_code')) {
+      context.handle(
+        _classificationCodeMeta,
+        classificationCode.isAcceptableOrUnknown(
+          data['classification_code']!,
+          _classificationCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('classification_description')) {
+      context.handle(
+        _classificationDescriptionMeta,
+        classificationDescription.isAcceptableOrUnknown(
+          data['classification_description']!,
+          _classificationDescriptionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -8316,6 +16044,30 @@ class $PurchaseInvoiceItemsTable extends PurchaseInvoiceItems
         DriftSqlType.int,
         data['${effectivePrefix}total_minor'],
       )!,
+      taxTreatment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_treatment'],
+      ),
+      taxCategoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_category_id'],
+      ),
+      taxSnapshotJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_snapshot_json'],
+      ),
+      classificationSystem: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_system'],
+      ),
+      classificationCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_code'],
+      ),
+      classificationDescription: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_description'],
+      ),
     );
   }
 
@@ -8347,6 +16099,12 @@ class PurchaseInvoiceItemRow extends DataClass
   final int netMinor;
   final int taxMinor;
   final int totalMinor;
+  final String? taxTreatment;
+  final String? taxCategoryId;
+  final String? taxSnapshotJson;
+  final String? classificationSystem;
+  final String? classificationCode;
+  final String? classificationDescription;
   const PurchaseInvoiceItemRow({
     required this.id,
     required this.invoiceId,
@@ -8368,6 +16126,12 @@ class PurchaseInvoiceItemRow extends DataClass
     required this.netMinor,
     required this.taxMinor,
     required this.totalMinor,
+    this.taxTreatment,
+    this.taxCategoryId,
+    this.taxSnapshotJson,
+    this.classificationSystem,
+    this.classificationCode,
+    this.classificationDescription,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -8394,6 +16158,26 @@ class PurchaseInvoiceItemRow extends DataClass
     map['net_minor'] = Variable<int>(netMinor);
     map['tax_minor'] = Variable<int>(taxMinor);
     map['total_minor'] = Variable<int>(totalMinor);
+    if (!nullToAbsent || taxTreatment != null) {
+      map['tax_treatment'] = Variable<String>(taxTreatment);
+    }
+    if (!nullToAbsent || taxCategoryId != null) {
+      map['tax_category_id'] = Variable<String>(taxCategoryId);
+    }
+    if (!nullToAbsent || taxSnapshotJson != null) {
+      map['tax_snapshot_json'] = Variable<String>(taxSnapshotJson);
+    }
+    if (!nullToAbsent || classificationSystem != null) {
+      map['classification_system'] = Variable<String>(classificationSystem);
+    }
+    if (!nullToAbsent || classificationCode != null) {
+      map['classification_code'] = Variable<String>(classificationCode);
+    }
+    if (!nullToAbsent || classificationDescription != null) {
+      map['classification_description'] = Variable<String>(
+        classificationDescription,
+      );
+    }
     return map;
   }
 
@@ -8421,6 +16205,25 @@ class PurchaseInvoiceItemRow extends DataClass
       netMinor: Value(netMinor),
       taxMinor: Value(taxMinor),
       totalMinor: Value(totalMinor),
+      taxTreatment: taxTreatment == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxTreatment),
+      taxCategoryId: taxCategoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxCategoryId),
+      taxSnapshotJson: taxSnapshotJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxSnapshotJson),
+      classificationSystem: classificationSystem == null && nullToAbsent
+          ? const Value.absent()
+          : Value(classificationSystem),
+      classificationCode: classificationCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(classificationCode),
+      classificationDescription:
+          classificationDescription == null && nullToAbsent
+          ? const Value.absent()
+          : Value(classificationDescription),
     );
   }
 
@@ -8450,6 +16253,18 @@ class PurchaseInvoiceItemRow extends DataClass
       netMinor: serializer.fromJson<int>(json['netMinor']),
       taxMinor: serializer.fromJson<int>(json['taxMinor']),
       totalMinor: serializer.fromJson<int>(json['totalMinor']),
+      taxTreatment: serializer.fromJson<String?>(json['taxTreatment']),
+      taxCategoryId: serializer.fromJson<String?>(json['taxCategoryId']),
+      taxSnapshotJson: serializer.fromJson<String?>(json['taxSnapshotJson']),
+      classificationSystem: serializer.fromJson<String?>(
+        json['classificationSystem'],
+      ),
+      classificationCode: serializer.fromJson<String?>(
+        json['classificationCode'],
+      ),
+      classificationDescription: serializer.fromJson<String?>(
+        json['classificationDescription'],
+      ),
     );
   }
   @override
@@ -8476,6 +16291,14 @@ class PurchaseInvoiceItemRow extends DataClass
       'netMinor': serializer.toJson<int>(netMinor),
       'taxMinor': serializer.toJson<int>(taxMinor),
       'totalMinor': serializer.toJson<int>(totalMinor),
+      'taxTreatment': serializer.toJson<String?>(taxTreatment),
+      'taxCategoryId': serializer.toJson<String?>(taxCategoryId),
+      'taxSnapshotJson': serializer.toJson<String?>(taxSnapshotJson),
+      'classificationSystem': serializer.toJson<String?>(classificationSystem),
+      'classificationCode': serializer.toJson<String?>(classificationCode),
+      'classificationDescription': serializer.toJson<String?>(
+        classificationDescription,
+      ),
     };
   }
 
@@ -8500,6 +16323,12 @@ class PurchaseInvoiceItemRow extends DataClass
     int? netMinor,
     int? taxMinor,
     int? totalMinor,
+    Value<String?> taxTreatment = const Value.absent(),
+    Value<String?> taxCategoryId = const Value.absent(),
+    Value<String?> taxSnapshotJson = const Value.absent(),
+    Value<String?> classificationSystem = const Value.absent(),
+    Value<String?> classificationCode = const Value.absent(),
+    Value<String?> classificationDescription = const Value.absent(),
   }) => PurchaseInvoiceItemRow(
     id: id ?? this.id,
     invoiceId: invoiceId ?? this.invoiceId,
@@ -8521,6 +16350,22 @@ class PurchaseInvoiceItemRow extends DataClass
     netMinor: netMinor ?? this.netMinor,
     taxMinor: taxMinor ?? this.taxMinor,
     totalMinor: totalMinor ?? this.totalMinor,
+    taxTreatment: taxTreatment.present ? taxTreatment.value : this.taxTreatment,
+    taxCategoryId: taxCategoryId.present
+        ? taxCategoryId.value
+        : this.taxCategoryId,
+    taxSnapshotJson: taxSnapshotJson.present
+        ? taxSnapshotJson.value
+        : this.taxSnapshotJson,
+    classificationSystem: classificationSystem.present
+        ? classificationSystem.value
+        : this.classificationSystem,
+    classificationCode: classificationCode.present
+        ? classificationCode.value
+        : this.classificationCode,
+    classificationDescription: classificationDescription.present
+        ? classificationDescription.value
+        : this.classificationDescription,
   );
   PurchaseInvoiceItemRow copyWithCompanion(PurchaseInvoiceItemsCompanion data) {
     return PurchaseInvoiceItemRow(
@@ -8566,6 +16411,24 @@ class PurchaseInvoiceItemRow extends DataClass
       totalMinor: data.totalMinor.present
           ? data.totalMinor.value
           : this.totalMinor,
+      taxTreatment: data.taxTreatment.present
+          ? data.taxTreatment.value
+          : this.taxTreatment,
+      taxCategoryId: data.taxCategoryId.present
+          ? data.taxCategoryId.value
+          : this.taxCategoryId,
+      taxSnapshotJson: data.taxSnapshotJson.present
+          ? data.taxSnapshotJson.value
+          : this.taxSnapshotJson,
+      classificationSystem: data.classificationSystem.present
+          ? data.classificationSystem.value
+          : this.classificationSystem,
+      classificationCode: data.classificationCode.present
+          ? data.classificationCode.value
+          : this.classificationCode,
+      classificationDescription: data.classificationDescription.present
+          ? data.classificationDescription.value
+          : this.classificationDescription,
     );
   }
 
@@ -8591,13 +16454,19 @@ class PurchaseInvoiceItemRow extends DataClass
           ..write('discountMinor: $discountMinor, ')
           ..write('netMinor: $netMinor, ')
           ..write('taxMinor: $taxMinor, ')
-          ..write('totalMinor: $totalMinor')
+          ..write('totalMinor: $totalMinor, ')
+          ..write('taxTreatment: $taxTreatment, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('taxSnapshotJson: $taxSnapshotJson, ')
+          ..write('classificationSystem: $classificationSystem, ')
+          ..write('classificationCode: $classificationCode, ')
+          ..write('classificationDescription: $classificationDescription')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     invoiceId,
     lineNo,
@@ -8618,7 +16487,13 @@ class PurchaseInvoiceItemRow extends DataClass
     netMinor,
     taxMinor,
     totalMinor,
-  );
+    taxTreatment,
+    taxCategoryId,
+    taxSnapshotJson,
+    classificationSystem,
+    classificationCode,
+    classificationDescription,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -8642,7 +16517,13 @@ class PurchaseInvoiceItemRow extends DataClass
           other.discountMinor == this.discountMinor &&
           other.netMinor == this.netMinor &&
           other.taxMinor == this.taxMinor &&
-          other.totalMinor == this.totalMinor);
+          other.totalMinor == this.totalMinor &&
+          other.taxTreatment == this.taxTreatment &&
+          other.taxCategoryId == this.taxCategoryId &&
+          other.taxSnapshotJson == this.taxSnapshotJson &&
+          other.classificationSystem == this.classificationSystem &&
+          other.classificationCode == this.classificationCode &&
+          other.classificationDescription == this.classificationDescription);
 }
 
 class PurchaseInvoiceItemsCompanion
@@ -8667,6 +16548,12 @@ class PurchaseInvoiceItemsCompanion
   final Value<int> netMinor;
   final Value<int> taxMinor;
   final Value<int> totalMinor;
+  final Value<String?> taxTreatment;
+  final Value<String?> taxCategoryId;
+  final Value<String?> taxSnapshotJson;
+  final Value<String?> classificationSystem;
+  final Value<String?> classificationCode;
+  final Value<String?> classificationDescription;
   final Value<int> rowid;
   const PurchaseInvoiceItemsCompanion({
     this.id = const Value.absent(),
@@ -8689,6 +16576,12 @@ class PurchaseInvoiceItemsCompanion
     this.netMinor = const Value.absent(),
     this.taxMinor = const Value.absent(),
     this.totalMinor = const Value.absent(),
+    this.taxTreatment = const Value.absent(),
+    this.taxCategoryId = const Value.absent(),
+    this.taxSnapshotJson = const Value.absent(),
+    this.classificationSystem = const Value.absent(),
+    this.classificationCode = const Value.absent(),
+    this.classificationDescription = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PurchaseInvoiceItemsCompanion.insert({
@@ -8712,6 +16605,12 @@ class PurchaseInvoiceItemsCompanion
     required int netMinor,
     required int taxMinor,
     required int totalMinor,
+    this.taxTreatment = const Value.absent(),
+    this.taxCategoryId = const Value.absent(),
+    this.taxSnapshotJson = const Value.absent(),
+    this.classificationSystem = const Value.absent(),
+    this.classificationCode = const Value.absent(),
+    this.classificationDescription = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        invoiceId = Value(invoiceId),
@@ -8753,6 +16652,12 @@ class PurchaseInvoiceItemsCompanion
     Expression<int>? netMinor,
     Expression<int>? taxMinor,
     Expression<int>? totalMinor,
+    Expression<String>? taxTreatment,
+    Expression<String>? taxCategoryId,
+    Expression<String>? taxSnapshotJson,
+    Expression<String>? classificationSystem,
+    Expression<String>? classificationCode,
+    Expression<String>? classificationDescription,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -8776,6 +16681,14 @@ class PurchaseInvoiceItemsCompanion
       if (netMinor != null) 'net_minor': netMinor,
       if (taxMinor != null) 'tax_minor': taxMinor,
       if (totalMinor != null) 'total_minor': totalMinor,
+      if (taxTreatment != null) 'tax_treatment': taxTreatment,
+      if (taxCategoryId != null) 'tax_category_id': taxCategoryId,
+      if (taxSnapshotJson != null) 'tax_snapshot_json': taxSnapshotJson,
+      if (classificationSystem != null)
+        'classification_system': classificationSystem,
+      if (classificationCode != null) 'classification_code': classificationCode,
+      if (classificationDescription != null)
+        'classification_description': classificationDescription,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -8801,6 +16714,12 @@ class PurchaseInvoiceItemsCompanion
     Value<int>? netMinor,
     Value<int>? taxMinor,
     Value<int>? totalMinor,
+    Value<String?>? taxTreatment,
+    Value<String?>? taxCategoryId,
+    Value<String?>? taxSnapshotJson,
+    Value<String?>? classificationSystem,
+    Value<String?>? classificationCode,
+    Value<String?>? classificationDescription,
     Value<int>? rowid,
   }) {
     return PurchaseInvoiceItemsCompanion(
@@ -8824,6 +16743,13 @@ class PurchaseInvoiceItemsCompanion
       netMinor: netMinor ?? this.netMinor,
       taxMinor: taxMinor ?? this.taxMinor,
       totalMinor: totalMinor ?? this.totalMinor,
+      taxTreatment: taxTreatment ?? this.taxTreatment,
+      taxCategoryId: taxCategoryId ?? this.taxCategoryId,
+      taxSnapshotJson: taxSnapshotJson ?? this.taxSnapshotJson,
+      classificationSystem: classificationSystem ?? this.classificationSystem,
+      classificationCode: classificationCode ?? this.classificationCode,
+      classificationDescription:
+          classificationDescription ?? this.classificationDescription,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -8891,6 +16817,28 @@ class PurchaseInvoiceItemsCompanion
     if (totalMinor.present) {
       map['total_minor'] = Variable<int>(totalMinor.value);
     }
+    if (taxTreatment.present) {
+      map['tax_treatment'] = Variable<String>(taxTreatment.value);
+    }
+    if (taxCategoryId.present) {
+      map['tax_category_id'] = Variable<String>(taxCategoryId.value);
+    }
+    if (taxSnapshotJson.present) {
+      map['tax_snapshot_json'] = Variable<String>(taxSnapshotJson.value);
+    }
+    if (classificationSystem.present) {
+      map['classification_system'] = Variable<String>(
+        classificationSystem.value,
+      );
+    }
+    if (classificationCode.present) {
+      map['classification_code'] = Variable<String>(classificationCode.value);
+    }
+    if (classificationDescription.present) {
+      map['classification_description'] = Variable<String>(
+        classificationDescription.value,
+      );
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -8920,6 +16868,12 @@ class PurchaseInvoiceItemsCompanion
           ..write('netMinor: $netMinor, ')
           ..write('taxMinor: $taxMinor, ')
           ..write('totalMinor: $totalMinor, ')
+          ..write('taxTreatment: $taxTreatment, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('taxSnapshotJson: $taxSnapshotJson, ')
+          ..write('classificationSystem: $classificationSystem, ')
+          ..write('classificationCode: $classificationCode, ')
+          ..write('classificationDescription: $classificationDescription, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -10431,6 +18385,72 @@ class $SalesInvoiceItemsTable extends SalesInvoiceItems
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL CHECK (total_minor >= 0)',
   );
+  static const VerificationMeta _taxTreatmentMeta = const VerificationMeta(
+    'taxTreatment',
+  );
+  @override
+  late final GeneratedColumn<String> taxTreatment = GeneratedColumn<String>(
+    'tax_treatment',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _taxCategoryIdMeta = const VerificationMeta(
+    'taxCategoryId',
+  );
+  @override
+  late final GeneratedColumn<String> taxCategoryId = GeneratedColumn<String>(
+    'tax_category_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _taxSnapshotJsonMeta = const VerificationMeta(
+    'taxSnapshotJson',
+  );
+  @override
+  late final GeneratedColumn<String> taxSnapshotJson = GeneratedColumn<String>(
+    'tax_snapshot_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _classificationSystemMeta =
+      const VerificationMeta('classificationSystem');
+  @override
+  late final GeneratedColumn<String> classificationSystem =
+      GeneratedColumn<String>(
+        'classification_system',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _classificationCodeMeta =
+      const VerificationMeta('classificationCode');
+  @override
+  late final GeneratedColumn<String> classificationCode =
+      GeneratedColumn<String>(
+        'classification_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _classificationDescriptionMeta =
+      const VerificationMeta('classificationDescription');
+  @override
+  late final GeneratedColumn<String> classificationDescription =
+      GeneratedColumn<String>(
+        'classification_description',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -10453,6 +18473,12 @@ class $SalesInvoiceItemsTable extends SalesInvoiceItems
     netMinor,
     taxMinor,
     totalMinor,
+    taxTreatment,
+    taxCategoryId,
+    taxSnapshotJson,
+    classificationSystem,
+    classificationCode,
+    classificationDescription,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -10645,6 +18671,60 @@ class $SalesInvoiceItemsTable extends SalesInvoiceItems
     } else if (isInserting) {
       context.missing(_totalMinorMeta);
     }
+    if (data.containsKey('tax_treatment')) {
+      context.handle(
+        _taxTreatmentMeta,
+        taxTreatment.isAcceptableOrUnknown(
+          data['tax_treatment']!,
+          _taxTreatmentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tax_category_id')) {
+      context.handle(
+        _taxCategoryIdMeta,
+        taxCategoryId.isAcceptableOrUnknown(
+          data['tax_category_id']!,
+          _taxCategoryIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tax_snapshot_json')) {
+      context.handle(
+        _taxSnapshotJsonMeta,
+        taxSnapshotJson.isAcceptableOrUnknown(
+          data['tax_snapshot_json']!,
+          _taxSnapshotJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('classification_system')) {
+      context.handle(
+        _classificationSystemMeta,
+        classificationSystem.isAcceptableOrUnknown(
+          data['classification_system']!,
+          _classificationSystemMeta,
+        ),
+      );
+    }
+    if (data.containsKey('classification_code')) {
+      context.handle(
+        _classificationCodeMeta,
+        classificationCode.isAcceptableOrUnknown(
+          data['classification_code']!,
+          _classificationCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('classification_description')) {
+      context.handle(
+        _classificationDescriptionMeta,
+        classificationDescription.isAcceptableOrUnknown(
+          data['classification_description']!,
+          _classificationDescriptionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -10738,6 +18818,30 @@ class $SalesInvoiceItemsTable extends SalesInvoiceItems
         DriftSqlType.int,
         data['${effectivePrefix}total_minor'],
       )!,
+      taxTreatment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_treatment'],
+      ),
+      taxCategoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_category_id'],
+      ),
+      taxSnapshotJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_snapshot_json'],
+      ),
+      classificationSystem: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_system'],
+      ),
+      classificationCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_code'],
+      ),
+      classificationDescription: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}classification_description'],
+      ),
     );
   }
 
@@ -10769,6 +18873,12 @@ class SalesInvoiceItemRow extends DataClass
   final int netMinor;
   final int taxMinor;
   final int totalMinor;
+  final String? taxTreatment;
+  final String? taxCategoryId;
+  final String? taxSnapshotJson;
+  final String? classificationSystem;
+  final String? classificationCode;
+  final String? classificationDescription;
   const SalesInvoiceItemRow({
     required this.id,
     required this.invoiceId,
@@ -10790,6 +18900,12 @@ class SalesInvoiceItemRow extends DataClass
     required this.netMinor,
     required this.taxMinor,
     required this.totalMinor,
+    this.taxTreatment,
+    this.taxCategoryId,
+    this.taxSnapshotJson,
+    this.classificationSystem,
+    this.classificationCode,
+    this.classificationDescription,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -10816,6 +18932,26 @@ class SalesInvoiceItemRow extends DataClass
     map['net_minor'] = Variable<int>(netMinor);
     map['tax_minor'] = Variable<int>(taxMinor);
     map['total_minor'] = Variable<int>(totalMinor);
+    if (!nullToAbsent || taxTreatment != null) {
+      map['tax_treatment'] = Variable<String>(taxTreatment);
+    }
+    if (!nullToAbsent || taxCategoryId != null) {
+      map['tax_category_id'] = Variable<String>(taxCategoryId);
+    }
+    if (!nullToAbsent || taxSnapshotJson != null) {
+      map['tax_snapshot_json'] = Variable<String>(taxSnapshotJson);
+    }
+    if (!nullToAbsent || classificationSystem != null) {
+      map['classification_system'] = Variable<String>(classificationSystem);
+    }
+    if (!nullToAbsent || classificationCode != null) {
+      map['classification_code'] = Variable<String>(classificationCode);
+    }
+    if (!nullToAbsent || classificationDescription != null) {
+      map['classification_description'] = Variable<String>(
+        classificationDescription,
+      );
+    }
     return map;
   }
 
@@ -10843,6 +18979,25 @@ class SalesInvoiceItemRow extends DataClass
       netMinor: Value(netMinor),
       taxMinor: Value(taxMinor),
       totalMinor: Value(totalMinor),
+      taxTreatment: taxTreatment == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxTreatment),
+      taxCategoryId: taxCategoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxCategoryId),
+      taxSnapshotJson: taxSnapshotJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxSnapshotJson),
+      classificationSystem: classificationSystem == null && nullToAbsent
+          ? const Value.absent()
+          : Value(classificationSystem),
+      classificationCode: classificationCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(classificationCode),
+      classificationDescription:
+          classificationDescription == null && nullToAbsent
+          ? const Value.absent()
+          : Value(classificationDescription),
     );
   }
 
@@ -10872,6 +19027,18 @@ class SalesInvoiceItemRow extends DataClass
       netMinor: serializer.fromJson<int>(json['netMinor']),
       taxMinor: serializer.fromJson<int>(json['taxMinor']),
       totalMinor: serializer.fromJson<int>(json['totalMinor']),
+      taxTreatment: serializer.fromJson<String?>(json['taxTreatment']),
+      taxCategoryId: serializer.fromJson<String?>(json['taxCategoryId']),
+      taxSnapshotJson: serializer.fromJson<String?>(json['taxSnapshotJson']),
+      classificationSystem: serializer.fromJson<String?>(
+        json['classificationSystem'],
+      ),
+      classificationCode: serializer.fromJson<String?>(
+        json['classificationCode'],
+      ),
+      classificationDescription: serializer.fromJson<String?>(
+        json['classificationDescription'],
+      ),
     );
   }
   @override
@@ -10898,6 +19065,14 @@ class SalesInvoiceItemRow extends DataClass
       'netMinor': serializer.toJson<int>(netMinor),
       'taxMinor': serializer.toJson<int>(taxMinor),
       'totalMinor': serializer.toJson<int>(totalMinor),
+      'taxTreatment': serializer.toJson<String?>(taxTreatment),
+      'taxCategoryId': serializer.toJson<String?>(taxCategoryId),
+      'taxSnapshotJson': serializer.toJson<String?>(taxSnapshotJson),
+      'classificationSystem': serializer.toJson<String?>(classificationSystem),
+      'classificationCode': serializer.toJson<String?>(classificationCode),
+      'classificationDescription': serializer.toJson<String?>(
+        classificationDescription,
+      ),
     };
   }
 
@@ -10922,6 +19097,12 @@ class SalesInvoiceItemRow extends DataClass
     int? netMinor,
     int? taxMinor,
     int? totalMinor,
+    Value<String?> taxTreatment = const Value.absent(),
+    Value<String?> taxCategoryId = const Value.absent(),
+    Value<String?> taxSnapshotJson = const Value.absent(),
+    Value<String?> classificationSystem = const Value.absent(),
+    Value<String?> classificationCode = const Value.absent(),
+    Value<String?> classificationDescription = const Value.absent(),
   }) => SalesInvoiceItemRow(
     id: id ?? this.id,
     invoiceId: invoiceId ?? this.invoiceId,
@@ -10943,6 +19124,22 @@ class SalesInvoiceItemRow extends DataClass
     netMinor: netMinor ?? this.netMinor,
     taxMinor: taxMinor ?? this.taxMinor,
     totalMinor: totalMinor ?? this.totalMinor,
+    taxTreatment: taxTreatment.present ? taxTreatment.value : this.taxTreatment,
+    taxCategoryId: taxCategoryId.present
+        ? taxCategoryId.value
+        : this.taxCategoryId,
+    taxSnapshotJson: taxSnapshotJson.present
+        ? taxSnapshotJson.value
+        : this.taxSnapshotJson,
+    classificationSystem: classificationSystem.present
+        ? classificationSystem.value
+        : this.classificationSystem,
+    classificationCode: classificationCode.present
+        ? classificationCode.value
+        : this.classificationCode,
+    classificationDescription: classificationDescription.present
+        ? classificationDescription.value
+        : this.classificationDescription,
   );
   SalesInvoiceItemRow copyWithCompanion(SalesInvoiceItemsCompanion data) {
     return SalesInvoiceItemRow(
@@ -10988,6 +19185,24 @@ class SalesInvoiceItemRow extends DataClass
       totalMinor: data.totalMinor.present
           ? data.totalMinor.value
           : this.totalMinor,
+      taxTreatment: data.taxTreatment.present
+          ? data.taxTreatment.value
+          : this.taxTreatment,
+      taxCategoryId: data.taxCategoryId.present
+          ? data.taxCategoryId.value
+          : this.taxCategoryId,
+      taxSnapshotJson: data.taxSnapshotJson.present
+          ? data.taxSnapshotJson.value
+          : this.taxSnapshotJson,
+      classificationSystem: data.classificationSystem.present
+          ? data.classificationSystem.value
+          : this.classificationSystem,
+      classificationCode: data.classificationCode.present
+          ? data.classificationCode.value
+          : this.classificationCode,
+      classificationDescription: data.classificationDescription.present
+          ? data.classificationDescription.value
+          : this.classificationDescription,
     );
   }
 
@@ -11013,13 +19228,19 @@ class SalesInvoiceItemRow extends DataClass
           ..write('discountMinor: $discountMinor, ')
           ..write('netMinor: $netMinor, ')
           ..write('taxMinor: $taxMinor, ')
-          ..write('totalMinor: $totalMinor')
+          ..write('totalMinor: $totalMinor, ')
+          ..write('taxTreatment: $taxTreatment, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('taxSnapshotJson: $taxSnapshotJson, ')
+          ..write('classificationSystem: $classificationSystem, ')
+          ..write('classificationCode: $classificationCode, ')
+          ..write('classificationDescription: $classificationDescription')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     invoiceId,
     lineNo,
@@ -11040,7 +19261,13 @@ class SalesInvoiceItemRow extends DataClass
     netMinor,
     taxMinor,
     totalMinor,
-  );
+    taxTreatment,
+    taxCategoryId,
+    taxSnapshotJson,
+    classificationSystem,
+    classificationCode,
+    classificationDescription,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -11064,7 +19291,13 @@ class SalesInvoiceItemRow extends DataClass
           other.discountMinor == this.discountMinor &&
           other.netMinor == this.netMinor &&
           other.taxMinor == this.taxMinor &&
-          other.totalMinor == this.totalMinor);
+          other.totalMinor == this.totalMinor &&
+          other.taxTreatment == this.taxTreatment &&
+          other.taxCategoryId == this.taxCategoryId &&
+          other.taxSnapshotJson == this.taxSnapshotJson &&
+          other.classificationSystem == this.classificationSystem &&
+          other.classificationCode == this.classificationCode &&
+          other.classificationDescription == this.classificationDescription);
 }
 
 class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
@@ -11088,6 +19321,12 @@ class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
   final Value<int> netMinor;
   final Value<int> taxMinor;
   final Value<int> totalMinor;
+  final Value<String?> taxTreatment;
+  final Value<String?> taxCategoryId;
+  final Value<String?> taxSnapshotJson;
+  final Value<String?> classificationSystem;
+  final Value<String?> classificationCode;
+  final Value<String?> classificationDescription;
   final Value<int> rowid;
   const SalesInvoiceItemsCompanion({
     this.id = const Value.absent(),
@@ -11110,6 +19349,12 @@ class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
     this.netMinor = const Value.absent(),
     this.taxMinor = const Value.absent(),
     this.totalMinor = const Value.absent(),
+    this.taxTreatment = const Value.absent(),
+    this.taxCategoryId = const Value.absent(),
+    this.taxSnapshotJson = const Value.absent(),
+    this.classificationSystem = const Value.absent(),
+    this.classificationCode = const Value.absent(),
+    this.classificationDescription = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SalesInvoiceItemsCompanion.insert({
@@ -11133,6 +19378,12 @@ class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
     required int netMinor,
     required int taxMinor,
     required int totalMinor,
+    this.taxTreatment = const Value.absent(),
+    this.taxCategoryId = const Value.absent(),
+    this.taxSnapshotJson = const Value.absent(),
+    this.classificationSystem = const Value.absent(),
+    this.classificationCode = const Value.absent(),
+    this.classificationDescription = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        invoiceId = Value(invoiceId),
@@ -11174,6 +19425,12 @@ class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
     Expression<int>? netMinor,
     Expression<int>? taxMinor,
     Expression<int>? totalMinor,
+    Expression<String>? taxTreatment,
+    Expression<String>? taxCategoryId,
+    Expression<String>? taxSnapshotJson,
+    Expression<String>? classificationSystem,
+    Expression<String>? classificationCode,
+    Expression<String>? classificationDescription,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -11197,6 +19454,14 @@ class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
       if (netMinor != null) 'net_minor': netMinor,
       if (taxMinor != null) 'tax_minor': taxMinor,
       if (totalMinor != null) 'total_minor': totalMinor,
+      if (taxTreatment != null) 'tax_treatment': taxTreatment,
+      if (taxCategoryId != null) 'tax_category_id': taxCategoryId,
+      if (taxSnapshotJson != null) 'tax_snapshot_json': taxSnapshotJson,
+      if (classificationSystem != null)
+        'classification_system': classificationSystem,
+      if (classificationCode != null) 'classification_code': classificationCode,
+      if (classificationDescription != null)
+        'classification_description': classificationDescription,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -11222,6 +19487,12 @@ class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
     Value<int>? netMinor,
     Value<int>? taxMinor,
     Value<int>? totalMinor,
+    Value<String?>? taxTreatment,
+    Value<String?>? taxCategoryId,
+    Value<String?>? taxSnapshotJson,
+    Value<String?>? classificationSystem,
+    Value<String?>? classificationCode,
+    Value<String?>? classificationDescription,
     Value<int>? rowid,
   }) {
     return SalesInvoiceItemsCompanion(
@@ -11245,6 +19516,13 @@ class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
       netMinor: netMinor ?? this.netMinor,
       taxMinor: taxMinor ?? this.taxMinor,
       totalMinor: totalMinor ?? this.totalMinor,
+      taxTreatment: taxTreatment ?? this.taxTreatment,
+      taxCategoryId: taxCategoryId ?? this.taxCategoryId,
+      taxSnapshotJson: taxSnapshotJson ?? this.taxSnapshotJson,
+      classificationSystem: classificationSystem ?? this.classificationSystem,
+      classificationCode: classificationCode ?? this.classificationCode,
+      classificationDescription:
+          classificationDescription ?? this.classificationDescription,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -11312,6 +19590,28 @@ class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
     if (totalMinor.present) {
       map['total_minor'] = Variable<int>(totalMinor.value);
     }
+    if (taxTreatment.present) {
+      map['tax_treatment'] = Variable<String>(taxTreatment.value);
+    }
+    if (taxCategoryId.present) {
+      map['tax_category_id'] = Variable<String>(taxCategoryId.value);
+    }
+    if (taxSnapshotJson.present) {
+      map['tax_snapshot_json'] = Variable<String>(taxSnapshotJson.value);
+    }
+    if (classificationSystem.present) {
+      map['classification_system'] = Variable<String>(
+        classificationSystem.value,
+      );
+    }
+    if (classificationCode.present) {
+      map['classification_code'] = Variable<String>(classificationCode.value);
+    }
+    if (classificationDescription.present) {
+      map['classification_description'] = Variable<String>(
+        classificationDescription.value,
+      );
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -11341,6 +19641,12 @@ class SalesInvoiceItemsCompanion extends UpdateCompanion<SalesInvoiceItemRow> {
           ..write('netMinor: $netMinor, ')
           ..write('taxMinor: $taxMinor, ')
           ..write('totalMinor: $totalMinor, ')
+          ..write('taxTreatment: $taxTreatment, ')
+          ..write('taxCategoryId: $taxCategoryId, ')
+          ..write('taxSnapshotJson: $taxSnapshotJson, ')
+          ..write('classificationSystem: $classificationSystem, ')
+          ..write('classificationCode: $classificationCode, ')
+          ..write('classificationDescription: $classificationDescription, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -20895,7 +29201,22 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $UnitsTable units = $UnitsTable(this);
   late final $TaxRatesTable taxRates = $TaxRatesTable(this);
+  late final $TaxRegimesTable taxRegimes = $TaxRegimesTable(this);
+  late final $TaxJurisdictionsTable taxJurisdictions = $TaxJurisdictionsTable(
+    this,
+  );
+  late final $TaxCategoriesTable taxCategories = $TaxCategoriesTable(this);
+  late final $TaxProfilesTable taxProfiles = $TaxProfilesTable(this);
+  late final $TaxOverridesTable taxOverrides = $TaxOverridesTable(this);
+  late final $TaxRulesTable taxRules = $TaxRulesTable(this);
+  late final $TaxComponentsTable taxComponents = $TaxComponentsTable(this);
   late final $ProductsTable products = $ProductsTable(this);
+  late final $ProductClassificationsTable productClassifications =
+      $ProductClassificationsTable(this);
+  late final $InvoiceItemTaxComponentsTable invoiceItemTaxComponents =
+      $InvoiceItemTaxComponentsTable(this);
+  late final $AuditEventsTable auditEvents = $AuditEventsTable(this);
+  late final $AuditOutboxTable auditOutbox = $AuditOutboxTable(this);
   late final $InventoryBalancesTable inventoryBalances =
       $InventoryBalancesTable(this);
   late final $StockMovementsTable stockMovements = $StockMovementsTable(this);
@@ -20933,6 +29254,46 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ExpensesTable expenses = $ExpensesTable(this);
   late final $AttachmentsTable attachments = $AttachmentsTable(this);
   late final $BackupHistoryTable backupHistory = $BackupHistoryTable(this);
+  late final Index idxTaxJurisdictionsRegime = Index(
+    'idx_tax_jurisdictions_regime',
+    'CREATE INDEX idx_tax_jurisdictions_regime ON tax_jurisdictions (regime_id)',
+  );
+  late final Index idxTaxRulesLookup = Index(
+    'idx_tax_rules_lookup',
+    'CREATE INDEX idx_tax_rules_lookup ON tax_rules (tax_profile_id, tax_category_id, is_active)',
+  );
+  late final Index idxTaxComponentsRule = Index(
+    'idx_tax_components_rule',
+    'CREATE INDEX idx_tax_components_rule ON tax_components (tax_rule_id)',
+  );
+  late final Index idxProductClassificationsProduct = Index(
+    'idx_product_classifications_product',
+    'CREATE INDEX idx_product_classifications_product ON product_classifications (product_id)',
+  );
+  late final Index idxProductClassificationsCode = Index(
+    'idx_product_classifications_code',
+    'CREATE INDEX idx_product_classifications_code ON product_classifications (classification_code)',
+  );
+  late final Index idxInvoiceItemTaxComponentsItem = Index(
+    'idx_invoice_item_tax_components_item',
+    'CREATE INDEX idx_invoice_item_tax_components_item ON invoice_item_tax_components (document_type, item_id)',
+  );
+  late final Index idxAuditEventsEntity = Index(
+    'idx_audit_events_entity',
+    'CREATE INDEX idx_audit_events_entity ON audit_events (entity_type, entity_id, occurred_at_utc)',
+  );
+  late final Index idxAuditEventsType = Index(
+    'idx_audit_events_type',
+    'CREATE INDEX idx_audit_events_type ON audit_events (event_type, occurred_at_utc)',
+  );
+  late final Index idxAuditEventsTime = Index(
+    'idx_audit_events_time',
+    'CREATE INDEX idx_audit_events_time ON audit_events (occurred_at_utc)',
+  );
+  late final Index idxAuditEventsCorrelation = Index(
+    'idx_audit_events_correlation',
+    'CREATE INDEX idx_audit_events_correlation ON audit_events (correlation_id)',
+  );
   late final Index idxProductsCategoryId = Index(
     'idx_products_category_id',
     'CREATE INDEX idx_products_category_id ON products (category_id)',
@@ -20959,7 +29320,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     categories,
     units,
     taxRates,
+    taxRegimes,
+    taxJurisdictions,
+    taxCategories,
+    taxProfiles,
+    taxOverrides,
+    taxRules,
+    taxComponents,
     products,
+    productClassifications,
+    invoiceItemTaxComponents,
+    auditEvents,
+    auditOutbox,
     inventoryBalances,
     stockMovements,
     customers,
@@ -20982,6 +29354,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     expenses,
     attachments,
     backupHistory,
+    idxTaxJurisdictionsRegime,
+    idxTaxRulesLookup,
+    idxTaxComponentsRule,
+    idxProductClassificationsProduct,
+    idxProductClassificationsCode,
+    idxInvoiceItemTaxComponentsItem,
+    idxAuditEventsEntity,
+    idxAuditEventsType,
+    idxAuditEventsTime,
+    idxAuditEventsCorrelation,
     idxProductsCategoryId,
     idxProductsName,
     idxStockMovementsProductOccurred,
@@ -22654,6 +31036,4134 @@ typedef $$TaxRatesTableProcessedTableManager =
       TaxRateRow,
       PrefetchHooks Function({bool productsRefs, bool expensesRefs})
     >;
+typedef $$TaxRegimesTableCreateCompanionBuilder =
+    TaxRegimesCompanion Function({
+      required String id,
+      required String name,
+      required String countryCode,
+      Value<String?> description,
+      required String currencyCode,
+      Value<bool> isActive,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$TaxRegimesTableUpdateCompanionBuilder =
+    TaxRegimesCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> countryCode,
+      Value<String?> description,
+      Value<String> currencyCode,
+      Value<bool> isActive,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$TaxRegimesTableReferences
+    extends BaseReferences<_$AppDatabase, $TaxRegimesTable, TaxRegimeRow> {
+  $$TaxRegimesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$TaxJurisdictionsTable, List<TaxJurisdictionRow>>
+  _taxJurisdictionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.taxJurisdictions,
+    aliasName: $_aliasNameGenerator(
+      db.taxRegimes.id,
+      db.taxJurisdictions.regimeId,
+    ),
+  );
+
+  $$TaxJurisdictionsTableProcessedTableManager get taxJurisdictionsRefs {
+    final manager = $$TaxJurisdictionsTableTableManager(
+      $_db,
+      $_db.taxJurisdictions,
+    ).filter((f) => f.regimeId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _taxJurisdictionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$TaxProfilesTable, List<TaxProfileRow>>
+  _taxProfilesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.taxProfiles,
+    aliasName: $_aliasNameGenerator(db.taxRegimes.id, db.taxProfiles.regimeId),
+  );
+
+  $$TaxProfilesTableProcessedTableManager get taxProfilesRefs {
+    final manager = $$TaxProfilesTableTableManager(
+      $_db,
+      $_db.taxProfiles,
+    ).filter((f) => f.regimeId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_taxProfilesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TaxRegimesTableFilterComposer
+    extends Composer<_$AppDatabase, $TaxRegimesTable> {
+  $$TaxRegimesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> taxJurisdictionsRefs(
+    Expression<bool> Function($$TaxJurisdictionsTableFilterComposer f) f,
+  ) {
+    final $$TaxJurisdictionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxJurisdictions,
+      getReferencedColumn: (t) => t.regimeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxJurisdictionsTableFilterComposer(
+            $db: $db,
+            $table: $db.taxJurisdictions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> taxProfilesRefs(
+    Expression<bool> Function($$TaxProfilesTableFilterComposer f) f,
+  ) {
+    final $$TaxProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxProfiles,
+      getReferencedColumn: (t) => t.regimeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxRegimesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaxRegimesTable> {
+  $$TaxRegimesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TaxRegimesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaxRegimesTable> {
+  $$TaxRegimesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  Expression<T> taxJurisdictionsRefs<T extends Object>(
+    Expression<T> Function($$TaxJurisdictionsTableAnnotationComposer a) f,
+  ) {
+    final $$TaxJurisdictionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxJurisdictions,
+      getReferencedColumn: (t) => t.regimeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxJurisdictionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxJurisdictions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> taxProfilesRefs<T extends Object>(
+    Expression<T> Function($$TaxProfilesTableAnnotationComposer a) f,
+  ) {
+    final $$TaxProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxProfiles,
+      getReferencedColumn: (t) => t.regimeId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxRegimesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaxRegimesTable,
+          TaxRegimeRow,
+          $$TaxRegimesTableFilterComposer,
+          $$TaxRegimesTableOrderingComposer,
+          $$TaxRegimesTableAnnotationComposer,
+          $$TaxRegimesTableCreateCompanionBuilder,
+          $$TaxRegimesTableUpdateCompanionBuilder,
+          (TaxRegimeRow, $$TaxRegimesTableReferences),
+          TaxRegimeRow,
+          PrefetchHooks Function({
+            bool taxJurisdictionsRefs,
+            bool taxProfilesRefs,
+          })
+        > {
+  $$TaxRegimesTableTableManager(_$AppDatabase db, $TaxRegimesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaxRegimesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaxRegimesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaxRegimesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> countryCode = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String> currencyCode = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaxRegimesCompanion(
+                id: id,
+                name: name,
+                countryCode: countryCode,
+                description: description,
+                currencyCode: currencyCode,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String countryCode,
+                Value<String?> description = const Value.absent(),
+                required String currencyCode,
+                Value<bool> isActive = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TaxRegimesCompanion.insert(
+                id: id,
+                name: name,
+                countryCode: countryCode,
+                description: description,
+                currencyCode: currencyCode,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaxRegimesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({taxJurisdictionsRefs = false, taxProfilesRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (taxJurisdictionsRefs) db.taxJurisdictions,
+                    if (taxProfilesRefs) db.taxProfiles,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (taxJurisdictionsRefs)
+                        await $_getPrefetchedData<
+                          TaxRegimeRow,
+                          $TaxRegimesTable,
+                          TaxJurisdictionRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxRegimesTableReferences
+                              ._taxJurisdictionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxRegimesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taxJurisdictionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.regimeId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (taxProfilesRefs)
+                        await $_getPrefetchedData<
+                          TaxRegimeRow,
+                          $TaxRegimesTable,
+                          TaxProfileRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxRegimesTableReferences
+                              ._taxProfilesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxRegimesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taxProfilesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.regimeId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TaxRegimesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaxRegimesTable,
+      TaxRegimeRow,
+      $$TaxRegimesTableFilterComposer,
+      $$TaxRegimesTableOrderingComposer,
+      $$TaxRegimesTableAnnotationComposer,
+      $$TaxRegimesTableCreateCompanionBuilder,
+      $$TaxRegimesTableUpdateCompanionBuilder,
+      (TaxRegimeRow, $$TaxRegimesTableReferences),
+      TaxRegimeRow,
+      PrefetchHooks Function({bool taxJurisdictionsRefs, bool taxProfilesRefs})
+    >;
+typedef $$TaxJurisdictionsTableCreateCompanionBuilder =
+    TaxJurisdictionsCompanion Function({
+      required String id,
+      required String regimeId,
+      required String countryCode,
+      Value<String?> regionCode,
+      Value<String?> regionName,
+      required String jurisdictionType,
+      Value<String?> parentJurisdictionId,
+      Value<bool> isActive,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$TaxJurisdictionsTableUpdateCompanionBuilder =
+    TaxJurisdictionsCompanion Function({
+      Value<String> id,
+      Value<String> regimeId,
+      Value<String> countryCode,
+      Value<String?> regionCode,
+      Value<String?> regionName,
+      Value<String> jurisdictionType,
+      Value<String?> parentJurisdictionId,
+      Value<bool> isActive,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$TaxJurisdictionsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TaxJurisdictionsTable,
+          TaxJurisdictionRow
+        > {
+  $$TaxJurisdictionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TaxRegimesTable _regimeIdTable(_$AppDatabase db) =>
+      db.taxRegimes.createAlias(
+        $_aliasNameGenerator(db.taxJurisdictions.regimeId, db.taxRegimes.id),
+      );
+
+  $$TaxRegimesTableProcessedTableManager get regimeId {
+    final $_column = $_itemColumn<String>('regime_id')!;
+
+    final manager = $$TaxRegimesTableTableManager(
+      $_db,
+      $_db.taxRegimes,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_regimeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TaxJurisdictionsTable _parentJurisdictionIdTable(_$AppDatabase db) =>
+      db.taxJurisdictions.createAlias(
+        $_aliasNameGenerator(
+          db.taxJurisdictions.parentJurisdictionId,
+          db.taxJurisdictions.id,
+        ),
+      );
+
+  $$TaxJurisdictionsTableProcessedTableManager? get parentJurisdictionId {
+    final $_column = $_itemColumn<String>('parent_jurisdiction_id');
+    if ($_column == null) return null;
+    final manager = $$TaxJurisdictionsTableTableManager(
+      $_db,
+      $_db.taxJurisdictions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(
+      _parentJurisdictionIdTable($_db),
+    );
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$TaxRulesTable, List<TaxRuleRow>>
+  _taxRulesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.taxRules,
+    aliasName: $_aliasNameGenerator(
+      db.taxJurisdictions.id,
+      db.taxRules.jurisdictionId,
+    ),
+  );
+
+  $$TaxRulesTableProcessedTableManager get taxRulesRefs {
+    final manager = $$TaxRulesTableTableManager(
+      $_db,
+      $_db.taxRules,
+    ).filter((f) => f.jurisdictionId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_taxRulesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TaxJurisdictionsTableFilterComposer
+    extends Composer<_$AppDatabase, $TaxJurisdictionsTable> {
+  $$TaxJurisdictionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get regionCode => $composableBuilder(
+    column: $table.regionCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get regionName => $composableBuilder(
+    column: $table.regionName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jurisdictionType => $composableBuilder(
+    column: $table.jurisdictionType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaxRegimesTableFilterComposer get regimeId {
+    final $$TaxRegimesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.regimeId,
+      referencedTable: $db.taxRegimes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRegimesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxRegimes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxJurisdictionsTableFilterComposer get parentJurisdictionId {
+    final $$TaxJurisdictionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parentJurisdictionId,
+      referencedTable: $db.taxJurisdictions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxJurisdictionsTableFilterComposer(
+            $db: $db,
+            $table: $db.taxJurisdictions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> taxRulesRefs(
+    Expression<bool> Function($$TaxRulesTableFilterComposer f) f,
+  ) {
+    final $$TaxRulesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.jurisdictionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRulesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxJurisdictionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaxJurisdictionsTable> {
+  $$TaxJurisdictionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get regionCode => $composableBuilder(
+    column: $table.regionCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get regionName => $composableBuilder(
+    column: $table.regionName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jurisdictionType => $composableBuilder(
+    column: $table.jurisdictionType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaxRegimesTableOrderingComposer get regimeId {
+    final $$TaxRegimesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.regimeId,
+      referencedTable: $db.taxRegimes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRegimesTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxRegimes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxJurisdictionsTableOrderingComposer get parentJurisdictionId {
+    final $$TaxJurisdictionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parentJurisdictionId,
+      referencedTable: $db.taxJurisdictions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxJurisdictionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxJurisdictions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaxJurisdictionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaxJurisdictionsTable> {
+  $$TaxJurisdictionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get regionCode => $composableBuilder(
+    column: $table.regionCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get regionName => $composableBuilder(
+    column: $table.regionName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get jurisdictionType => $composableBuilder(
+    column: $table.jurisdictionType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TaxRegimesTableAnnotationComposer get regimeId {
+    final $$TaxRegimesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.regimeId,
+      referencedTable: $db.taxRegimes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRegimesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxRegimes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxJurisdictionsTableAnnotationComposer get parentJurisdictionId {
+    final $$TaxJurisdictionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parentJurisdictionId,
+      referencedTable: $db.taxJurisdictions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxJurisdictionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxJurisdictions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> taxRulesRefs<T extends Object>(
+    Expression<T> Function($$TaxRulesTableAnnotationComposer a) f,
+  ) {
+    final $$TaxRulesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.jurisdictionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRulesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxJurisdictionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaxJurisdictionsTable,
+          TaxJurisdictionRow,
+          $$TaxJurisdictionsTableFilterComposer,
+          $$TaxJurisdictionsTableOrderingComposer,
+          $$TaxJurisdictionsTableAnnotationComposer,
+          $$TaxJurisdictionsTableCreateCompanionBuilder,
+          $$TaxJurisdictionsTableUpdateCompanionBuilder,
+          (TaxJurisdictionRow, $$TaxJurisdictionsTableReferences),
+          TaxJurisdictionRow,
+          PrefetchHooks Function({
+            bool regimeId,
+            bool parentJurisdictionId,
+            bool taxRulesRefs,
+          })
+        > {
+  $$TaxJurisdictionsTableTableManager(
+    _$AppDatabase db,
+    $TaxJurisdictionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaxJurisdictionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaxJurisdictionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaxJurisdictionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> regimeId = const Value.absent(),
+                Value<String> countryCode = const Value.absent(),
+                Value<String?> regionCode = const Value.absent(),
+                Value<String?> regionName = const Value.absent(),
+                Value<String> jurisdictionType = const Value.absent(),
+                Value<String?> parentJurisdictionId = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaxJurisdictionsCompanion(
+                id: id,
+                regimeId: regimeId,
+                countryCode: countryCode,
+                regionCode: regionCode,
+                regionName: regionName,
+                jurisdictionType: jurisdictionType,
+                parentJurisdictionId: parentJurisdictionId,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String regimeId,
+                required String countryCode,
+                Value<String?> regionCode = const Value.absent(),
+                Value<String?> regionName = const Value.absent(),
+                required String jurisdictionType,
+                Value<String?> parentJurisdictionId = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TaxJurisdictionsCompanion.insert(
+                id: id,
+                regimeId: regimeId,
+                countryCode: countryCode,
+                regionCode: regionCode,
+                regionName: regionName,
+                jurisdictionType: jurisdictionType,
+                parentJurisdictionId: parentJurisdictionId,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaxJurisdictionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                regimeId = false,
+                parentJurisdictionId = false,
+                taxRulesRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [if (taxRulesRefs) db.taxRules],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (regimeId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.regimeId,
+                                    referencedTable:
+                                        $$TaxJurisdictionsTableReferences
+                                            ._regimeIdTable(db),
+                                    referencedColumn:
+                                        $$TaxJurisdictionsTableReferences
+                                            ._regimeIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (parentJurisdictionId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.parentJurisdictionId,
+                                    referencedTable:
+                                        $$TaxJurisdictionsTableReferences
+                                            ._parentJurisdictionIdTable(db),
+                                    referencedColumn:
+                                        $$TaxJurisdictionsTableReferences
+                                            ._parentJurisdictionIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (taxRulesRefs)
+                        await $_getPrefetchedData<
+                          TaxJurisdictionRow,
+                          $TaxJurisdictionsTable,
+                          TaxRuleRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxJurisdictionsTableReferences
+                              ._taxRulesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxJurisdictionsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taxRulesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.jurisdictionId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TaxJurisdictionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaxJurisdictionsTable,
+      TaxJurisdictionRow,
+      $$TaxJurisdictionsTableFilterComposer,
+      $$TaxJurisdictionsTableOrderingComposer,
+      $$TaxJurisdictionsTableAnnotationComposer,
+      $$TaxJurisdictionsTableCreateCompanionBuilder,
+      $$TaxJurisdictionsTableUpdateCompanionBuilder,
+      (TaxJurisdictionRow, $$TaxJurisdictionsTableReferences),
+      TaxJurisdictionRow,
+      PrefetchHooks Function({
+        bool regimeId,
+        bool parentJurisdictionId,
+        bool taxRulesRefs,
+      })
+    >;
+typedef $$TaxCategoriesTableCreateCompanionBuilder =
+    TaxCategoriesCompanion Function({
+      required String id,
+      required String name,
+      required String code,
+      Value<String?> description,
+      required String defaultTaxTreatment,
+      Value<bool> isActive,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$TaxCategoriesTableUpdateCompanionBuilder =
+    TaxCategoriesCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> code,
+      Value<String?> description,
+      Value<String> defaultTaxTreatment,
+      Value<bool> isActive,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$TaxCategoriesTableReferences
+    extends BaseReferences<_$AppDatabase, $TaxCategoriesTable, TaxCategoryRow> {
+  $$TaxCategoriesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<$TaxProfilesTable, List<TaxProfileRow>>
+  _taxProfilesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.taxProfiles,
+    aliasName: $_aliasNameGenerator(
+      db.taxCategories.id,
+      db.taxProfiles.defaultTaxCategoryId,
+    ),
+  );
+
+  $$TaxProfilesTableProcessedTableManager get taxProfilesRefs {
+    final manager = $$TaxProfilesTableTableManager($_db, $_db.taxProfiles)
+        .filter(
+          (f) =>
+              f.defaultTaxCategoryId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(_taxProfilesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$TaxOverridesTable, List<TaxOverrideRow>>
+  _taxOverridesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.taxOverrides,
+    aliasName: $_aliasNameGenerator(
+      db.taxCategories.id,
+      db.taxOverrides.taxCategoryId,
+    ),
+  );
+
+  $$TaxOverridesTableProcessedTableManager get taxOverridesRefs {
+    final manager = $$TaxOverridesTableTableManager(
+      $_db,
+      $_db.taxOverrides,
+    ).filter((f) => f.taxCategoryId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_taxOverridesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$TaxRulesTable, List<TaxRuleRow>>
+  _taxRulesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.taxRules,
+    aliasName: $_aliasNameGenerator(
+      db.taxCategories.id,
+      db.taxRules.taxCategoryId,
+    ),
+  );
+
+  $$TaxRulesTableProcessedTableManager get taxRulesRefs {
+    final manager = $$TaxRulesTableTableManager(
+      $_db,
+      $_db.taxRules,
+    ).filter((f) => f.taxCategoryId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_taxRulesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ProductsTable, List<ProductRow>>
+  _productsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.products,
+    aliasName: $_aliasNameGenerator(
+      db.taxCategories.id,
+      db.products.taxCategoryId,
+    ),
+  );
+
+  $$ProductsTableProcessedTableManager get productsRefs {
+    final manager = $$ProductsTableTableManager(
+      $_db,
+      $_db.products,
+    ).filter((f) => f.taxCategoryId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_productsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TaxCategoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $TaxCategoriesTable> {
+  $$TaxCategoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get defaultTaxTreatment => $composableBuilder(
+    column: $table.defaultTaxTreatment,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> taxProfilesRefs(
+    Expression<bool> Function($$TaxProfilesTableFilterComposer f) f,
+  ) {
+    final $$TaxProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxProfiles,
+      getReferencedColumn: (t) => t.defaultTaxCategoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> taxOverridesRefs(
+    Expression<bool> Function($$TaxOverridesTableFilterComposer f) f,
+  ) {
+    final $$TaxOverridesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxOverrides,
+      getReferencedColumn: (t) => t.taxCategoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxOverridesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxOverrides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> taxRulesRefs(
+    Expression<bool> Function($$TaxRulesTableFilterComposer f) f,
+  ) {
+    final $$TaxRulesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.taxCategoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRulesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> productsRefs(
+    Expression<bool> Function($$ProductsTableFilterComposer f) f,
+  ) {
+    final $$ProductsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.taxCategoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProductsTableFilterComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxCategoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaxCategoriesTable> {
+  $$TaxCategoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get defaultTaxTreatment => $composableBuilder(
+    column: $table.defaultTaxTreatment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TaxCategoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaxCategoriesTable> {
+  $$TaxCategoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get defaultTaxTreatment => $composableBuilder(
+    column: $table.defaultTaxTreatment,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  Expression<T> taxProfilesRefs<T extends Object>(
+    Expression<T> Function($$TaxProfilesTableAnnotationComposer a) f,
+  ) {
+    final $$TaxProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxProfiles,
+      getReferencedColumn: (t) => t.defaultTaxCategoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> taxOverridesRefs<T extends Object>(
+    Expression<T> Function($$TaxOverridesTableAnnotationComposer a) f,
+  ) {
+    final $$TaxOverridesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxOverrides,
+      getReferencedColumn: (t) => t.taxCategoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxOverridesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxOverrides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> taxRulesRefs<T extends Object>(
+    Expression<T> Function($$TaxRulesTableAnnotationComposer a) f,
+  ) {
+    final $$TaxRulesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.taxCategoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRulesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> productsRefs<T extends Object>(
+    Expression<T> Function($$ProductsTableAnnotationComposer a) f,
+  ) {
+    final $$ProductsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.taxCategoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProductsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxCategoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaxCategoriesTable,
+          TaxCategoryRow,
+          $$TaxCategoriesTableFilterComposer,
+          $$TaxCategoriesTableOrderingComposer,
+          $$TaxCategoriesTableAnnotationComposer,
+          $$TaxCategoriesTableCreateCompanionBuilder,
+          $$TaxCategoriesTableUpdateCompanionBuilder,
+          (TaxCategoryRow, $$TaxCategoriesTableReferences),
+          TaxCategoryRow,
+          PrefetchHooks Function({
+            bool taxProfilesRefs,
+            bool taxOverridesRefs,
+            bool taxRulesRefs,
+            bool productsRefs,
+          })
+        > {
+  $$TaxCategoriesTableTableManager(_$AppDatabase db, $TaxCategoriesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaxCategoriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaxCategoriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaxCategoriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> code = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String> defaultTaxTreatment = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaxCategoriesCompanion(
+                id: id,
+                name: name,
+                code: code,
+                description: description,
+                defaultTaxTreatment: defaultTaxTreatment,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String code,
+                Value<String?> description = const Value.absent(),
+                required String defaultTaxTreatment,
+                Value<bool> isActive = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TaxCategoriesCompanion.insert(
+                id: id,
+                name: name,
+                code: code,
+                description: description,
+                defaultTaxTreatment: defaultTaxTreatment,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaxCategoriesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                taxProfilesRefs = false,
+                taxOverridesRefs = false,
+                taxRulesRefs = false,
+                productsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (taxProfilesRefs) db.taxProfiles,
+                    if (taxOverridesRefs) db.taxOverrides,
+                    if (taxRulesRefs) db.taxRules,
+                    if (productsRefs) db.products,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (taxProfilesRefs)
+                        await $_getPrefetchedData<
+                          TaxCategoryRow,
+                          $TaxCategoriesTable,
+                          TaxProfileRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxCategoriesTableReferences
+                              ._taxProfilesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxCategoriesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taxProfilesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.defaultTaxCategoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (taxOverridesRefs)
+                        await $_getPrefetchedData<
+                          TaxCategoryRow,
+                          $TaxCategoriesTable,
+                          TaxOverrideRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxCategoriesTableReferences
+                              ._taxOverridesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxCategoriesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taxOverridesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taxCategoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (taxRulesRefs)
+                        await $_getPrefetchedData<
+                          TaxCategoryRow,
+                          $TaxCategoriesTable,
+                          TaxRuleRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxCategoriesTableReferences
+                              ._taxRulesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxCategoriesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taxRulesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taxCategoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (productsRefs)
+                        await $_getPrefetchedData<
+                          TaxCategoryRow,
+                          $TaxCategoriesTable,
+                          ProductRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxCategoriesTableReferences
+                              ._productsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxCategoriesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).productsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taxCategoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TaxCategoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaxCategoriesTable,
+      TaxCategoryRow,
+      $$TaxCategoriesTableFilterComposer,
+      $$TaxCategoriesTableOrderingComposer,
+      $$TaxCategoriesTableAnnotationComposer,
+      $$TaxCategoriesTableCreateCompanionBuilder,
+      $$TaxCategoriesTableUpdateCompanionBuilder,
+      (TaxCategoryRow, $$TaxCategoriesTableReferences),
+      TaxCategoryRow,
+      PrefetchHooks Function({
+        bool taxProfilesRefs,
+        bool taxOverridesRefs,
+        bool taxRulesRefs,
+        bool productsRefs,
+      })
+    >;
+typedef $$TaxProfilesTableCreateCompanionBuilder =
+    TaxProfilesCompanion Function({
+      required String id,
+      required String name,
+      required String regimeId,
+      Value<String?> description,
+      Value<bool> isDefault,
+      Value<String?> defaultTaxCategoryId,
+      Value<bool> isActive,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$TaxProfilesTableUpdateCompanionBuilder =
+    TaxProfilesCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> regimeId,
+      Value<String?> description,
+      Value<bool> isDefault,
+      Value<String?> defaultTaxCategoryId,
+      Value<bool> isActive,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$TaxProfilesTableReferences
+    extends BaseReferences<_$AppDatabase, $TaxProfilesTable, TaxProfileRow> {
+  $$TaxProfilesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $TaxRegimesTable _regimeIdTable(_$AppDatabase db) =>
+      db.taxRegimes.createAlias(
+        $_aliasNameGenerator(db.taxProfiles.regimeId, db.taxRegimes.id),
+      );
+
+  $$TaxRegimesTableProcessedTableManager get regimeId {
+    final $_column = $_itemColumn<String>('regime_id')!;
+
+    final manager = $$TaxRegimesTableTableManager(
+      $_db,
+      $_db.taxRegimes,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_regimeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TaxCategoriesTable _defaultTaxCategoryIdTable(_$AppDatabase db) =>
+      db.taxCategories.createAlias(
+        $_aliasNameGenerator(
+          db.taxProfiles.defaultTaxCategoryId,
+          db.taxCategories.id,
+        ),
+      );
+
+  $$TaxCategoriesTableProcessedTableManager? get defaultTaxCategoryId {
+    final $_column = $_itemColumn<String>('default_tax_category_id');
+    if ($_column == null) return null;
+    final manager = $$TaxCategoriesTableTableManager(
+      $_db,
+      $_db.taxCategories,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(
+      _defaultTaxCategoryIdTable($_db),
+    );
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$TaxRulesTable, List<TaxRuleRow>>
+  _taxRulesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.taxRules,
+    aliasName: $_aliasNameGenerator(
+      db.taxProfiles.id,
+      db.taxRules.taxProfileId,
+    ),
+  );
+
+  $$TaxRulesTableProcessedTableManager get taxRulesRefs {
+    final manager = $$TaxRulesTableTableManager(
+      $_db,
+      $_db.taxRules,
+    ).filter((f) => f.taxProfileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_taxRulesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TaxProfilesTableFilterComposer
+    extends Composer<_$AppDatabase, $TaxProfilesTable> {
+  $$TaxProfilesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDefault => $composableBuilder(
+    column: $table.isDefault,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaxRegimesTableFilterComposer get regimeId {
+    final $$TaxRegimesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.regimeId,
+      referencedTable: $db.taxRegimes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRegimesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxRegimes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxCategoriesTableFilterComposer get defaultTaxCategoryId {
+    final $$TaxCategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.defaultTaxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> taxRulesRefs(
+    Expression<bool> Function($$TaxRulesTableFilterComposer f) f,
+  ) {
+    final $$TaxRulesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.taxProfileId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRulesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxProfilesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaxProfilesTable> {
+  $$TaxProfilesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDefault => $composableBuilder(
+    column: $table.isDefault,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaxRegimesTableOrderingComposer get regimeId {
+    final $$TaxRegimesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.regimeId,
+      referencedTable: $db.taxRegimes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRegimesTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxRegimes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxCategoriesTableOrderingComposer get defaultTaxCategoryId {
+    final $$TaxCategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.defaultTaxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaxProfilesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaxProfilesTable> {
+  $$TaxProfilesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDefault =>
+      $composableBuilder(column: $table.isDefault, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TaxRegimesTableAnnotationComposer get regimeId {
+    final $$TaxRegimesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.regimeId,
+      referencedTable: $db.taxRegimes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRegimesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxRegimes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxCategoriesTableAnnotationComposer get defaultTaxCategoryId {
+    final $$TaxCategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.defaultTaxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> taxRulesRefs<T extends Object>(
+    Expression<T> Function($$TaxRulesTableAnnotationComposer a) f,
+  ) {
+    final $$TaxRulesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.taxProfileId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRulesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxProfilesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaxProfilesTable,
+          TaxProfileRow,
+          $$TaxProfilesTableFilterComposer,
+          $$TaxProfilesTableOrderingComposer,
+          $$TaxProfilesTableAnnotationComposer,
+          $$TaxProfilesTableCreateCompanionBuilder,
+          $$TaxProfilesTableUpdateCompanionBuilder,
+          (TaxProfileRow, $$TaxProfilesTableReferences),
+          TaxProfileRow,
+          PrefetchHooks Function({
+            bool regimeId,
+            bool defaultTaxCategoryId,
+            bool taxRulesRefs,
+          })
+        > {
+  $$TaxProfilesTableTableManager(_$AppDatabase db, $TaxProfilesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaxProfilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaxProfilesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaxProfilesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> regimeId = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<bool> isDefault = const Value.absent(),
+                Value<String?> defaultTaxCategoryId = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaxProfilesCompanion(
+                id: id,
+                name: name,
+                regimeId: regimeId,
+                description: description,
+                isDefault: isDefault,
+                defaultTaxCategoryId: defaultTaxCategoryId,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String regimeId,
+                Value<String?> description = const Value.absent(),
+                Value<bool> isDefault = const Value.absent(),
+                Value<String?> defaultTaxCategoryId = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TaxProfilesCompanion.insert(
+                id: id,
+                name: name,
+                regimeId: regimeId,
+                description: description,
+                isDefault: isDefault,
+                defaultTaxCategoryId: defaultTaxCategoryId,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaxProfilesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                regimeId = false,
+                defaultTaxCategoryId = false,
+                taxRulesRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [if (taxRulesRefs) db.taxRules],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (regimeId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.regimeId,
+                                    referencedTable:
+                                        $$TaxProfilesTableReferences
+                                            ._regimeIdTable(db),
+                                    referencedColumn:
+                                        $$TaxProfilesTableReferences
+                                            ._regimeIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (defaultTaxCategoryId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.defaultTaxCategoryId,
+                                    referencedTable:
+                                        $$TaxProfilesTableReferences
+                                            ._defaultTaxCategoryIdTable(db),
+                                    referencedColumn:
+                                        $$TaxProfilesTableReferences
+                                            ._defaultTaxCategoryIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (taxRulesRefs)
+                        await $_getPrefetchedData<
+                          TaxProfileRow,
+                          $TaxProfilesTable,
+                          TaxRuleRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxProfilesTableReferences
+                              ._taxRulesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxProfilesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taxRulesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taxProfileId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TaxProfilesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaxProfilesTable,
+      TaxProfileRow,
+      $$TaxProfilesTableFilterComposer,
+      $$TaxProfilesTableOrderingComposer,
+      $$TaxProfilesTableAnnotationComposer,
+      $$TaxProfilesTableCreateCompanionBuilder,
+      $$TaxProfilesTableUpdateCompanionBuilder,
+      (TaxProfileRow, $$TaxProfilesTableReferences),
+      TaxProfileRow,
+      PrefetchHooks Function({
+        bool regimeId,
+        bool defaultTaxCategoryId,
+        bool taxRulesRefs,
+      })
+    >;
+typedef $$TaxOverridesTableCreateCompanionBuilder =
+    TaxOverridesCompanion Function({
+      required String id,
+      required String name,
+      required String taxCategoryId,
+      required String reason,
+      Value<bool> isActive,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$TaxOverridesTableUpdateCompanionBuilder =
+    TaxOverridesCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> taxCategoryId,
+      Value<String> reason,
+      Value<bool> isActive,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$TaxOverridesTableReferences
+    extends BaseReferences<_$AppDatabase, $TaxOverridesTable, TaxOverrideRow> {
+  $$TaxOverridesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $TaxCategoriesTable _taxCategoryIdTable(_$AppDatabase db) =>
+      db.taxCategories.createAlias(
+        $_aliasNameGenerator(
+          db.taxOverrides.taxCategoryId,
+          db.taxCategories.id,
+        ),
+      );
+
+  $$TaxCategoriesTableProcessedTableManager get taxCategoryId {
+    final $_column = $_itemColumn<String>('tax_category_id')!;
+
+    final manager = $$TaxCategoriesTableTableManager(
+      $_db,
+      $_db.taxCategories,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taxCategoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$ProductsTable, List<ProductRow>>
+  _productsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.products,
+    aliasName: $_aliasNameGenerator(
+      db.taxOverrides.id,
+      db.products.taxOverrideId,
+    ),
+  );
+
+  $$ProductsTableProcessedTableManager get productsRefs {
+    final manager = $$ProductsTableTableManager(
+      $_db,
+      $_db.products,
+    ).filter((f) => f.taxOverrideId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_productsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TaxOverridesTableFilterComposer
+    extends Composer<_$AppDatabase, $TaxOverridesTable> {
+  $$TaxOverridesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaxCategoriesTableFilterComposer get taxCategoryId {
+    final $$TaxCategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> productsRefs(
+    Expression<bool> Function($$ProductsTableFilterComposer f) f,
+  ) {
+    final $$ProductsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.taxOverrideId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProductsTableFilterComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxOverridesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaxOverridesTable> {
+  $$TaxOverridesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaxCategoriesTableOrderingComposer get taxCategoryId {
+    final $$TaxCategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaxOverridesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaxOverridesTable> {
+  $$TaxOverridesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get reason =>
+      $composableBuilder(column: $table.reason, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TaxCategoriesTableAnnotationComposer get taxCategoryId {
+    final $$TaxCategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> productsRefs<T extends Object>(
+    Expression<T> Function($$ProductsTableAnnotationComposer a) f,
+  ) {
+    final $$ProductsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.taxOverrideId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProductsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxOverridesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaxOverridesTable,
+          TaxOverrideRow,
+          $$TaxOverridesTableFilterComposer,
+          $$TaxOverridesTableOrderingComposer,
+          $$TaxOverridesTableAnnotationComposer,
+          $$TaxOverridesTableCreateCompanionBuilder,
+          $$TaxOverridesTableUpdateCompanionBuilder,
+          (TaxOverrideRow, $$TaxOverridesTableReferences),
+          TaxOverrideRow,
+          PrefetchHooks Function({bool taxCategoryId, bool productsRefs})
+        > {
+  $$TaxOverridesTableTableManager(_$AppDatabase db, $TaxOverridesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaxOverridesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaxOverridesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaxOverridesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> taxCategoryId = const Value.absent(),
+                Value<String> reason = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaxOverridesCompanion(
+                id: id,
+                name: name,
+                taxCategoryId: taxCategoryId,
+                reason: reason,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String taxCategoryId,
+                required String reason,
+                Value<bool> isActive = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TaxOverridesCompanion.insert(
+                id: id,
+                name: name,
+                taxCategoryId: taxCategoryId,
+                reason: reason,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaxOverridesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({taxCategoryId = false, productsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [if (productsRefs) db.products],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (taxCategoryId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.taxCategoryId,
+                                    referencedTable:
+                                        $$TaxOverridesTableReferences
+                                            ._taxCategoryIdTable(db),
+                                    referencedColumn:
+                                        $$TaxOverridesTableReferences
+                                            ._taxCategoryIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (productsRefs)
+                        await $_getPrefetchedData<
+                          TaxOverrideRow,
+                          $TaxOverridesTable,
+                          ProductRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxOverridesTableReferences
+                              ._productsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxOverridesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).productsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taxOverrideId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TaxOverridesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaxOverridesTable,
+      TaxOverrideRow,
+      $$TaxOverridesTableFilterComposer,
+      $$TaxOverridesTableOrderingComposer,
+      $$TaxOverridesTableAnnotationComposer,
+      $$TaxOverridesTableCreateCompanionBuilder,
+      $$TaxOverridesTableUpdateCompanionBuilder,
+      (TaxOverrideRow, $$TaxOverridesTableReferences),
+      TaxOverrideRow,
+      PrefetchHooks Function({bool taxCategoryId, bool productsRefs})
+    >;
+typedef $$TaxRulesTableCreateCompanionBuilder =
+    TaxRulesCompanion Function({
+      required String id,
+      required String taxProfileId,
+      required String taxCategoryId,
+      Value<String?> jurisdictionId,
+      Value<String?> transactionType,
+      Value<String?> customerTaxStatus,
+      Value<String?> supplyType,
+      Value<String> supplyRelation,
+      required String calculationMethod,
+      Value<bool> isStackable,
+      required int effectiveFrom,
+      Value<int?> effectiveUntil,
+      Value<int> priority,
+      Value<bool> isActive,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$TaxRulesTableUpdateCompanionBuilder =
+    TaxRulesCompanion Function({
+      Value<String> id,
+      Value<String> taxProfileId,
+      Value<String> taxCategoryId,
+      Value<String?> jurisdictionId,
+      Value<String?> transactionType,
+      Value<String?> customerTaxStatus,
+      Value<String?> supplyType,
+      Value<String> supplyRelation,
+      Value<String> calculationMethod,
+      Value<bool> isStackable,
+      Value<int> effectiveFrom,
+      Value<int?> effectiveUntil,
+      Value<int> priority,
+      Value<bool> isActive,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$TaxRulesTableReferences
+    extends BaseReferences<_$AppDatabase, $TaxRulesTable, TaxRuleRow> {
+  $$TaxRulesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $TaxProfilesTable _taxProfileIdTable(_$AppDatabase db) =>
+      db.taxProfiles.createAlias(
+        $_aliasNameGenerator(db.taxRules.taxProfileId, db.taxProfiles.id),
+      );
+
+  $$TaxProfilesTableProcessedTableManager get taxProfileId {
+    final $_column = $_itemColumn<String>('tax_profile_id')!;
+
+    final manager = $$TaxProfilesTableTableManager(
+      $_db,
+      $_db.taxProfiles,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taxProfileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TaxCategoriesTable _taxCategoryIdTable(_$AppDatabase db) =>
+      db.taxCategories.createAlias(
+        $_aliasNameGenerator(db.taxRules.taxCategoryId, db.taxCategories.id),
+      );
+
+  $$TaxCategoriesTableProcessedTableManager get taxCategoryId {
+    final $_column = $_itemColumn<String>('tax_category_id')!;
+
+    final manager = $$TaxCategoriesTableTableManager(
+      $_db,
+      $_db.taxCategories,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taxCategoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TaxJurisdictionsTable _jurisdictionIdTable(_$AppDatabase db) =>
+      db.taxJurisdictions.createAlias(
+        $_aliasNameGenerator(
+          db.taxRules.jurisdictionId,
+          db.taxJurisdictions.id,
+        ),
+      );
+
+  $$TaxJurisdictionsTableProcessedTableManager? get jurisdictionId {
+    final $_column = $_itemColumn<String>('jurisdiction_id');
+    if ($_column == null) return null;
+    final manager = $$TaxJurisdictionsTableTableManager(
+      $_db,
+      $_db.taxJurisdictions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_jurisdictionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$TaxComponentsTable, List<TaxComponentRow>>
+  _taxComponentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.taxComponents,
+    aliasName: $_aliasNameGenerator(db.taxRules.id, db.taxComponents.taxRuleId),
+  );
+
+  $$TaxComponentsTableProcessedTableManager get taxComponentsRefs {
+    final manager = $$TaxComponentsTableTableManager(
+      $_db,
+      $_db.taxComponents,
+    ).filter((f) => f.taxRuleId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_taxComponentsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TaxRulesTableFilterComposer
+    extends Composer<_$AppDatabase, $TaxRulesTable> {
+  $$TaxRulesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get transactionType => $composableBuilder(
+    column: $table.transactionType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customerTaxStatus => $composableBuilder(
+    column: $table.customerTaxStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get supplyType => $composableBuilder(
+    column: $table.supplyType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get supplyRelation => $composableBuilder(
+    column: $table.supplyRelation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get calculationMethod => $composableBuilder(
+    column: $table.calculationMethod,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isStackable => $composableBuilder(
+    column: $table.isStackable,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get effectiveUntil => $composableBuilder(
+    column: $table.effectiveUntil,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaxProfilesTableFilterComposer get taxProfileId {
+    final $$TaxProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxProfileId,
+      referencedTable: $db.taxProfiles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxCategoriesTableFilterComposer get taxCategoryId {
+    final $$TaxCategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxJurisdictionsTableFilterComposer get jurisdictionId {
+    final $$TaxJurisdictionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.jurisdictionId,
+      referencedTable: $db.taxJurisdictions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxJurisdictionsTableFilterComposer(
+            $db: $db,
+            $table: $db.taxJurisdictions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> taxComponentsRefs(
+    Expression<bool> Function($$TaxComponentsTableFilterComposer f) f,
+  ) {
+    final $$TaxComponentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxComponents,
+      getReferencedColumn: (t) => t.taxRuleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxComponentsTableFilterComposer(
+            $db: $db,
+            $table: $db.taxComponents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxRulesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaxRulesTable> {
+  $$TaxRulesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get transactionType => $composableBuilder(
+    column: $table.transactionType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get customerTaxStatus => $composableBuilder(
+    column: $table.customerTaxStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get supplyType => $composableBuilder(
+    column: $table.supplyType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get supplyRelation => $composableBuilder(
+    column: $table.supplyRelation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get calculationMethod => $composableBuilder(
+    column: $table.calculationMethod,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isStackable => $composableBuilder(
+    column: $table.isStackable,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get effectiveUntil => $composableBuilder(
+    column: $table.effectiveUntil,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaxProfilesTableOrderingComposer get taxProfileId {
+    final $$TaxProfilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxProfileId,
+      referencedTable: $db.taxProfiles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxProfilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxCategoriesTableOrderingComposer get taxCategoryId {
+    final $$TaxCategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxJurisdictionsTableOrderingComposer get jurisdictionId {
+    final $$TaxJurisdictionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.jurisdictionId,
+      referencedTable: $db.taxJurisdictions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxJurisdictionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxJurisdictions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaxRulesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaxRulesTable> {
+  $$TaxRulesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get transactionType => $composableBuilder(
+    column: $table.transactionType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get customerTaxStatus => $composableBuilder(
+    column: $table.customerTaxStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get supplyType => $composableBuilder(
+    column: $table.supplyType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get supplyRelation => $composableBuilder(
+    column: $table.supplyRelation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get calculationMethod => $composableBuilder(
+    column: $table.calculationMethod,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isStackable => $composableBuilder(
+    column: $table.isStackable,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get effectiveUntil => $composableBuilder(
+    column: $table.effectiveUntil,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TaxProfilesTableAnnotationComposer get taxProfileId {
+    final $$TaxProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxProfileId,
+      referencedTable: $db.taxProfiles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxCategoriesTableAnnotationComposer get taxCategoryId {
+    final $$TaxCategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxJurisdictionsTableAnnotationComposer get jurisdictionId {
+    final $$TaxJurisdictionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.jurisdictionId,
+      referencedTable: $db.taxJurisdictions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxJurisdictionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxJurisdictions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> taxComponentsRefs<T extends Object>(
+    Expression<T> Function($$TaxComponentsTableAnnotationComposer a) f,
+  ) {
+    final $$TaxComponentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taxComponents,
+      getReferencedColumn: (t) => t.taxRuleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxComponentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxComponents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TaxRulesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaxRulesTable,
+          TaxRuleRow,
+          $$TaxRulesTableFilterComposer,
+          $$TaxRulesTableOrderingComposer,
+          $$TaxRulesTableAnnotationComposer,
+          $$TaxRulesTableCreateCompanionBuilder,
+          $$TaxRulesTableUpdateCompanionBuilder,
+          (TaxRuleRow, $$TaxRulesTableReferences),
+          TaxRuleRow,
+          PrefetchHooks Function({
+            bool taxProfileId,
+            bool taxCategoryId,
+            bool jurisdictionId,
+            bool taxComponentsRefs,
+          })
+        > {
+  $$TaxRulesTableTableManager(_$AppDatabase db, $TaxRulesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaxRulesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaxRulesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaxRulesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> taxProfileId = const Value.absent(),
+                Value<String> taxCategoryId = const Value.absent(),
+                Value<String?> jurisdictionId = const Value.absent(),
+                Value<String?> transactionType = const Value.absent(),
+                Value<String?> customerTaxStatus = const Value.absent(),
+                Value<String?> supplyType = const Value.absent(),
+                Value<String> supplyRelation = const Value.absent(),
+                Value<String> calculationMethod = const Value.absent(),
+                Value<bool> isStackable = const Value.absent(),
+                Value<int> effectiveFrom = const Value.absent(),
+                Value<int?> effectiveUntil = const Value.absent(),
+                Value<int> priority = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaxRulesCompanion(
+                id: id,
+                taxProfileId: taxProfileId,
+                taxCategoryId: taxCategoryId,
+                jurisdictionId: jurisdictionId,
+                transactionType: transactionType,
+                customerTaxStatus: customerTaxStatus,
+                supplyType: supplyType,
+                supplyRelation: supplyRelation,
+                calculationMethod: calculationMethod,
+                isStackable: isStackable,
+                effectiveFrom: effectiveFrom,
+                effectiveUntil: effectiveUntil,
+                priority: priority,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String taxProfileId,
+                required String taxCategoryId,
+                Value<String?> jurisdictionId = const Value.absent(),
+                Value<String?> transactionType = const Value.absent(),
+                Value<String?> customerTaxStatus = const Value.absent(),
+                Value<String?> supplyType = const Value.absent(),
+                Value<String> supplyRelation = const Value.absent(),
+                required String calculationMethod,
+                Value<bool> isStackable = const Value.absent(),
+                required int effectiveFrom,
+                Value<int?> effectiveUntil = const Value.absent(),
+                Value<int> priority = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TaxRulesCompanion.insert(
+                id: id,
+                taxProfileId: taxProfileId,
+                taxCategoryId: taxCategoryId,
+                jurisdictionId: jurisdictionId,
+                transactionType: transactionType,
+                customerTaxStatus: customerTaxStatus,
+                supplyType: supplyType,
+                supplyRelation: supplyRelation,
+                calculationMethod: calculationMethod,
+                isStackable: isStackable,
+                effectiveFrom: effectiveFrom,
+                effectiveUntil: effectiveUntil,
+                priority: priority,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaxRulesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                taxProfileId = false,
+                taxCategoryId = false,
+                jurisdictionId = false,
+                taxComponentsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (taxComponentsRefs) db.taxComponents,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (taxProfileId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.taxProfileId,
+                                    referencedTable: $$TaxRulesTableReferences
+                                        ._taxProfileIdTable(db),
+                                    referencedColumn: $$TaxRulesTableReferences
+                                        ._taxProfileIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (taxCategoryId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.taxCategoryId,
+                                    referencedTable: $$TaxRulesTableReferences
+                                        ._taxCategoryIdTable(db),
+                                    referencedColumn: $$TaxRulesTableReferences
+                                        ._taxCategoryIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (jurisdictionId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.jurisdictionId,
+                                    referencedTable: $$TaxRulesTableReferences
+                                        ._jurisdictionIdTable(db),
+                                    referencedColumn: $$TaxRulesTableReferences
+                                        ._jurisdictionIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (taxComponentsRefs)
+                        await $_getPrefetchedData<
+                          TaxRuleRow,
+                          $TaxRulesTable,
+                          TaxComponentRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaxRulesTableReferences
+                              ._taxComponentsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaxRulesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taxComponentsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taxRuleId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TaxRulesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaxRulesTable,
+      TaxRuleRow,
+      $$TaxRulesTableFilterComposer,
+      $$TaxRulesTableOrderingComposer,
+      $$TaxRulesTableAnnotationComposer,
+      $$TaxRulesTableCreateCompanionBuilder,
+      $$TaxRulesTableUpdateCompanionBuilder,
+      (TaxRuleRow, $$TaxRulesTableReferences),
+      TaxRuleRow,
+      PrefetchHooks Function({
+        bool taxProfileId,
+        bool taxCategoryId,
+        bool jurisdictionId,
+        bool taxComponentsRefs,
+      })
+    >;
+typedef $$TaxComponentsTableCreateCompanionBuilder =
+    TaxComponentsCompanion Function({
+      required String id,
+      required String taxRuleId,
+      required String name,
+      required String componentType,
+      Value<int> rateBasisPoints,
+      Value<int?> fixedAmountMinor,
+      required int calculationOrder,
+      Value<bool> isCompound,
+      Value<bool> isRecoverable,
+      Value<bool> isActive,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$TaxComponentsTableUpdateCompanionBuilder =
+    TaxComponentsCompanion Function({
+      Value<String> id,
+      Value<String> taxRuleId,
+      Value<String> name,
+      Value<String> componentType,
+      Value<int> rateBasisPoints,
+      Value<int?> fixedAmountMinor,
+      Value<int> calculationOrder,
+      Value<bool> isCompound,
+      Value<bool> isRecoverable,
+      Value<bool> isActive,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$TaxComponentsTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $TaxComponentsTable, TaxComponentRow> {
+  $$TaxComponentsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TaxRulesTable _taxRuleIdTable(_$AppDatabase db) =>
+      db.taxRules.createAlias(
+        $_aliasNameGenerator(db.taxComponents.taxRuleId, db.taxRules.id),
+      );
+
+  $$TaxRulesTableProcessedTableManager get taxRuleId {
+    final $_column = $_itemColumn<String>('tax_rule_id')!;
+
+    final manager = $$TaxRulesTableTableManager(
+      $_db,
+      $_db.taxRules,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taxRuleIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TaxComponentsTableFilterComposer
+    extends Composer<_$AppDatabase, $TaxComponentsTable> {
+  $$TaxComponentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get componentType => $composableBuilder(
+    column: $table.componentType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rateBasisPoints => $composableBuilder(
+    column: $table.rateBasisPoints,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fixedAmountMinor => $composableBuilder(
+    column: $table.fixedAmountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get calculationOrder => $composableBuilder(
+    column: $table.calculationOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCompound => $composableBuilder(
+    column: $table.isCompound,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isRecoverable => $composableBuilder(
+    column: $table.isRecoverable,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaxRulesTableFilterComposer get taxRuleId {
+    final $$TaxRulesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxRuleId,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRulesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaxComponentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaxComponentsTable> {
+  $$TaxComponentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get componentType => $composableBuilder(
+    column: $table.componentType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rateBasisPoints => $composableBuilder(
+    column: $table.rateBasisPoints,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fixedAmountMinor => $composableBuilder(
+    column: $table.fixedAmountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get calculationOrder => $composableBuilder(
+    column: $table.calculationOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCompound => $composableBuilder(
+    column: $table.isCompound,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isRecoverable => $composableBuilder(
+    column: $table.isRecoverable,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaxRulesTableOrderingComposer get taxRuleId {
+    final $$TaxRulesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxRuleId,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRulesTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaxComponentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaxComponentsTable> {
+  $$TaxComponentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get componentType => $composableBuilder(
+    column: $table.componentType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rateBasisPoints => $composableBuilder(
+    column: $table.rateBasisPoints,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get fixedAmountMinor => $composableBuilder(
+    column: $table.fixedAmountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get calculationOrder => $composableBuilder(
+    column: $table.calculationOrder,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isCompound => $composableBuilder(
+    column: $table.isCompound,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isRecoverable => $composableBuilder(
+    column: $table.isRecoverable,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TaxRulesTableAnnotationComposer get taxRuleId {
+    final $$TaxRulesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxRuleId,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxRulesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaxComponentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaxComponentsTable,
+          TaxComponentRow,
+          $$TaxComponentsTableFilterComposer,
+          $$TaxComponentsTableOrderingComposer,
+          $$TaxComponentsTableAnnotationComposer,
+          $$TaxComponentsTableCreateCompanionBuilder,
+          $$TaxComponentsTableUpdateCompanionBuilder,
+          (TaxComponentRow, $$TaxComponentsTableReferences),
+          TaxComponentRow,
+          PrefetchHooks Function({bool taxRuleId})
+        > {
+  $$TaxComponentsTableTableManager(_$AppDatabase db, $TaxComponentsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaxComponentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaxComponentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaxComponentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> taxRuleId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> componentType = const Value.absent(),
+                Value<int> rateBasisPoints = const Value.absent(),
+                Value<int?> fixedAmountMinor = const Value.absent(),
+                Value<int> calculationOrder = const Value.absent(),
+                Value<bool> isCompound = const Value.absent(),
+                Value<bool> isRecoverable = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaxComponentsCompanion(
+                id: id,
+                taxRuleId: taxRuleId,
+                name: name,
+                componentType: componentType,
+                rateBasisPoints: rateBasisPoints,
+                fixedAmountMinor: fixedAmountMinor,
+                calculationOrder: calculationOrder,
+                isCompound: isCompound,
+                isRecoverable: isRecoverable,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String taxRuleId,
+                required String name,
+                required String componentType,
+                Value<int> rateBasisPoints = const Value.absent(),
+                Value<int?> fixedAmountMinor = const Value.absent(),
+                required int calculationOrder,
+                Value<bool> isCompound = const Value.absent(),
+                Value<bool> isRecoverable = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TaxComponentsCompanion.insert(
+                id: id,
+                taxRuleId: taxRuleId,
+                name: name,
+                componentType: componentType,
+                rateBasisPoints: rateBasisPoints,
+                fixedAmountMinor: fixedAmountMinor,
+                calculationOrder: calculationOrder,
+                isCompound: isCompound,
+                isRecoverable: isRecoverable,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaxComponentsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({taxRuleId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (taxRuleId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.taxRuleId,
+                                referencedTable: $$TaxComponentsTableReferences
+                                    ._taxRuleIdTable(db),
+                                referencedColumn: $$TaxComponentsTableReferences
+                                    ._taxRuleIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TaxComponentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaxComponentsTable,
+      TaxComponentRow,
+      $$TaxComponentsTableFilterComposer,
+      $$TaxComponentsTableOrderingComposer,
+      $$TaxComponentsTableAnnotationComposer,
+      $$TaxComponentsTableCreateCompanionBuilder,
+      $$TaxComponentsTableUpdateCompanionBuilder,
+      (TaxComponentRow, $$TaxComponentsTableReferences),
+      TaxComponentRow,
+      PrefetchHooks Function({bool taxRuleId})
+    >;
 typedef $$ProductsTableCreateCompanionBuilder =
     ProductsCompanion Function({
       required String id,
@@ -22667,6 +35177,8 @@ typedef $$ProductsTableCreateCompanionBuilder =
       required int sellingPriceMinor,
       Value<bool> priceIncludesTax,
       Value<String?> taxRateId,
+      Value<String?> taxCategoryId,
+      Value<String?> taxOverrideId,
       required int reorderLevelMilli,
       Value<String?> imagePath,
       Value<int?> archivedAt,
@@ -22687,6 +35199,8 @@ typedef $$ProductsTableUpdateCompanionBuilder =
       Value<int> sellingPriceMinor,
       Value<bool> priceIncludesTax,
       Value<String?> taxRateId,
+      Value<String?> taxCategoryId,
+      Value<String?> taxOverrideId,
       Value<int> reorderLevelMilli,
       Value<String?> imagePath,
       Value<int?> archivedAt,
@@ -22750,6 +35264,72 @@ final class $$ProductsTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TaxCategoriesTable _taxCategoryIdTable(_$AppDatabase db) =>
+      db.taxCategories.createAlias(
+        $_aliasNameGenerator(db.products.taxCategoryId, db.taxCategories.id),
+      );
+
+  $$TaxCategoriesTableProcessedTableManager? get taxCategoryId {
+    final $_column = $_itemColumn<String>('tax_category_id');
+    if ($_column == null) return null;
+    final manager = $$TaxCategoriesTableTableManager(
+      $_db,
+      $_db.taxCategories,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taxCategoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TaxOverridesTable _taxOverrideIdTable(_$AppDatabase db) =>
+      db.taxOverrides.createAlias(
+        $_aliasNameGenerator(db.products.taxOverrideId, db.taxOverrides.id),
+      );
+
+  $$TaxOverridesTableProcessedTableManager? get taxOverrideId {
+    final $_column = $_itemColumn<String>('tax_override_id');
+    if ($_column == null) return null;
+    final manager = $$TaxOverridesTableTableManager(
+      $_db,
+      $_db.taxOverrides,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taxOverrideIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $ProductClassificationsTable,
+    List<ProductClassificationRow>
+  >
+  _productClassificationsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.productClassifications,
+        aliasName: $_aliasNameGenerator(
+          db.products.id,
+          db.productClassifications.productId,
+        ),
+      );
+
+  $$ProductClassificationsTableProcessedTableManager
+  get productClassificationsRefs {
+    final manager = $$ProductClassificationsTableTableManager(
+      $_db,
+      $_db.productClassifications,
+    ).filter((f) => f.productId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _productClassificationsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
@@ -23042,6 +35622,78 @@ class $$ProductsTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  $$TaxCategoriesTableFilterComposer get taxCategoryId {
+    final $$TaxCategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxOverridesTableFilterComposer get taxOverrideId {
+    final $$TaxOverridesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxOverrideId,
+      referencedTable: $db.taxOverrides,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxOverridesTableFilterComposer(
+            $db: $db,
+            $table: $db.taxOverrides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> productClassificationsRefs(
+    Expression<bool> Function($$ProductClassificationsTableFilterComposer f) f,
+  ) {
+    final $$ProductClassificationsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.productClassifications,
+          getReferencedColumn: (t) => t.productId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ProductClassificationsTableFilterComposer(
+                $db: $db,
+                $table: $db.productClassifications,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
   }
 
   Expression<bool> inventoryBalancesRefs(
@@ -23337,6 +35989,52 @@ class $$ProductsTableOrderingComposer
     );
     return composer;
   }
+
+  $$TaxCategoriesTableOrderingComposer get taxCategoryId {
+    final $$TaxCategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxOverridesTableOrderingComposer get taxOverrideId {
+    final $$TaxOverridesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxOverrideId,
+      referencedTable: $db.taxOverrides,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxOverridesTableOrderingComposer(
+            $db: $db,
+            $table: $db.taxOverrides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$ProductsTableAnnotationComposer
@@ -23466,6 +36164,78 @@ class $$ProductsTableAnnotationComposer
           ),
     );
     return composer;
+  }
+
+  $$TaxCategoriesTableAnnotationComposer get taxCategoryId {
+    final $$TaxCategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxCategoryId,
+      referencedTable: $db.taxCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxCategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TaxOverridesTableAnnotationComposer get taxOverrideId {
+    final $$TaxOverridesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxOverrideId,
+      referencedTable: $db.taxOverrides,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaxOverridesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taxOverrides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> productClassificationsRefs<T extends Object>(
+    Expression<T> Function($$ProductClassificationsTableAnnotationComposer a) f,
+  ) {
+    final $$ProductClassificationsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.productClassifications,
+          getReferencedColumn: (t) => t.productId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ProductClassificationsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.productClassifications,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
   }
 
   Expression<T> inventoryBalancesRefs<T extends Object>(
@@ -23640,6 +36410,9 @@ class $$ProductsTableTableManager
             bool categoryId,
             bool unitId,
             bool taxRateId,
+            bool taxCategoryId,
+            bool taxOverrideId,
+            bool productClassificationsRefs,
             bool inventoryBalancesRefs,
             bool stockMovementsRefs,
             bool purchaseInvoiceItemsRefs,
@@ -23672,6 +36445,8 @@ class $$ProductsTableTableManager
                 Value<int> sellingPriceMinor = const Value.absent(),
                 Value<bool> priceIncludesTax = const Value.absent(),
                 Value<String?> taxRateId = const Value.absent(),
+                Value<String?> taxCategoryId = const Value.absent(),
+                Value<String?> taxOverrideId = const Value.absent(),
                 Value<int> reorderLevelMilli = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
                 Value<int?> archivedAt = const Value.absent(),
@@ -23690,6 +36465,8 @@ class $$ProductsTableTableManager
                 sellingPriceMinor: sellingPriceMinor,
                 priceIncludesTax: priceIncludesTax,
                 taxRateId: taxRateId,
+                taxCategoryId: taxCategoryId,
+                taxOverrideId: taxOverrideId,
                 reorderLevelMilli: reorderLevelMilli,
                 imagePath: imagePath,
                 archivedAt: archivedAt,
@@ -23710,6 +36487,8 @@ class $$ProductsTableTableManager
                 required int sellingPriceMinor,
                 Value<bool> priceIncludesTax = const Value.absent(),
                 Value<String?> taxRateId = const Value.absent(),
+                Value<String?> taxCategoryId = const Value.absent(),
+                Value<String?> taxOverrideId = const Value.absent(),
                 required int reorderLevelMilli,
                 Value<String?> imagePath = const Value.absent(),
                 Value<int?> archivedAt = const Value.absent(),
@@ -23728,6 +36507,8 @@ class $$ProductsTableTableManager
                 sellingPriceMinor: sellingPriceMinor,
                 priceIncludesTax: priceIncludesTax,
                 taxRateId: taxRateId,
+                taxCategoryId: taxCategoryId,
+                taxOverrideId: taxOverrideId,
                 reorderLevelMilli: reorderLevelMilli,
                 imagePath: imagePath,
                 archivedAt: archivedAt,
@@ -23748,6 +36529,9 @@ class $$ProductsTableTableManager
                 categoryId = false,
                 unitId = false,
                 taxRateId = false,
+                taxCategoryId = false,
+                taxOverrideId = false,
+                productClassificationsRefs = false,
                 inventoryBalancesRefs = false,
                 stockMovementsRefs = false,
                 purchaseInvoiceItemsRefs = false,
@@ -23758,6 +36542,7 @@ class $$ProductsTableTableManager
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (productClassificationsRefs) db.productClassifications,
                     if (inventoryBalancesRefs) db.inventoryBalances,
                     if (stockMovementsRefs) db.stockMovements,
                     if (purchaseInvoiceItemsRefs) db.purchaseInvoiceItems,
@@ -23820,11 +36605,58 @@ class $$ProductsTableTableManager
                                   )
                                   as T;
                         }
+                        if (taxCategoryId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.taxCategoryId,
+                                    referencedTable: $$ProductsTableReferences
+                                        ._taxCategoryIdTable(db),
+                                    referencedColumn: $$ProductsTableReferences
+                                        ._taxCategoryIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (taxOverrideId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.taxOverrideId,
+                                    referencedTable: $$ProductsTableReferences
+                                        ._taxOverrideIdTable(db),
+                                    referencedColumn: $$ProductsTableReferences
+                                        ._taxOverrideIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
 
                         return state;
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (productClassificationsRefs)
+                        await $_getPrefetchedData<
+                          ProductRow,
+                          $ProductsTable,
+                          ProductClassificationRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ProductsTableReferences
+                              ._productClassificationsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ProductsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).productClassificationsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.productId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (inventoryBalancesRefs)
                         await $_getPrefetchedData<
                           ProductRow,
@@ -23975,6 +36807,9 @@ typedef $$ProductsTableProcessedTableManager =
         bool categoryId,
         bool unitId,
         bool taxRateId,
+        bool taxCategoryId,
+        bool taxOverrideId,
+        bool productClassificationsRefs,
         bool inventoryBalancesRefs,
         bool stockMovementsRefs,
         bool purchaseInvoiceItemsRefs,
@@ -23982,6 +36817,1560 @@ typedef $$ProductsTableProcessedTableManager =
         bool salesReturnItemsRefs,
         bool purchaseReturnItemsRefs,
       })
+    >;
+typedef $$ProductClassificationsTableCreateCompanionBuilder =
+    ProductClassificationsCompanion Function({
+      required String id,
+      required String productId,
+      required String classificationSystem,
+      required String classificationCode,
+      Value<String?> classificationDescription,
+      Value<String?> countryCode,
+      required String classificationType,
+      Value<bool> isPrimary,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ProductClassificationsTableUpdateCompanionBuilder =
+    ProductClassificationsCompanion Function({
+      Value<String> id,
+      Value<String> productId,
+      Value<String> classificationSystem,
+      Value<String> classificationCode,
+      Value<String?> classificationDescription,
+      Value<String?> countryCode,
+      Value<String> classificationType,
+      Value<bool> isPrimary,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$ProductClassificationsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $ProductClassificationsTable,
+          ProductClassificationRow
+        > {
+  $$ProductClassificationsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ProductsTable _productIdTable(_$AppDatabase db) =>
+      db.products.createAlias(
+        $_aliasNameGenerator(
+          db.productClassifications.productId,
+          db.products.id,
+        ),
+      );
+
+  $$ProductsTableProcessedTableManager get productId {
+    final $_column = $_itemColumn<String>('product_id')!;
+
+    final manager = $$ProductsTableTableManager(
+      $_db,
+      $_db.products,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_productIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ProductClassificationsTableFilterComposer
+    extends Composer<_$AppDatabase, $ProductClassificationsTable> {
+  $$ProductClassificationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationSystem => $composableBuilder(
+    column: $table.classificationSystem,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationCode => $composableBuilder(
+    column: $table.classificationCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationDescription => $composableBuilder(
+    column: $table.classificationDescription,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationType => $composableBuilder(
+    column: $table.classificationType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPrimary => $composableBuilder(
+    column: $table.isPrimary,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ProductsTableFilterComposer get productId {
+    final $$ProductsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.productId,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProductsTableFilterComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProductClassificationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProductClassificationsTable> {
+  $$ProductClassificationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationSystem => $composableBuilder(
+    column: $table.classificationSystem,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationCode => $composableBuilder(
+    column: $table.classificationCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationDescription => $composableBuilder(
+    column: $table.classificationDescription,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationType => $composableBuilder(
+    column: $table.classificationType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPrimary => $composableBuilder(
+    column: $table.isPrimary,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ProductsTableOrderingComposer get productId {
+    final $$ProductsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.productId,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProductsTableOrderingComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProductClassificationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProductClassificationsTable> {
+  $$ProductClassificationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get classificationSystem => $composableBuilder(
+    column: $table.classificationSystem,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get classificationCode => $composableBuilder(
+    column: $table.classificationCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get classificationDescription => $composableBuilder(
+    column: $table.classificationDescription,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get classificationType => $composableBuilder(
+    column: $table.classificationType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isPrimary =>
+      $composableBuilder(column: $table.isPrimary, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$ProductsTableAnnotationComposer get productId {
+    final $$ProductsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.productId,
+      referencedTable: $db.products,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProductsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.products,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProductClassificationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ProductClassificationsTable,
+          ProductClassificationRow,
+          $$ProductClassificationsTableFilterComposer,
+          $$ProductClassificationsTableOrderingComposer,
+          $$ProductClassificationsTableAnnotationComposer,
+          $$ProductClassificationsTableCreateCompanionBuilder,
+          $$ProductClassificationsTableUpdateCompanionBuilder,
+          (ProductClassificationRow, $$ProductClassificationsTableReferences),
+          ProductClassificationRow,
+          PrefetchHooks Function({bool productId})
+        > {
+  $$ProductClassificationsTableTableManager(
+    _$AppDatabase db,
+    $ProductClassificationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProductClassificationsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$ProductClassificationsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ProductClassificationsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> productId = const Value.absent(),
+                Value<String> classificationSystem = const Value.absent(),
+                Value<String> classificationCode = const Value.absent(),
+                Value<String?> classificationDescription = const Value.absent(),
+                Value<String?> countryCode = const Value.absent(),
+                Value<String> classificationType = const Value.absent(),
+                Value<bool> isPrimary = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProductClassificationsCompanion(
+                id: id,
+                productId: productId,
+                classificationSystem: classificationSystem,
+                classificationCode: classificationCode,
+                classificationDescription: classificationDescription,
+                countryCode: countryCode,
+                classificationType: classificationType,
+                isPrimary: isPrimary,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String productId,
+                required String classificationSystem,
+                required String classificationCode,
+                Value<String?> classificationDescription = const Value.absent(),
+                Value<String?> countryCode = const Value.absent(),
+                required String classificationType,
+                Value<bool> isPrimary = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ProductClassificationsCompanion.insert(
+                id: id,
+                productId: productId,
+                classificationSystem: classificationSystem,
+                classificationCode: classificationCode,
+                classificationDescription: classificationDescription,
+                countryCode: countryCode,
+                classificationType: classificationType,
+                isPrimary: isPrimary,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ProductClassificationsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({productId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (productId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.productId,
+                                referencedTable:
+                                    $$ProductClassificationsTableReferences
+                                        ._productIdTable(db),
+                                referencedColumn:
+                                    $$ProductClassificationsTableReferences
+                                        ._productIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ProductClassificationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ProductClassificationsTable,
+      ProductClassificationRow,
+      $$ProductClassificationsTableFilterComposer,
+      $$ProductClassificationsTableOrderingComposer,
+      $$ProductClassificationsTableAnnotationComposer,
+      $$ProductClassificationsTableCreateCompanionBuilder,
+      $$ProductClassificationsTableUpdateCompanionBuilder,
+      (ProductClassificationRow, $$ProductClassificationsTableReferences),
+      ProductClassificationRow,
+      PrefetchHooks Function({bool productId})
+    >;
+typedef $$InvoiceItemTaxComponentsTableCreateCompanionBuilder =
+    InvoiceItemTaxComponentsCompanion Function({
+      required String id,
+      required String documentType,
+      required String itemId,
+      required int componentNo,
+      required String ruleId,
+      required String componentId,
+      required String name,
+      required String componentType,
+      required String calculationMethod,
+      Value<int?> rateBasisPoints,
+      Value<int?> fixedAmountMinor,
+      required int taxableMinor,
+      required int amountMinor,
+      required bool isCompound,
+      required bool isRecoverable,
+      Value<int> rowid,
+    });
+typedef $$InvoiceItemTaxComponentsTableUpdateCompanionBuilder =
+    InvoiceItemTaxComponentsCompanion Function({
+      Value<String> id,
+      Value<String> documentType,
+      Value<String> itemId,
+      Value<int> componentNo,
+      Value<String> ruleId,
+      Value<String> componentId,
+      Value<String> name,
+      Value<String> componentType,
+      Value<String> calculationMethod,
+      Value<int?> rateBasisPoints,
+      Value<int?> fixedAmountMinor,
+      Value<int> taxableMinor,
+      Value<int> amountMinor,
+      Value<bool> isCompound,
+      Value<bool> isRecoverable,
+      Value<int> rowid,
+    });
+
+class $$InvoiceItemTaxComponentsTableFilterComposer
+    extends Composer<_$AppDatabase, $InvoiceItemTaxComponentsTable> {
+  $$InvoiceItemTaxComponentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentType => $composableBuilder(
+    column: $table.documentType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get componentNo => $composableBuilder(
+    column: $table.componentNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ruleId => $composableBuilder(
+    column: $table.ruleId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get componentId => $composableBuilder(
+    column: $table.componentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get componentType => $composableBuilder(
+    column: $table.componentType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get calculationMethod => $composableBuilder(
+    column: $table.calculationMethod,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rateBasisPoints => $composableBuilder(
+    column: $table.rateBasisPoints,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fixedAmountMinor => $composableBuilder(
+    column: $table.fixedAmountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get taxableMinor => $composableBuilder(
+    column: $table.taxableMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCompound => $composableBuilder(
+    column: $table.isCompound,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isRecoverable => $composableBuilder(
+    column: $table.isRecoverable,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InvoiceItemTaxComponentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $InvoiceItemTaxComponentsTable> {
+  $$InvoiceItemTaxComponentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get documentType => $composableBuilder(
+    column: $table.documentType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get componentNo => $composableBuilder(
+    column: $table.componentNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ruleId => $composableBuilder(
+    column: $table.ruleId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get componentId => $composableBuilder(
+    column: $table.componentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get componentType => $composableBuilder(
+    column: $table.componentType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get calculationMethod => $composableBuilder(
+    column: $table.calculationMethod,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rateBasisPoints => $composableBuilder(
+    column: $table.rateBasisPoints,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fixedAmountMinor => $composableBuilder(
+    column: $table.fixedAmountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get taxableMinor => $composableBuilder(
+    column: $table.taxableMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCompound => $composableBuilder(
+    column: $table.isCompound,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isRecoverable => $composableBuilder(
+    column: $table.isRecoverable,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InvoiceItemTaxComponentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $InvoiceItemTaxComponentsTable> {
+  $$InvoiceItemTaxComponentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get documentType => $composableBuilder(
+    column: $table.documentType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get itemId =>
+      $composableBuilder(column: $table.itemId, builder: (column) => column);
+
+  GeneratedColumn<int> get componentNo => $composableBuilder(
+    column: $table.componentNo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get ruleId =>
+      $composableBuilder(column: $table.ruleId, builder: (column) => column);
+
+  GeneratedColumn<String> get componentId => $composableBuilder(
+    column: $table.componentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get componentType => $composableBuilder(
+    column: $table.componentType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get calculationMethod => $composableBuilder(
+    column: $table.calculationMethod,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rateBasisPoints => $composableBuilder(
+    column: $table.rateBasisPoints,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get fixedAmountMinor => $composableBuilder(
+    column: $table.fixedAmountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get taxableMinor => $composableBuilder(
+    column: $table.taxableMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isCompound => $composableBuilder(
+    column: $table.isCompound,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isRecoverable => $composableBuilder(
+    column: $table.isRecoverable,
+    builder: (column) => column,
+  );
+}
+
+class $$InvoiceItemTaxComponentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $InvoiceItemTaxComponentsTable,
+          InvoiceItemTaxComponentRow,
+          $$InvoiceItemTaxComponentsTableFilterComposer,
+          $$InvoiceItemTaxComponentsTableOrderingComposer,
+          $$InvoiceItemTaxComponentsTableAnnotationComposer,
+          $$InvoiceItemTaxComponentsTableCreateCompanionBuilder,
+          $$InvoiceItemTaxComponentsTableUpdateCompanionBuilder,
+          (
+            InvoiceItemTaxComponentRow,
+            BaseReferences<
+              _$AppDatabase,
+              $InvoiceItemTaxComponentsTable,
+              InvoiceItemTaxComponentRow
+            >,
+          ),
+          InvoiceItemTaxComponentRow,
+          PrefetchHooks Function()
+        > {
+  $$InvoiceItemTaxComponentsTableTableManager(
+    _$AppDatabase db,
+    $InvoiceItemTaxComponentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InvoiceItemTaxComponentsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$InvoiceItemTaxComponentsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$InvoiceItemTaxComponentsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> documentType = const Value.absent(),
+                Value<String> itemId = const Value.absent(),
+                Value<int> componentNo = const Value.absent(),
+                Value<String> ruleId = const Value.absent(),
+                Value<String> componentId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> componentType = const Value.absent(),
+                Value<String> calculationMethod = const Value.absent(),
+                Value<int?> rateBasisPoints = const Value.absent(),
+                Value<int?> fixedAmountMinor = const Value.absent(),
+                Value<int> taxableMinor = const Value.absent(),
+                Value<int> amountMinor = const Value.absent(),
+                Value<bool> isCompound = const Value.absent(),
+                Value<bool> isRecoverable = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InvoiceItemTaxComponentsCompanion(
+                id: id,
+                documentType: documentType,
+                itemId: itemId,
+                componentNo: componentNo,
+                ruleId: ruleId,
+                componentId: componentId,
+                name: name,
+                componentType: componentType,
+                calculationMethod: calculationMethod,
+                rateBasisPoints: rateBasisPoints,
+                fixedAmountMinor: fixedAmountMinor,
+                taxableMinor: taxableMinor,
+                amountMinor: amountMinor,
+                isCompound: isCompound,
+                isRecoverable: isRecoverable,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String documentType,
+                required String itemId,
+                required int componentNo,
+                required String ruleId,
+                required String componentId,
+                required String name,
+                required String componentType,
+                required String calculationMethod,
+                Value<int?> rateBasisPoints = const Value.absent(),
+                Value<int?> fixedAmountMinor = const Value.absent(),
+                required int taxableMinor,
+                required int amountMinor,
+                required bool isCompound,
+                required bool isRecoverable,
+                Value<int> rowid = const Value.absent(),
+              }) => InvoiceItemTaxComponentsCompanion.insert(
+                id: id,
+                documentType: documentType,
+                itemId: itemId,
+                componentNo: componentNo,
+                ruleId: ruleId,
+                componentId: componentId,
+                name: name,
+                componentType: componentType,
+                calculationMethod: calculationMethod,
+                rateBasisPoints: rateBasisPoints,
+                fixedAmountMinor: fixedAmountMinor,
+                taxableMinor: taxableMinor,
+                amountMinor: amountMinor,
+                isCompound: isCompound,
+                isRecoverable: isRecoverable,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InvoiceItemTaxComponentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $InvoiceItemTaxComponentsTable,
+      InvoiceItemTaxComponentRow,
+      $$InvoiceItemTaxComponentsTableFilterComposer,
+      $$InvoiceItemTaxComponentsTableOrderingComposer,
+      $$InvoiceItemTaxComponentsTableAnnotationComposer,
+      $$InvoiceItemTaxComponentsTableCreateCompanionBuilder,
+      $$InvoiceItemTaxComponentsTableUpdateCompanionBuilder,
+      (
+        InvoiceItemTaxComponentRow,
+        BaseReferences<
+          _$AppDatabase,
+          $InvoiceItemTaxComponentsTable,
+          InvoiceItemTaxComponentRow
+        >,
+      ),
+      InvoiceItemTaxComponentRow,
+      PrefetchHooks Function()
+    >;
+typedef $$AuditEventsTableCreateCompanionBuilder =
+    AuditEventsCompanion Function({
+      Value<int> seq,
+      required String id,
+      required String eventType,
+      required String entityType,
+      required String entityId,
+      required String action,
+      required String actorType,
+      Value<String?> actorId,
+      required String actorDisplayName,
+      required int occurredAtUtc,
+      Value<String?> reason,
+      required String source,
+      required String correlationId,
+      Value<String?> previousValues,
+      Value<String?> newValues,
+      Value<String?> metadata,
+      required String previousEventHash,
+      required String eventHash,
+      required int schemaVersion,
+    });
+typedef $$AuditEventsTableUpdateCompanionBuilder =
+    AuditEventsCompanion Function({
+      Value<int> seq,
+      Value<String> id,
+      Value<String> eventType,
+      Value<String> entityType,
+      Value<String> entityId,
+      Value<String> action,
+      Value<String> actorType,
+      Value<String?> actorId,
+      Value<String> actorDisplayName,
+      Value<int> occurredAtUtc,
+      Value<String?> reason,
+      Value<String> source,
+      Value<String> correlationId,
+      Value<String?> previousValues,
+      Value<String?> newValues,
+      Value<String?> metadata,
+      Value<String> previousEventHash,
+      Value<String> eventHash,
+      Value<int> schemaVersion,
+    });
+
+class $$AuditEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $AuditEventsTable> {
+  $$AuditEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get seq => $composableBuilder(
+    column: $table.seq,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventType => $composableBuilder(
+    column: $table.eventType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get actorType => $composableBuilder(
+    column: $table.actorType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get actorId => $composableBuilder(
+    column: $table.actorId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get actorDisplayName => $composableBuilder(
+    column: $table.actorDisplayName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get occurredAtUtc => $composableBuilder(
+    column: $table.occurredAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get correlationId => $composableBuilder(
+    column: $table.correlationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get previousValues => $composableBuilder(
+    column: $table.previousValues,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get newValues => $composableBuilder(
+    column: $table.newValues,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadata => $composableBuilder(
+    column: $table.metadata,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get previousEventHash => $composableBuilder(
+    column: $table.previousEventHash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventHash => $composableBuilder(
+    column: $table.eventHash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get schemaVersion => $composableBuilder(
+    column: $table.schemaVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AuditEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AuditEventsTable> {
+  $$AuditEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get seq => $composableBuilder(
+    column: $table.seq,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventType => $composableBuilder(
+    column: $table.eventType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get actorType => $composableBuilder(
+    column: $table.actorType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get actorId => $composableBuilder(
+    column: $table.actorId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get actorDisplayName => $composableBuilder(
+    column: $table.actorDisplayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get occurredAtUtc => $composableBuilder(
+    column: $table.occurredAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get correlationId => $composableBuilder(
+    column: $table.correlationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get previousValues => $composableBuilder(
+    column: $table.previousValues,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get newValues => $composableBuilder(
+    column: $table.newValues,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get metadata => $composableBuilder(
+    column: $table.metadata,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get previousEventHash => $composableBuilder(
+    column: $table.previousEventHash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventHash => $composableBuilder(
+    column: $table.eventHash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get schemaVersion => $composableBuilder(
+    column: $table.schemaVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AuditEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AuditEventsTable> {
+  $$AuditEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get seq =>
+      $composableBuilder(column: $table.seq, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get eventType =>
+      $composableBuilder(column: $table.eventType, builder: (column) => column);
+
+  GeneratedColumn<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
+
+  GeneratedColumn<String> get action =>
+      $composableBuilder(column: $table.action, builder: (column) => column);
+
+  GeneratedColumn<String> get actorType =>
+      $composableBuilder(column: $table.actorType, builder: (column) => column);
+
+  GeneratedColumn<String> get actorId =>
+      $composableBuilder(column: $table.actorId, builder: (column) => column);
+
+  GeneratedColumn<String> get actorDisplayName => $composableBuilder(
+    column: $table.actorDisplayName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get occurredAtUtc => $composableBuilder(
+    column: $table.occurredAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reason =>
+      $composableBuilder(column: $table.reason, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<String> get correlationId => $composableBuilder(
+    column: $table.correlationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get previousValues => $composableBuilder(
+    column: $table.previousValues,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get newValues =>
+      $composableBuilder(column: $table.newValues, builder: (column) => column);
+
+  GeneratedColumn<String> get metadata =>
+      $composableBuilder(column: $table.metadata, builder: (column) => column);
+
+  GeneratedColumn<String> get previousEventHash => $composableBuilder(
+    column: $table.previousEventHash,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get eventHash =>
+      $composableBuilder(column: $table.eventHash, builder: (column) => column);
+
+  GeneratedColumn<int> get schemaVersion => $composableBuilder(
+    column: $table.schemaVersion,
+    builder: (column) => column,
+  );
+}
+
+class $$AuditEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AuditEventsTable,
+          AuditEventRow,
+          $$AuditEventsTableFilterComposer,
+          $$AuditEventsTableOrderingComposer,
+          $$AuditEventsTableAnnotationComposer,
+          $$AuditEventsTableCreateCompanionBuilder,
+          $$AuditEventsTableUpdateCompanionBuilder,
+          (
+            AuditEventRow,
+            BaseReferences<_$AppDatabase, $AuditEventsTable, AuditEventRow>,
+          ),
+          AuditEventRow,
+          PrefetchHooks Function()
+        > {
+  $$AuditEventsTableTableManager(_$AppDatabase db, $AuditEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AuditEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AuditEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AuditEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> seq = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> eventType = const Value.absent(),
+                Value<String> entityType = const Value.absent(),
+                Value<String> entityId = const Value.absent(),
+                Value<String> action = const Value.absent(),
+                Value<String> actorType = const Value.absent(),
+                Value<String?> actorId = const Value.absent(),
+                Value<String> actorDisplayName = const Value.absent(),
+                Value<int> occurredAtUtc = const Value.absent(),
+                Value<String?> reason = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<String> correlationId = const Value.absent(),
+                Value<String?> previousValues = const Value.absent(),
+                Value<String?> newValues = const Value.absent(),
+                Value<String?> metadata = const Value.absent(),
+                Value<String> previousEventHash = const Value.absent(),
+                Value<String> eventHash = const Value.absent(),
+                Value<int> schemaVersion = const Value.absent(),
+              }) => AuditEventsCompanion(
+                seq: seq,
+                id: id,
+                eventType: eventType,
+                entityType: entityType,
+                entityId: entityId,
+                action: action,
+                actorType: actorType,
+                actorId: actorId,
+                actorDisplayName: actorDisplayName,
+                occurredAtUtc: occurredAtUtc,
+                reason: reason,
+                source: source,
+                correlationId: correlationId,
+                previousValues: previousValues,
+                newValues: newValues,
+                metadata: metadata,
+                previousEventHash: previousEventHash,
+                eventHash: eventHash,
+                schemaVersion: schemaVersion,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> seq = const Value.absent(),
+                required String id,
+                required String eventType,
+                required String entityType,
+                required String entityId,
+                required String action,
+                required String actorType,
+                Value<String?> actorId = const Value.absent(),
+                required String actorDisplayName,
+                required int occurredAtUtc,
+                Value<String?> reason = const Value.absent(),
+                required String source,
+                required String correlationId,
+                Value<String?> previousValues = const Value.absent(),
+                Value<String?> newValues = const Value.absent(),
+                Value<String?> metadata = const Value.absent(),
+                required String previousEventHash,
+                required String eventHash,
+                required int schemaVersion,
+              }) => AuditEventsCompanion.insert(
+                seq: seq,
+                id: id,
+                eventType: eventType,
+                entityType: entityType,
+                entityId: entityId,
+                action: action,
+                actorType: actorType,
+                actorId: actorId,
+                actorDisplayName: actorDisplayName,
+                occurredAtUtc: occurredAtUtc,
+                reason: reason,
+                source: source,
+                correlationId: correlationId,
+                previousValues: previousValues,
+                newValues: newValues,
+                metadata: metadata,
+                previousEventHash: previousEventHash,
+                eventHash: eventHash,
+                schemaVersion: schemaVersion,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AuditEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AuditEventsTable,
+      AuditEventRow,
+      $$AuditEventsTableFilterComposer,
+      $$AuditEventsTableOrderingComposer,
+      $$AuditEventsTableAnnotationComposer,
+      $$AuditEventsTableCreateCompanionBuilder,
+      $$AuditEventsTableUpdateCompanionBuilder,
+      (
+        AuditEventRow,
+        BaseReferences<_$AppDatabase, $AuditEventsTable, AuditEventRow>,
+      ),
+      AuditEventRow,
+      PrefetchHooks Function()
+    >;
+typedef $$AuditOutboxTableCreateCompanionBuilder =
+    AuditOutboxCompanion Function({
+      required String id,
+      required String payload,
+      required int createdAt,
+      Value<int> attempts,
+      Value<String?> lastError,
+      Value<int> rowid,
+    });
+typedef $$AuditOutboxTableUpdateCompanionBuilder =
+    AuditOutboxCompanion Function({
+      Value<String> id,
+      Value<String> payload,
+      Value<int> createdAt,
+      Value<int> attempts,
+      Value<String?> lastError,
+      Value<int> rowid,
+    });
+
+class $$AuditOutboxTableFilterComposer
+    extends Composer<_$AppDatabase, $AuditOutboxTable> {
+  $$AuditOutboxTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AuditOutboxTableOrderingComposer
+    extends Composer<_$AppDatabase, $AuditOutboxTable> {
+  $$AuditOutboxTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AuditOutboxTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AuditOutboxTable> {
+  $$AuditOutboxTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+}
+
+class $$AuditOutboxTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AuditOutboxTable,
+          AuditOutboxRow,
+          $$AuditOutboxTableFilterComposer,
+          $$AuditOutboxTableOrderingComposer,
+          $$AuditOutboxTableAnnotationComposer,
+          $$AuditOutboxTableCreateCompanionBuilder,
+          $$AuditOutboxTableUpdateCompanionBuilder,
+          (
+            AuditOutboxRow,
+            BaseReferences<_$AppDatabase, $AuditOutboxTable, AuditOutboxRow>,
+          ),
+          AuditOutboxRow,
+          PrefetchHooks Function()
+        > {
+  $$AuditOutboxTableTableManager(_$AppDatabase db, $AuditOutboxTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AuditOutboxTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AuditOutboxTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AuditOutboxTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> payload = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AuditOutboxCompanion(
+                id: id,
+                payload: payload,
+                createdAt: createdAt,
+                attempts: attempts,
+                lastError: lastError,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String payload,
+                required int createdAt,
+                Value<int> attempts = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AuditOutboxCompanion.insert(
+                id: id,
+                payload: payload,
+                createdAt: createdAt,
+                attempts: attempts,
+                lastError: lastError,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AuditOutboxTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AuditOutboxTable,
+      AuditOutboxRow,
+      $$AuditOutboxTableFilterComposer,
+      $$AuditOutboxTableOrderingComposer,
+      $$AuditOutboxTableAnnotationComposer,
+      $$AuditOutboxTableCreateCompanionBuilder,
+      $$AuditOutboxTableUpdateCompanionBuilder,
+      (
+        AuditOutboxRow,
+        BaseReferences<_$AppDatabase, $AuditOutboxTable, AuditOutboxRow>,
+      ),
+      AuditOutboxRow,
+      PrefetchHooks Function()
     >;
 typedef $$InventoryBalancesTableCreateCompanionBuilder =
     InventoryBalancesCompanion Function({
@@ -27540,6 +41929,12 @@ typedef $$PurchaseInvoiceItemsTableCreateCompanionBuilder =
       required int netMinor,
       required int taxMinor,
       required int totalMinor,
+      Value<String?> taxTreatment,
+      Value<String?> taxCategoryId,
+      Value<String?> taxSnapshotJson,
+      Value<String?> classificationSystem,
+      Value<String?> classificationCode,
+      Value<String?> classificationDescription,
       Value<int> rowid,
     });
 typedef $$PurchaseInvoiceItemsTableUpdateCompanionBuilder =
@@ -27564,6 +41959,12 @@ typedef $$PurchaseInvoiceItemsTableUpdateCompanionBuilder =
       Value<int> netMinor,
       Value<int> taxMinor,
       Value<int> totalMinor,
+      Value<String?> taxTreatment,
+      Value<String?> taxCategoryId,
+      Value<String?> taxSnapshotJson,
+      Value<String?> classificationSystem,
+      Value<String?> classificationCode,
+      Value<String?> classificationDescription,
       Value<int> rowid,
     });
 
@@ -27748,6 +42149,36 @@ class $$PurchaseInvoiceItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get taxTreatment => $composableBuilder(
+    column: $table.taxTreatment,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taxCategoryId => $composableBuilder(
+    column: $table.taxCategoryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taxSnapshotJson => $composableBuilder(
+    column: $table.taxSnapshotJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationSystem => $composableBuilder(
+    column: $table.classificationSystem,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationCode => $composableBuilder(
+    column: $table.classificationCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationDescription => $composableBuilder(
+    column: $table.classificationDescription,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$PurchaseInvoicesTableFilterComposer get invoiceId {
     final $$PurchaseInvoicesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -27919,6 +42350,36 @@ class $$PurchaseInvoiceItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get taxTreatment => $composableBuilder(
+    column: $table.taxTreatment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taxCategoryId => $composableBuilder(
+    column: $table.taxCategoryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taxSnapshotJson => $composableBuilder(
+    column: $table.taxSnapshotJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationSystem => $composableBuilder(
+    column: $table.classificationSystem,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationCode => $composableBuilder(
+    column: $table.classificationCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationDescription => $composableBuilder(
+    column: $table.classificationDescription,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$PurchaseInvoicesTableOrderingComposer get invoiceId {
     final $$PurchaseInvoicesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -28048,6 +42509,36 @@ class $$PurchaseInvoiceItemsTableAnnotationComposer
 
   GeneratedColumn<int> get totalMinor => $composableBuilder(
     column: $table.totalMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get taxTreatment => $composableBuilder(
+    column: $table.taxTreatment,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get taxCategoryId => $composableBuilder(
+    column: $table.taxCategoryId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get taxSnapshotJson => $composableBuilder(
+    column: $table.taxSnapshotJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get classificationSystem => $composableBuilder(
+    column: $table.classificationSystem,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get classificationCode => $composableBuilder(
+    column: $table.classificationCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get classificationDescription => $composableBuilder(
+    column: $table.classificationDescription,
     builder: (column) => column,
   );
 
@@ -28184,6 +42675,12 @@ class $$PurchaseInvoiceItemsTableTableManager
                 Value<int> netMinor = const Value.absent(),
                 Value<int> taxMinor = const Value.absent(),
                 Value<int> totalMinor = const Value.absent(),
+                Value<String?> taxTreatment = const Value.absent(),
+                Value<String?> taxCategoryId = const Value.absent(),
+                Value<String?> taxSnapshotJson = const Value.absent(),
+                Value<String?> classificationSystem = const Value.absent(),
+                Value<String?> classificationCode = const Value.absent(),
+                Value<String?> classificationDescription = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PurchaseInvoiceItemsCompanion(
                 id: id,
@@ -28206,6 +42703,12 @@ class $$PurchaseInvoiceItemsTableTableManager
                 netMinor: netMinor,
                 taxMinor: taxMinor,
                 totalMinor: totalMinor,
+                taxTreatment: taxTreatment,
+                taxCategoryId: taxCategoryId,
+                taxSnapshotJson: taxSnapshotJson,
+                classificationSystem: classificationSystem,
+                classificationCode: classificationCode,
+                classificationDescription: classificationDescription,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -28230,6 +42733,12 @@ class $$PurchaseInvoiceItemsTableTableManager
                 required int netMinor,
                 required int taxMinor,
                 required int totalMinor,
+                Value<String?> taxTreatment = const Value.absent(),
+                Value<String?> taxCategoryId = const Value.absent(),
+                Value<String?> taxSnapshotJson = const Value.absent(),
+                Value<String?> classificationSystem = const Value.absent(),
+                Value<String?> classificationCode = const Value.absent(),
+                Value<String?> classificationDescription = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PurchaseInvoiceItemsCompanion.insert(
                 id: id,
@@ -28252,6 +42761,12 @@ class $$PurchaseInvoiceItemsTableTableManager
                 netMinor: netMinor,
                 taxMinor: taxMinor,
                 totalMinor: totalMinor,
+                taxTreatment: taxTreatment,
+                taxCategoryId: taxCategoryId,
+                taxSnapshotJson: taxSnapshotJson,
+                classificationSystem: classificationSystem,
+                classificationCode: classificationCode,
+                classificationDescription: classificationDescription,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -29374,6 +43889,12 @@ typedef $$SalesInvoiceItemsTableCreateCompanionBuilder =
       required int netMinor,
       required int taxMinor,
       required int totalMinor,
+      Value<String?> taxTreatment,
+      Value<String?> taxCategoryId,
+      Value<String?> taxSnapshotJson,
+      Value<String?> classificationSystem,
+      Value<String?> classificationCode,
+      Value<String?> classificationDescription,
       Value<int> rowid,
     });
 typedef $$SalesInvoiceItemsTableUpdateCompanionBuilder =
@@ -29398,6 +43919,12 @@ typedef $$SalesInvoiceItemsTableUpdateCompanionBuilder =
       Value<int> netMinor,
       Value<int> taxMinor,
       Value<int> totalMinor,
+      Value<String?> taxTreatment,
+      Value<String?> taxCategoryId,
+      Value<String?> taxSnapshotJson,
+      Value<String?> classificationSystem,
+      Value<String?> classificationCode,
+      Value<String?> classificationDescription,
       Value<int> rowid,
     });
 
@@ -29578,6 +44105,36 @@ class $$SalesInvoiceItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get taxTreatment => $composableBuilder(
+    column: $table.taxTreatment,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taxCategoryId => $composableBuilder(
+    column: $table.taxCategoryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taxSnapshotJson => $composableBuilder(
+    column: $table.taxSnapshotJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationSystem => $composableBuilder(
+    column: $table.classificationSystem,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationCode => $composableBuilder(
+    column: $table.classificationCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get classificationDescription => $composableBuilder(
+    column: $table.classificationDescription,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$SalesInvoicesTableFilterComposer get invoiceId {
     final $$SalesInvoicesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -29749,6 +44306,36 @@ class $$SalesInvoiceItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get taxTreatment => $composableBuilder(
+    column: $table.taxTreatment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taxCategoryId => $composableBuilder(
+    column: $table.taxCategoryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taxSnapshotJson => $composableBuilder(
+    column: $table.taxSnapshotJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationSystem => $composableBuilder(
+    column: $table.classificationSystem,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationCode => $composableBuilder(
+    column: $table.classificationCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get classificationDescription => $composableBuilder(
+    column: $table.classificationDescription,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$SalesInvoicesTableOrderingComposer get invoiceId {
     final $$SalesInvoicesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -29881,6 +44468,36 @@ class $$SalesInvoiceItemsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get taxTreatment => $composableBuilder(
+    column: $table.taxTreatment,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get taxCategoryId => $composableBuilder(
+    column: $table.taxCategoryId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get taxSnapshotJson => $composableBuilder(
+    column: $table.taxSnapshotJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get classificationSystem => $composableBuilder(
+    column: $table.classificationSystem,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get classificationCode => $composableBuilder(
+    column: $table.classificationCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get classificationDescription => $composableBuilder(
+    column: $table.classificationDescription,
+    builder: (column) => column,
+  );
+
   $$SalesInvoicesTableAnnotationComposer get invoiceId {
     final $$SalesInvoicesTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -30010,6 +44627,12 @@ class $$SalesInvoiceItemsTableTableManager
                 Value<int> netMinor = const Value.absent(),
                 Value<int> taxMinor = const Value.absent(),
                 Value<int> totalMinor = const Value.absent(),
+                Value<String?> taxTreatment = const Value.absent(),
+                Value<String?> taxCategoryId = const Value.absent(),
+                Value<String?> taxSnapshotJson = const Value.absent(),
+                Value<String?> classificationSystem = const Value.absent(),
+                Value<String?> classificationCode = const Value.absent(),
+                Value<String?> classificationDescription = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SalesInvoiceItemsCompanion(
                 id: id,
@@ -30032,6 +44655,12 @@ class $$SalesInvoiceItemsTableTableManager
                 netMinor: netMinor,
                 taxMinor: taxMinor,
                 totalMinor: totalMinor,
+                taxTreatment: taxTreatment,
+                taxCategoryId: taxCategoryId,
+                taxSnapshotJson: taxSnapshotJson,
+                classificationSystem: classificationSystem,
+                classificationCode: classificationCode,
+                classificationDescription: classificationDescription,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -30056,6 +44685,12 @@ class $$SalesInvoiceItemsTableTableManager
                 required int netMinor,
                 required int taxMinor,
                 required int totalMinor,
+                Value<String?> taxTreatment = const Value.absent(),
+                Value<String?> taxCategoryId = const Value.absent(),
+                Value<String?> taxSnapshotJson = const Value.absent(),
+                Value<String?> classificationSystem = const Value.absent(),
+                Value<String?> classificationCode = const Value.absent(),
+                Value<String?> classificationDescription = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SalesInvoiceItemsCompanion.insert(
                 id: id,
@@ -30078,6 +44713,12 @@ class $$SalesInvoiceItemsTableTableManager
                 netMinor: netMinor,
                 taxMinor: taxMinor,
                 totalMinor: totalMinor,
+                taxTreatment: taxTreatment,
+                taxCategoryId: taxCategoryId,
+                taxSnapshotJson: taxSnapshotJson,
+                classificationSystem: classificationSystem,
+                classificationCode: classificationCode,
+                classificationDescription: classificationDescription,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -37990,8 +52631,36 @@ class $AppDatabaseManager {
       $$UnitsTableTableManager(_db, _db.units);
   $$TaxRatesTableTableManager get taxRates =>
       $$TaxRatesTableTableManager(_db, _db.taxRates);
+  $$TaxRegimesTableTableManager get taxRegimes =>
+      $$TaxRegimesTableTableManager(_db, _db.taxRegimes);
+  $$TaxJurisdictionsTableTableManager get taxJurisdictions =>
+      $$TaxJurisdictionsTableTableManager(_db, _db.taxJurisdictions);
+  $$TaxCategoriesTableTableManager get taxCategories =>
+      $$TaxCategoriesTableTableManager(_db, _db.taxCategories);
+  $$TaxProfilesTableTableManager get taxProfiles =>
+      $$TaxProfilesTableTableManager(_db, _db.taxProfiles);
+  $$TaxOverridesTableTableManager get taxOverrides =>
+      $$TaxOverridesTableTableManager(_db, _db.taxOverrides);
+  $$TaxRulesTableTableManager get taxRules =>
+      $$TaxRulesTableTableManager(_db, _db.taxRules);
+  $$TaxComponentsTableTableManager get taxComponents =>
+      $$TaxComponentsTableTableManager(_db, _db.taxComponents);
   $$ProductsTableTableManager get products =>
       $$ProductsTableTableManager(_db, _db.products);
+  $$ProductClassificationsTableTableManager get productClassifications =>
+      $$ProductClassificationsTableTableManager(
+        _db,
+        _db.productClassifications,
+      );
+  $$InvoiceItemTaxComponentsTableTableManager get invoiceItemTaxComponents =>
+      $$InvoiceItemTaxComponentsTableTableManager(
+        _db,
+        _db.invoiceItemTaxComponents,
+      );
+  $$AuditEventsTableTableManager get auditEvents =>
+      $$AuditEventsTableTableManager(_db, _db.auditEvents);
+  $$AuditOutboxTableTableManager get auditOutbox =>
+      $$AuditOutboxTableTableManager(_db, _db.auditOutbox);
   $$InventoryBalancesTableTableManager get inventoryBalances =>
       $$InventoryBalancesTableTableManager(_db, _db.inventoryBalances);
   $$StockMovementsTableTableManager get stockMovements =>

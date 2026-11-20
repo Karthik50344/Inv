@@ -405,3 +405,55 @@ const List<String> kSchemaExtraStatementsV9 = [
   'CREATE INDEX IF NOT EXISTS idx_backup_history_created '
       'ON backup_history (created_at)',
 ];
+
+/// Extra SQL introduced by schema version 10 (configurable tax model). Runs
+/// on fresh installs and as part of the 9 -> 10 upgrade; idempotent.
+const List<String> kSchemaExtraStatementsV10 = [
+  'CREATE INDEX IF NOT EXISTS idx_products_tax_category '
+      'ON products (tax_category_id)',
+  // At most one default profile.
+  'CREATE UNIQUE INDEX IF NOT EXISTS uq_tax_profiles_default '
+      'ON tax_profiles (is_default) WHERE is_default = 1',
+  // A rule never changes owner once created: moving it would silently
+  // re-tax other documents.
+  'CREATE TRIGGER IF NOT EXISTS trg_tax_rules_keep_owner '
+      'BEFORE UPDATE OF tax_profile_id, tax_category_id ON tax_rules '
+      'WHEN OLD.tax_profile_id <> NEW.tax_profile_id '
+      'OR OLD.tax_category_id <> NEW.tax_category_id '
+      "BEGIN SELECT RAISE(ABORT, 'a tax rule cannot move to another "
+      "profile or category'); END",
+];
+
+/// Extra SQL introduced by schema version 11 (product classification and
+/// invoice tax snapshots). Runs on fresh installs and as part of the
+/// 10 -> 11 upgrade; idempotent.
+const List<String> kSchemaExtraStatementsV11 = [
+  // At most one primary classification per product.
+  'CREATE UNIQUE INDEX IF NOT EXISTS uq_product_classifications_primary '
+      'ON product_classifications (product_id) WHERE is_primary = 1',
+  // Snapshot rows follow the same draft-only rule as the invoice lines.
+  "CREATE TRIGGER IF NOT EXISTS trg_item_tax_components_insert_draft_only "
+      "BEFORE INSERT ON invoice_item_tax_components "
+      "WHEN (CASE NEW.document_type WHEN 'sales' THEN (SELECT i.status FROM sales_invoice_items li JOIN sales_invoices i ON i.id = li.invoice_id WHERE li.id = NEW.item_id) ELSE (SELECT i.status FROM purchase_invoice_items li JOIN purchase_invoices i ON i.id = li.invoice_id WHERE li.id = NEW.item_id) END) IS NOT 'draft' "
+      "BEGIN SELECT RAISE(ABORT, 'posted invoices are immutable'); END",
+  "CREATE TRIGGER IF NOT EXISTS trg_item_tax_components_update_draft_only "
+      "BEFORE UPDATE ON invoice_item_tax_components "
+      "WHEN (CASE OLD.document_type WHEN 'sales' THEN (SELECT i.status FROM sales_invoice_items li JOIN sales_invoices i ON i.id = li.invoice_id WHERE li.id = OLD.item_id) ELSE (SELECT i.status FROM purchase_invoice_items li JOIN purchase_invoices i ON i.id = li.invoice_id WHERE li.id = OLD.item_id) END) IS NOT 'draft' "
+      "BEGIN SELECT RAISE(ABORT, 'posted invoices are immutable'); END",
+  "CREATE TRIGGER IF NOT EXISTS trg_item_tax_components_delete_draft_only "
+      "BEFORE DELETE ON invoice_item_tax_components "
+      "WHEN (CASE OLD.document_type WHEN 'sales' THEN (SELECT i.status FROM sales_invoice_items li JOIN sales_invoices i ON i.id = li.invoice_id WHERE li.id = OLD.item_id) ELSE (SELECT i.status FROM purchase_invoice_items li JOIN purchase_invoices i ON i.id = li.invoice_id WHERE li.id = OLD.item_id) END) IS NOT 'draft' "
+      "BEGIN SELECT RAISE(ABORT, 'posted invoices are immutable'); END",
+];
+
+/// Extra SQL introduced by schema version 12 (hash-chained audit events).
+/// Runs on fresh installs and as part of the 11 -> 12 upgrade; idempotent.
+const List<String> kSchemaExtraStatementsV12 = [
+  // Append-only: no edit and no delete, whatever the caller.
+  'CREATE TRIGGER IF NOT EXISTS trg_audit_events_no_update '
+      'BEFORE UPDATE ON audit_events '
+      "BEGIN SELECT RAISE(ABORT, 'audit events cannot be changed'); END",
+  'CREATE TRIGGER IF NOT EXISTS trg_audit_events_no_delete '
+      'BEFORE DELETE ON audit_events '
+      "BEGIN SELECT RAISE(ABORT, 'audit events cannot be deleted'); END",
+];

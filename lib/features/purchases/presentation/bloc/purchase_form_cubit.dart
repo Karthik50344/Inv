@@ -302,6 +302,7 @@ class PurchaseFormCubit extends Cubit<PurchaseFormState> {
       lineNo: (index ?? state.lines.length) + 1,
       lineId: 'preview',
       currency: currency,
+      date: state.invoiceDate,
     );
     final failure = built.failureOrNull;
     if (failure != null) {
@@ -393,6 +394,7 @@ class PurchaseFormCubit extends Cubit<PurchaseFormState> {
         lineNo: i + 1,
         lineId: 'preview-$i',
         currency: currency,
+        date: state.invoiceDate,
       );
       previews.add(built.valueOrNull);
     }

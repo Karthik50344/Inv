@@ -21,6 +21,8 @@ final class Product extends Equatable {
     this.description,
     this.categoryId,
     this.taxRateId,
+    this.taxCategoryId,
+    this.taxOverrideId,
     this.imagePath,
     this.archivedAt,
   });
@@ -45,6 +47,8 @@ final class Product extends Equatable {
     sellingPrice: fields.sellingPrice,
     priceIncludesTax: fields.priceIncludesTax,
     taxRateId: fields.taxRateId,
+    taxCategoryId: fields.taxCategoryId,
+    taxOverrideId: fields.taxOverrideId,
     reorderLevel: fields.reorderLevel,
     imagePath: fields.imagePath,
     createdAt: createdAt,
@@ -85,6 +89,13 @@ final class Product extends Equatable {
   /// Optional tax rate id.
   final String? taxRateId;
 
+  /// The tax category (configurable tax model). When set it decides the
+  /// product's tax; otherwise the single [taxRateId] is used.
+  final String? taxCategoryId;
+
+  /// An explicit tax override replacing [taxCategoryId], if any.
+  final String? taxOverrideId;
+
   /// Reorder level.
   final Quantity reorderLevel;
 
@@ -121,6 +132,8 @@ final class Product extends Equatable {
     sellingPrice: sellingPrice,
     priceIncludesTax: priceIncludesTax,
     taxRateId: taxRateId,
+    taxCategoryId: taxCategoryId,
+    taxOverrideId: taxOverrideId,
     reorderLevel: reorderLevel,
     imagePath: imagePath,
     createdAt: createdAt,
@@ -141,6 +154,8 @@ final class Product extends Equatable {
     sellingPrice,
     priceIncludesTax,
     taxRateId,
+    taxCategoryId,
+    taxOverrideId,
     reorderLevel,
     imagePath,
     createdAt,

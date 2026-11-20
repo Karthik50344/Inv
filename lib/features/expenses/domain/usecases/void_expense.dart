@@ -68,6 +68,9 @@ final class VoidExpense {
           action: 'voided',
           summary: 'Voided ${expense.displayNumber}: $trimmed',
           occurredAt: now,
+          reason: trimmed,
+          previousValues: const {'status': 'posted'},
+          newValues: const {'status': 'voided'},
         ),
       )).getOrThrow();
       return (await _expenses.getById(id)).getOrThrow();

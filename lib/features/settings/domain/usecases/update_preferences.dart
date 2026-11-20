@@ -79,6 +79,8 @@ final class UpdatePreferences {
         action: after ? 'enabled' : 'disabled',
         summary: '$label ${after ? 'turned on' : 'turned off'}.',
         occurredAt: _clock.now(),
+        previousValues: {'enabled': before},
+        newValues: {'enabled': after},
       ),
     )).getOrThrow();
   }

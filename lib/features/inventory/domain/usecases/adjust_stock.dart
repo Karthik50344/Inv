@@ -125,6 +125,13 @@ final class AdjustStock {
               '${context.unit.symbol} for ${context.product.sku}: '
               '$trimmedReason',
           occurredAt: now,
+          reason: trimmedReason,
+          metadata: {
+            'sku': context.product.sku,
+            'direction': verb,
+            'quantity': amount.toDecimalString(),
+            'unit': context.unit.symbol,
+          },
         ),
       )).getOrThrow();
       return movement;

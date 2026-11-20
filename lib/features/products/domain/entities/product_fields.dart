@@ -17,6 +17,8 @@ final class ProductFields extends Equatable {
     this.description,
     this.categoryId,
     this.taxRateId,
+    this.taxCategoryId,
+    this.taxOverrideId,
     this.imagePath,
   });
 
@@ -50,6 +52,12 @@ final class ProductFields extends Equatable {
   /// Optional tax rate id (null = no tax configured).
   final String? taxRateId;
 
+  /// Tax category of the configurable tax model.
+  final String? taxCategoryId;
+
+  /// Explicit tax override.
+  final String? taxOverrideId;
+
   /// Stock level at or below which the product is considered low.
   final Quantity reorderLevel;
 
@@ -68,6 +76,8 @@ final class ProductFields extends Equatable {
     sellingPrice,
     priceIncludesTax,
     taxRateId,
+    taxCategoryId,
+    taxOverrideId,
     reorderLevel,
     imagePath,
   ];

@@ -1,6 +1,12 @@
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/core/utils/decimal_text.dart';
+import 'package:inventrix/features/product_classification/domain/entities/product_classification.dart';
+import 'package:inventrix/features/product_classification/domain/repositories/product_classification_repository.dart';
+import 'package:inventrix/features/taxation/domain/entities/line_tax_snapshot.dart';
+import 'package:inventrix/features/taxation/domain/entities/tax_types.dart';
+import 'package:inventrix/features/taxation/domain/services/tax_line_service.dart';
+import 'package:inventrix/shared/domain/value_objects/line_amounts.dart';
 import 'package:inventrix/features/products/domain/repositories/product_repository.dart';
 import 'package:inventrix/features/products/domain/repositories/unit_repository.dart';
 import 'package:inventrix/features/sales/domain/entities/sales_input.dart';
@@ -23,13 +29,19 @@ final class SalesLineBuilder {
     required ProductRepository products,
     required UnitRepository units,
     required TaxRateRepository taxRates,
+    TaxLineService? taxLines,
+    ProductClassificationRepository? classifications,
   }) : _products = products,
        _units = units,
-       _taxRates = taxRates;
+       _taxRates = taxRates,
+       _taxLines = taxLines,
+       _classifications = classifications;
 
   final ProductRepository _products;
   final UnitRepository _units;
   final TaxRateRepository _taxRates;
+  final TaxLineService? _taxLines;
+  final ProductClassificationRepository? _classifications;
 
   /// Builds the line. Invalid input fails with a `ValidationFailure` whose
   /// `fieldErrors` use the keys `product`, `quantity`, `unitPrice` and
@@ -39,6 +51,7 @@ final class SalesLineBuilder {
     required int lineNo,
     required String lineId,
     required CurrencyConfig currency,
+    DateTime? date,
   }) async {
     final productResult = await _products.getById(input.productId);
     final product = productResult.valueOrNull;
@@ -90,19 +103,6 @@ final class SalesLineBuilder {
 
     final discount = _parseDiscount(input, currency, errors);
 
-    var taxRateBp = 0;
-    String? taxName;
-    final taxRateId = product.taxRateId;
-    if (taxRateId != null) {
-      final taxResult = await _taxRates.getById(taxRateId);
-      final tax = taxResult.valueOrNull;
-      if (tax == null) {
-        return Result.failure(taxResult.failureOrNull!);
-      }
-      taxRateBp = tax.isExempt ? 0 : tax.rateBp;
-      taxName = tax.name;
-    }
-
     if (errors.isNotEmpty ||
         quantity == null ||
         unitPrice == null ||
@@ -110,16 +110,76 @@ final class SalesLineBuilder {
       return Result.failure(_validation(errors));
     }
 
-    final amounts = LineCalculator.calculate(
-      unitPrice: unitPrice,
-      quantity: quantity,
-      priceIncludesTax: product.priceIncludesTax,
-      discount: discount,
-      taxRateBp: taxRateBp,
-    );
-    final computed = amounts.valueOrNull;
-    if (computed == null) {
-      return Result.failure(amounts.failureOrNull!);
+    // The configurable tax engine is used when the product has a tax
+    // category (or override) and a default tax profile exists; otherwise the
+    // single tax rate path below applies unchanged.
+    final taxLines = _taxLines;
+    final taxed = taxLines == null
+        ? const Result<TaxedLine?>.success(null)
+        : await taxLines.calculate(
+            productTaxCategoryId: product.taxCategoryId,
+            productTaxOverrideId: product.taxOverrideId,
+            type: TaxTransactionType.sale,
+            date: date ?? DateTime.now().toUtc(),
+            unitPrice: unitPrice,
+            quantity: quantity,
+            priceIncludesTax: product.priceIncludesTax,
+            discount: discount,
+          );
+    if (taxed.isFailure) {
+      return Result.failure(taxed.failureOrNull!);
+    }
+    final engine = taxed.valueOrNull;
+
+    final LineAmounts computed;
+    var taxRateBp = 0;
+    String? taxName;
+    LineTaxSnapshot? taxSnapshot;
+    if (engine != null) {
+      computed = engine.amounts;
+      taxRateBp = engine.taxRateBp;
+      taxName = engine.taxName;
+      taxSnapshot = engine.snapshot;
+    } else {
+      final taxRateId = product.taxRateId;
+      if (taxRateId != null) {
+        final taxResult = await _taxRates.getById(taxRateId);
+        final tax = taxResult.valueOrNull;
+        if (tax == null) {
+          return Result.failure(taxResult.failureOrNull!);
+        }
+        taxRateBp = tax.isExempt ? 0 : tax.rateBp;
+        taxName = tax.name;
+      }
+      final amounts = LineCalculator.calculate(
+        unitPrice: unitPrice,
+        quantity: quantity,
+        priceIncludesTax: product.priceIncludesTax,
+        discount: discount,
+        taxRateBp: taxRateBp,
+      );
+      final legacy = amounts.valueOrNull;
+      if (legacy == null) {
+        return Result.failure(amounts.failureOrNull!);
+      }
+      computed = legacy;
+    }
+
+    ClassificationSnapshot? classification;
+    final classifications = _classifications;
+    if (classifications != null) {
+      final primary = await classifications.primaryFor(product.id);
+      if (primary.isFailure) {
+        return Result.failure(primary.failureOrNull!);
+      }
+      final p = primary.valueOrNull;
+      if (p != null) {
+        classification = ClassificationSnapshot(
+          system: p.system.code,
+          code: p.code,
+          description: p.description,
+        );
+      }
     }
     return Result.success(
       SalesLine(
@@ -137,6 +197,8 @@ final class SalesLineBuilder {
         taxRateBp: taxRateBp,
         taxName: taxName,
         amounts: computed,
+        taxSnapshot: taxSnapshot,
+        classification: classification,
       ),
     );
   }

@@ -445,3 +445,25 @@ Run `flutter pub get`, `dart format .`, `flutter analyze`, `flutter test` and se
 ## Redesign Phase 5 (screens): in progress
 
 Dashboard, Products, Units, Categories, Inventory, Sales, Purchases, Customers, Suppliers and Payments restyled; the other groups are listed in `docs/redesign/phase5_screens.md`. Not compiled or run.
+
+## Enhancement: tax engine, classification, audit, auditor export
+
+Plan: `docs/architecture/tax_engine.md` and the step-1 analysis. Schema plan: v10 tax model, v11 classification and invoice snapshot tables, v12 audit events, v13 export history.
+
+### Checkpoint A (steps 2-4): tax domain model, v10 migration, tax engine — written, **not compiled or run**
+- Domain: `features/taxation/domain/{entities,services,repositories}`; data: `DriftTaxRepository`; DB: 7 tables + 2 product columns + migration/carry-over; DI: `TaxRepository`, `TaxCalculator`; failures: `TaxConfigurationFailure`, `TaxRuleConflictFailure`.
+- Tests written: `test/features/taxation/{tax_calculator_test,product_tax_classifier_test}.dart` (about 45 cases), `test/core/database/tax_schema_test.dart`. The engine's arithmetic was cross-checked with an independent Python implementation of the same algorithm; the Dart itself was never executed (no SDK in the sandbox).
+- Needs: `flutter pub get`, `build_runner`, `dart format .`, `flutter analyze`, `flutter test`.
+
+### Checkpoint B (steps 5-7): classification, invoice integration, snapshots - written, **not compiled or run**
+- Schema v11, `features/product_classification`, `TaxLineService`, snapshot persistence, builder/mapper/repository wiring for sales and purchases, invoice layout (HSN/SAC column, per-component tax), product entity/fields/draft/validator carry the new tax fields.
+- Tests written: classification validator and repository, snapshot codec, tax line service (including equivalence with `LineCalculator`), end-to-end flow (post, change configuration, posted invoice unchanged, immutability triggers).
+- **Not built:** product form UI (tax category/override, classification section), classification screens, tax settings screens, HSN/SAC-wise report.
+
+### Checkpoint C (steps 8-10): audit infrastructure, integration, hash chain - written, **not compiled or run**
+- `features/audit` (domain: events, actor, canonical JSON, recorder with fail-closed and outbox paths, chain verifier, checkpoints; data: Drift repository, SHA-256, actor from settings, `AuditLogRepository` adapter), schema v12, `AuditCorrelation` + `DriftTransactionRunner`, DI wiring, `AuditEntry` gained optional reason/values/metadata.
+- Existing audited operations now write chained events; voids, reversals, stock adjustments, currency/tax-rate/preferences/business-profile changes carry reason or before/after. Products and classifications are newly audited (optional dependencies, so existing tests construct them unchanged).
+- Tests written: `test/features/audit/{audit_chain_test,audited_master_data_test}.dart`, `test/data/audit_event_repository_test.dart`.
+- Docs: `docs/security/audit_trail.md` (including what a same-database hash chain cannot protect against).
+- **Not built:** audit dashboard/log/detail screens, integrity verification screen, categories/units/customers/suppliers/backup/import audit, tax configuration edit audit.
+

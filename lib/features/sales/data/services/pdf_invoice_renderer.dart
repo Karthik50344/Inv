@@ -142,22 +142,23 @@ final class PdfInvoiceRenderer implements InvoicePdfRenderer {
     columnWidths: {
       0: const pw.FixedColumnWidth(22),
       1: const pw.FlexColumnWidth(3),
-      2: const pw.FlexColumnWidth(1.4),
-      3: const pw.FlexColumnWidth(1.8),
-      4: const pw.FlexColumnWidth(1.4),
-      5: const pw.FlexColumnWidth(1.8),
-      6: const pw.FlexColumnWidth(1.8),
+      // With a classification column: it, Qty, Rate, Discount, Tax, Amount.
+      for (var i = 2; i < layout.columns.length; i++)
+        i: pw.FlexColumnWidth(_weights(layout)[i - 2]),
     },
     cellAlignments: {
       0: pw.Alignment.centerLeft,
       1: pw.Alignment.centerLeft,
-      2: pw.Alignment.centerRight,
-      3: pw.Alignment.centerRight,
-      4: pw.Alignment.centerRight,
-      5: pw.Alignment.centerRight,
-      6: pw.Alignment.centerRight,
+      for (var i = 2; i < layout.columns.length; i++)
+        i: layout.columns.length == 8 && i == 2
+            ? pw.Alignment.centerLeft
+            : pw.Alignment.centerRight,
     },
   );
+
+  List<double> _weights(InvoiceLayout layout) => layout.columns.length == 8
+      ? const [1.4, 1.4, 1.8, 1.4, 1.8, 1.8]
+      : const [1.4, 1.8, 1.4, 1.8, 1.8];
 
   pw.Widget _totals(InvoiceLayout layout) {
     pw.Widget row(String label, String value, {bool strong = false}) {

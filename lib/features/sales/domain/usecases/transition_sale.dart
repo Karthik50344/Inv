@@ -100,6 +100,8 @@ final class TransitionSale {
         action: action.name,
         summary: 'Sales invoice ${invoice.displayNumber} ${action.auditText}',
         occurredAt: now,
+        previousValues: {'status': invoice.status.dbName},
+        newValues: {'status': target.dbName},
       ),
     )).getOrThrow();
     return (await _sales.getById(id)).getOrThrow();

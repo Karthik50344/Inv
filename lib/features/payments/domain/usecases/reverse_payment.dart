@@ -108,6 +108,9 @@ final class ReversePayment {
           action: 'reversed',
           summary: 'Reversed ${payment.number}: $trimmed',
           occurredAt: now,
+          reason: trimmed,
+          previousValues: const {'status': 'recorded'},
+          newValues: const {'status': 'reversed'},
         ),
       )).getOrThrow();
       return (await _payments.getById(paymentId)).getOrThrow();

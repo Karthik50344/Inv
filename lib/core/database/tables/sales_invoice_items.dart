@@ -44,6 +44,15 @@ class SalesInvoiceItems extends Table {
   IntColumn get totalMinor =>
       integer().customConstraint('NOT NULL CHECK (total_minor >= 0)')();
 
+  // Schema v11: tax and classification snapshots (null on lines created by
+  // the single-rate path or before v11).
+  TextColumn get taxTreatment => text().nullable()();
+  TextColumn get taxCategoryId => text().nullable()();
+  TextColumn get taxSnapshotJson => text().nullable()();
+  TextColumn get classificationSystem => text().nullable()();
+  TextColumn get classificationCode => text().nullable()();
+  TextColumn get classificationDescription => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 

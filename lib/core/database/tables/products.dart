@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:inventrix/core/database/tables/categories.dart';
+import 'package:inventrix/core/database/tables/tax_categories.dart';
+import 'package:inventrix/core/database/tables/tax_overrides.dart';
 import 'package:inventrix/core/database/tables/tax_rates.dart';
 import 'package:inventrix/core/database/tables/units.dart';
 
@@ -29,6 +31,19 @@ class Products extends Table {
       boolean().withDefault(const Constant(false))();
   TextColumn get taxRateId => text().nullable().references(
     TaxRates,
+    #id,
+    onDelete: KeyAction.restrict,
+  )();
+
+  /// Configurable tax model (schema v10): the product's tax category and an
+  /// optional explicit override. Neither holds a tax amount.
+  TextColumn get taxCategoryId => text().nullable().references(
+    TaxCategories,
+    #id,
+    onDelete: KeyAction.restrict,
+  )();
+  TextColumn get taxOverrideId => text().nullable().references(
+    TaxOverrides,
     #id,
     onDelete: KeyAction.restrict,
   )();

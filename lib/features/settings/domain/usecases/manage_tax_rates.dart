@@ -110,6 +110,16 @@ final class UpdateTaxRate {
           action: 'updated',
           summary: 'Tax rate "${updated.name}" updated.',
           occurredAt: _clock.now(),
+          previousValues: {
+            'name': current.name,
+            'rateBp': current.rateBp,
+            'isExempt': current.isExempt,
+          },
+          newValues: {
+            'name': updated.name,
+            'rateBp': updated.rateBp,
+            'isExempt': updated.isExempt,
+          },
         ),
       )).getOrThrow();
       return updated;

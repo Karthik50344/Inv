@@ -81,7 +81,16 @@ final class SaveBusinessProfile {
     );
     String? previousLogo;
     final saved = await _transactions.runResult(() async {
-      previousLogo = (await _repository.find()).getOrThrow()?.logoPath;
+      final previous = (await _repository.find()).getOrThrow();
+      previousLogo = previous?.logoPath;
+      final changedFields = <String>[
+        if (previous?.name != profile.name) 'name',
+        if (previous?.address != profile.address) 'address',
+        if (previous?.phone != profile.phone) 'phone',
+        if (previous?.email != profile.email) 'email',
+        if (previous?.taxId != profile.taxId) 'taxId',
+        if (previous?.logoPath != profile.logoPath) 'logo',
+      ];
       (await _repository.save(profile)).getOrThrow();
       (await _audit.record(
         AuditEntry(
@@ -91,6 +100,8 @@ final class SaveBusinessProfile {
           action: 'updated',
           summary: 'Business profile updated.',
           occurredAt: _clock.now(),
+          // Field names only: contact details stay out of the audit log.
+          metadata: {'changedFields': changedFields},
         ),
       )).getOrThrow();
       return profile;

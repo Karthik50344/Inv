@@ -87,6 +87,37 @@ final class RestoreFailure extends Failure {
   const RestoreFailure(super.message, {super.cause, super.stackTrace});
 }
 
+/// The tax configuration cannot answer a calculation: no applicable rule, an
+/// unknown category or profile, or a rule whose components are unusable.
+///
+/// A missing rule is never treated as 0% tax; callers must surface this.
+final class TaxConfigurationFailure extends Failure {
+  /// Creates a [TaxConfigurationFailure].
+  const TaxConfigurationFailure(super.message, {super.cause, super.stackTrace});
+}
+
+/// Several equally applicable tax rules disagree; no rule is picked
+/// arbitrarily.
+final class TaxRuleConflictFailure extends Failure {
+  /// Creates a [TaxRuleConflictFailure] naming the conflicting [ruleIds].
+  const TaxRuleConflictFailure(
+    super.message, {
+    required this.ruleIds,
+    super.cause,
+    super.stackTrace,
+  });
+
+  /// Identifiers of the rules that tie.
+  final List<String> ruleIds;
+}
+
+/// The audit subsystem could not record or verify an event. A business
+/// operation that cannot be audited is not committed.
+final class AuditFailure extends Failure {
+  /// Creates an [AuditFailure].
+  const AuditFailure(super.message, {super.cause, super.stackTrace});
+}
+
 /// Anything that was not anticipated.
 final class UnexpectedFailure extends Failure {
   /// Creates an [UnexpectedFailure].

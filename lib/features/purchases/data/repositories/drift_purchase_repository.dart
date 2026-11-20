@@ -4,6 +4,7 @@ import 'package:inventrix/core/database/database_failure_mapper.dart';
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/core/utils/epoch.dart';
+import 'package:inventrix/features/taxation/data/tax_snapshot_persistence.dart';
 import 'package:inventrix/features/purchases/data/mappers/purchase_mapper.dart';
 import 'package:inventrix/features/purchases/domain/entities/purchase_filter.dart';
 import 'package:inventrix/features/purchases/domain/entities/purchase_invoice.dart';
@@ -111,6 +112,11 @@ final class DriftPurchaseRepository implements PurchaseRepository {
         await (_db.update(_db.purchaseInvoices)
               ..where((t) => t.id.equals(invoice.id)))
             .write(invoiceToCompanion(invoice));
+        await TaxSnapshotPersistence.clearForInvoice(
+          _db,
+          documentType: 'purchase',
+          invoiceId: invoice.id,
+        );
         await (_db.delete(
           _db.purchaseInvoiceItems,
         )..where((t) => t.invoiceId.equals(invoice.id))).go();
@@ -119,6 +125,12 @@ final class DriftPurchaseRepository implements PurchaseRepository {
         await _db
             .into(_db.purchaseInvoiceItems)
             .insert(lineToCompanion(line, invoice.id));
+        await TaxSnapshotPersistence.insertForLine(
+          _db,
+          documentType: 'purchase',
+          itemId: line.id,
+          snapshot: line.taxSnapshot,
+        );
       }
     }),
   );

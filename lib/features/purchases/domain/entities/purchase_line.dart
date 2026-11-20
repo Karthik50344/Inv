@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:inventrix/features/product_classification/domain/entities/product_classification.dart';
+import 'package:inventrix/features/taxation/domain/entities/line_tax_snapshot.dart';
 import 'package:inventrix/shared/domain/value_objects/line_amounts.dart';
 import 'package:inventrix/shared/domain/value_objects/discount.dart';
 import 'package:inventrix/shared/domain/value_objects/money.dart';
@@ -25,6 +27,8 @@ final class PurchaseLine extends Equatable {
     required this.taxRateBp,
     required this.amounts,
     this.taxName,
+    this.taxSnapshot,
+    this.classification,
   });
 
   /// Unique id (also the idempotency key of its stock movement).
@@ -69,6 +73,13 @@ final class PurchaseLine extends Equatable {
   /// Computed amounts.
   final LineAmounts amounts;
 
+  /// How the line was taxed (components, rules, treatment); `null` for
+  /// lines taxed with the single-rate path or created before schema v11.
+  final LineTaxSnapshot? taxSnapshot;
+
+  /// Primary classification (HSN/SAC/...) frozen with the line, if any.
+  final ClassificationSnapshot? classification;
+
   /// Line value before discount.
   Money get gross => amounts.gross;
 
@@ -100,5 +111,7 @@ final class PurchaseLine extends Equatable {
     taxRateBp,
     taxName,
     amounts,
+    taxSnapshot,
+    classification,
   ];
 }

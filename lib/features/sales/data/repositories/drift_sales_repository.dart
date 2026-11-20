@@ -4,6 +4,7 @@ import 'package:inventrix/core/database/database_failure_mapper.dart';
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/core/utils/epoch.dart';
+import 'package:inventrix/features/taxation/data/tax_snapshot_persistence.dart';
 import 'package:inventrix/features/sales/data/mappers/sales_mapper.dart';
 import 'package:inventrix/features/sales/domain/entities/sales_filter.dart';
 import 'package:inventrix/features/sales/domain/entities/sales_invoice.dart';
@@ -109,6 +110,11 @@ final class DriftSalesRepository implements SalesRepository {
         await (_db.update(_db.salesInvoices)
               ..where((t) => t.id.equals(invoice.id)))
             .write(invoiceToCompanion(invoice));
+        await TaxSnapshotPersistence.clearForInvoice(
+          _db,
+          documentType: 'sales',
+          invoiceId: invoice.id,
+        );
         await (_db.delete(
           _db.salesInvoiceItems,
         )..where((t) => t.invoiceId.equals(invoice.id))).go();
@@ -117,6 +123,12 @@ final class DriftSalesRepository implements SalesRepository {
         await _db
             .into(_db.salesInvoiceItems)
             .insert(lineToCompanion(line, invoice.id));
+        await TaxSnapshotPersistence.insertForLine(
+          _db,
+          documentType: 'sales',
+          itemId: line.id,
+          snapshot: line.taxSnapshot,
+        );
       }
     }),
   );

@@ -128,6 +128,14 @@ final class ProductValidator {
         sellingPrice: selling!,
         priceIncludesTax: draft.priceIncludesTax,
         taxRateId: draft.taxRateId,
+        taxCategoryId: draft.taxClassificationEdited
+            ? draft.taxCategoryId
+            : (draft.taxRateId == existing?.taxRateId
+                  ? existing?.taxCategoryId
+                  : null),
+        taxOverrideId: draft.taxClassificationEdited
+            ? draft.taxOverrideId
+            : existing?.taxOverrideId,
         reorderLevel: reorder!,
         imagePath: draft.imagePath,
       ),
