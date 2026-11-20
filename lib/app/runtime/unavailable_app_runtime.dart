@@ -13,4 +13,7 @@ final class UnavailableAppRuntime implements AppRuntime {
   @override
   Future<void> start() =>
       throw StateError('Restoring is not available in this environment.');
+
+  @override
+  Future<void> reportRestoreResult() async {}
 }

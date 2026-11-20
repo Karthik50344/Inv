@@ -201,6 +201,12 @@ final class RestoreBackup {
         );
       }
       await _swapper.commit(targets);
+      try {
+        // Record it and show the "restored" message now, not at next launch.
+        await _runtime.reportRestoreResult();
+      } on Object {
+        // Informative only; the journal stays and the next launch reports.
+      }
       return Result.success(
         RestoreOutcome(
           sourceName: staged.sourceName,

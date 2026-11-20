@@ -108,6 +108,24 @@ final class InventrixRuntime extends ChangeNotifier implements AppRuntime {
   }
 
   @override
+  Future<void> reportRestoreResult() async {
+    if (_phase != RuntimePhase.running) {
+      return;
+    }
+    try {
+      final notice = await _locator<ReconcileRestoreJournal>()();
+      if (notice != null) {
+        _notice = notice;
+        // The host shows the pending notice when it rebuilds.
+        notifyListeners();
+      }
+    } on Object catch (error, stackTrace) {
+      // Not fatal: the journal stays and the next launch reports it.
+      _log.warning('Could not report the restore result', error, stackTrace);
+    }
+  }
+
+  @override
   Future<void> shutDown() async {
     _phase = RuntimePhase.restarting;
     _router = null;

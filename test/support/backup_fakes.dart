@@ -152,6 +152,11 @@ class FakeRuntime implements AppRuntime {
       throw StateError('cannot open');
     }
   }
+
+  @override
+  Future<void> reportRestoreResult() {
+    throw UnimplementedError();
+  }
 }
 
 class FakeExporter implements BackupExporter {
