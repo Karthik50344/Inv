@@ -53,7 +53,10 @@ import 'package:inventrix/features/settings/domain/repositories/settings_reposit
 import 'package:inventrix/features/settings/domain/repositories/tax_rate_repository.dart';
 import 'package:inventrix/features/audit/data/repositories/audit_event_log_repository.dart';
 import 'package:inventrix/features/audit/data/repositories/drift_audit_event_repository.dart';
+import 'package:inventrix/features/audit/data/repositories/drift_audit_query_repository.dart';
+import 'package:inventrix/features/audit/domain/repositories/audit_query_repository.dart';
 import 'package:inventrix/features/audit/data/services/settings_audit_actor_provider.dart';
+import 'package:inventrix/features/audit/domain/repositories/audit_operator_repository.dart';
 import 'package:inventrix/features/audit/data/services/sha256_audit_hasher.dart';
 import 'package:inventrix/features/audit/domain/repositories/audit_actor_provider.dart';
 import 'package:inventrix/features/audit/domain/repositories/audit_event_repository.dart';
@@ -61,7 +64,9 @@ import 'package:inventrix/features/audit/domain/services/audit_canonical.dart';
 import 'package:inventrix/features/audit/domain/services/audit_recorder.dart';
 import 'package:inventrix/features/product_classification/data/repositories/drift_product_classification_repository.dart';
 import 'package:inventrix/features/product_classification/domain/repositories/product_classification_repository.dart';
+import 'package:inventrix/features/taxation/data/repositories/drift_tax_config_repository.dart';
 import 'package:inventrix/features/taxation/data/repositories/drift_tax_repository.dart';
+import 'package:inventrix/features/taxation/domain/repositories/tax_config_repository.dart';
 import 'package:inventrix/features/taxation/domain/repositories/tax_repository.dart';
 import 'package:inventrix/features/taxation/domain/services/tax_calculator.dart';
 import 'package:inventrix/features/suppliers/data/repositories/drift_supplier_repository.dart';
@@ -106,6 +111,12 @@ void registerRepositories(GetIt locator) {
       () => DriftTaxRepository(locator<AppDatabase>()),
     )
     ..registerLazySingleton<TaxCalculator>(TaxCalculator.new)
+    ..registerLazySingleton<TaxConfigRepository>(
+      () => DriftTaxConfigRepository(locator<AppDatabase>()),
+    )
+    ..registerLazySingleton<TaxPreferencesRepository>(
+      () => DriftTaxPreferencesRepository(locator<AppDatabase>()),
+    )
     ..registerLazySingleton<ProductClassificationRepository>(
       () => DriftProductClassificationRepository(locator<AppDatabase>()),
     )
@@ -135,6 +146,12 @@ void registerRepositories(GetIt locator) {
     )
     ..registerLazySingleton<AuditEventRepository>(
       () => DriftAuditEventRepository(locator<AppDatabase>()),
+    )
+    ..registerLazySingleton<AuditQueryRepository>(
+      () => DriftAuditQueryRepository(locator<AppDatabase>()),
+    )
+    ..registerLazySingleton<AuditOperatorRepository>(
+      () => SettingsAuditOperatorRepository(locator<AppDatabase>()),
     )
     ..registerLazySingleton<AuditHasher>(() => const Sha256AuditHasher())
     ..registerLazySingleton<AuditActorProvider>(

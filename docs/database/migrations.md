@@ -57,3 +57,6 @@ Immutability: triggers allow insert/update/delete on `invoice_item_tax_component
 ## Schema version 12 (hash-chained audit events, Checkpoint C)
 Adds `audit_events` (`seq` autoincrement gives chain order; unique `id` and `event_hash`; indexes on entity, type, time, correlation) with triggers refusing UPDATE and DELETE, and `audit_outbox` (events waiting after a failed write). `audit_logs` is untouched and stays readable. No data is migrated: the chain starts lazily with an `audit.chain_started` event on the first audited write, which records the number of legacy `audit_logs` rows. **`app_database.g.dart` must be regenerated.** Tests: `test/data/audit_event_repository_test.dart`.
 
+## Schema version 13 (export history, Checkpoint D)
+Adds `audit_export_history` (one row per auditor export: name, period kind/label/from/to, format, datasets as JSON, file name and size, SHA-256 of the file, integrity status `verified|failed|not_checked`, audit chain state at export time, app and schema version, `verified_at`, `file_deleted_at`). A record stays after its file is removed from the device. **`app_database.g.dart` must be regenerated.** Tests: `test/data/auditor_export_flow_test.dart`, `test/data/audit_query_repository_test.dart`.
+

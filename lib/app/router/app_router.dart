@@ -2,6 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inventrix/features/taxation/presentation/bloc/tax_settings_cubit.dart';
+import 'package:inventrix/features/taxation/presentation/pages/tax_list_page.dart';
+import 'package:inventrix/features/taxation/presentation/pages/tax_rule_page.dart';
+import 'package:inventrix/features/taxation/presentation/pages/tax_settings_page.dart';
+import 'package:inventrix/core/services/clock.dart';
+import 'package:inventrix/features/products/presentation/bloc/product_tax_cubit.dart';
+import 'package:inventrix/features/products/presentation/pages/product_tax_page.dart';
+import 'package:inventrix/features/audit/presentation/bloc/audit_center_cubit.dart';
+import 'package:inventrix/features/audit/presentation/bloc/audit_event_cubit.dart';
+import 'package:inventrix/features/audit/presentation/bloc/audit_integrity_cubit.dart';
+import 'package:inventrix/features/audit/presentation/bloc/audit_log_cubit.dart';
+import 'package:inventrix/features/audit/presentation/pages/audit_center_page.dart';
+import 'package:inventrix/features/audit/presentation/pages/audit_event_page.dart';
+import 'package:inventrix/features/audit/presentation/pages/audit_integrity_page.dart';
+import 'package:inventrix/features/audit/presentation/pages/audit_log_page.dart';
+import 'package:inventrix/features/auditor_exports/domain/usecases/generate_auditor_export.dart';
+import 'package:inventrix/features/auditor_exports/presentation/bloc/export_history_cubit.dart';
+import 'package:inventrix/features/auditor_exports/presentation/bloc/export_wizard_cubit.dart';
+import 'package:inventrix/features/auditor_exports/presentation/pages/export_detail_page.dart';
+import 'package:inventrix/features/auditor_exports/presentation/pages/export_history_page.dart';
+import 'package:inventrix/features/auditor_exports/presentation/pages/export_wizard_page.dart';
+import 'package:inventrix/features/auditor_exports/presentation/support/export_preset.dart';
 import 'package:inventrix/app/router/more_destinations.dart';
 import 'package:inventrix/app/router/route_names.dart';
 import 'package:inventrix/app/router/route_paths.dart';
@@ -122,6 +144,8 @@ abstract final class AppRouter {
     RouteNames.expenses,
     RouteNames.reports,
     RouteNames.backup,
+    RouteNames.audit,
+    RouteNames.tax,
     RouteNames.settings,
   };
 
@@ -264,6 +288,15 @@ abstract final class AppRouter {
                                 di<ProductFormCubit>()
                                   ..load(productId: id(state)),
                             child: ProductFormPage(productId: id(state)),
+                          ),
+                        ),
+                        GoRoute(
+                          path: 'tax',
+                          name: RouteNames.productTax,
+                          builder: (context, state) => BlocProvider(
+                            create: (_) =>
+                                di<ProductTaxCubit>()..load(id(state)),
+                            child: const ProductTaxPage(),
                           ),
                         ),
                       ],
@@ -449,6 +482,120 @@ abstract final class AppRouter {
                             create: (_) => di<TaxRatesCubit>()..load(),
                             child: const TaxRatesPage(),
                           ),
+                        ),
+                      ],
+                    ),
+                    GoRoute(
+                      path: 'tax',
+                      name: RouteNames.tax,
+                      builder: (context, state) => BlocProvider(
+                        create: (_) => di<TaxSettingsCubit>()..load(),
+                        child: const TaxSettingsPage(),
+                      ),
+                      routes: [
+                        _taxList(di, 'systems', RouteNames.taxSystems, TaxListKind.systems),
+                        _taxList(di, 'places', RouteNames.taxPlaces, TaxListKind.places),
+                        _taxList(di, 'profiles', RouteNames.taxProfiles, TaxListKind.profiles),
+                        _taxList(di, 'categories', RouteNames.taxCategories, TaxListKind.categories),
+                        _taxList(di, 'overrides', RouteNames.taxOverrides, TaxListKind.overrides),
+                        GoRoute(
+                          path: 'rules',
+                          name: RouteNames.taxRules,
+                          builder: (context, state) => BlocProvider(
+                            create: (_) => di<TaxSettingsCubit>()..load(),
+                            child: const TaxListPage(kind: TaxListKind.rules),
+                          ),
+                          routes: [
+                            GoRoute(
+                              path: ':id',
+                              name: RouteNames.taxRule,
+                              builder: (context, state) => BlocProvider(
+                                create: (_) => di<TaxSettingsCubit>()..load(),
+                                child: TaxRulePage(ruleId: state.pathParameters['id']!),
+                              ),
+                            ),
+                          ],
+                        ),
+                        GoRoute(
+                          path: 'preferences',
+                          name: RouteNames.taxPreferences,
+                          builder: (context, state) => BlocProvider(
+                            create: (_) => di<TaxSettingsCubit>()..load(),
+                            child: const TaxPreferencesPage(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    GoRoute(
+                      path: 'audit',
+                      name: RouteNames.audit,
+                      builder: (context, state) => BlocProvider(
+                        create: (_) => di<AuditCenterCubit>()..load(),
+                        child: const AuditCenterPage(),
+                      ),
+                      routes: [
+                        GoRoute(
+                          path: 'log',
+                          name: RouteNames.auditLog,
+                          builder: (context, state) => BlocProvider(
+                            create: (_) => di<AuditLogCubit>()..load(),
+                            child: const AuditLogPage(),
+                          ),
+                        ),
+                        GoRoute(
+                          path: 'event/:id',
+                          name: RouteNames.auditEvent,
+                          builder: (context, state) {
+                            final id = state.pathParameters['id']!;
+                            return BlocProvider(
+                              create: (_) => di<AuditEventCubit>()..load(id),
+                              child: AuditEventPage(eventId: id),
+                            );
+                          },
+                        ),
+                        GoRoute(
+                          path: 'integrity',
+                          name: RouteNames.auditIntegrity,
+                          builder: (context, state) => BlocProvider(
+                            create: (_) => di<AuditIntegrityCubit>(),
+                            child: const AuditIntegrityPage(),
+                          ),
+                        ),
+                        GoRoute(
+                          path: 'export',
+                          name: RouteNames.auditExport,
+                          builder: (context, state) {
+                            final extra = state.extra;
+                            return BlocProvider(
+                              create: (_) => ExportWizardCubit(
+                                generate: di<GenerateAuditorExport>(),
+                                clock: di<Clock>(),
+                                preset: extra is ExportPreset ? extra : null,
+                              ),
+                              child: const ExportWizardPage(),
+                            );
+                          },
+                        ),
+                        GoRoute(
+                          path: 'exports',
+                          name: RouteNames.auditExports,
+                          builder: (context, state) => BlocProvider(
+                            create: (_) =>
+                                di<ExportListCubit>(param1: null)..load(),
+                            child: const ExportHistoryPage(),
+                          ),
+                          routes: [
+                            GoRoute(
+                              path: ':id',
+                              name: RouteNames.auditExportDetail,
+                              builder: (context, state) => BlocProvider(
+                                create: (_) => di<ExportListCubit>(
+                                  param1: state.pathParameters['id'],
+                                )..load(),
+                                child: const ExportDetailPage(),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -819,3 +966,12 @@ abstract final class AppRouter {
     );
   }
 }
+
+GoRoute _taxList(GetIt di, String path, String name, TaxListKind kind) => GoRoute(
+  path: path,
+  name: name,
+  builder: (context, state) => BlocProvider(
+    create: (_) => di<TaxSettingsCubit>()..load(),
+    child: TaxListPage(kind: kind),
+  ),
+);

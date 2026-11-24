@@ -118,6 +118,12 @@ final class AuditFailure extends Failure {
   const AuditFailure(super.message, {super.cause, super.stackTrace});
 }
 
+/// An auditor export could not be created or verified.
+final class ExportFailure extends Failure {
+  /// Creates an [ExportFailure].
+  const ExportFailure(super.message, {super.cause, super.stackTrace});
+}
+
 /// Anything that was not anticipated.
 final class UnexpectedFailure extends Failure {
   /// Creates an [UnexpectedFailure].

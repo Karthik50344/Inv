@@ -467,3 +467,21 @@ Plan: `docs/architecture/tax_engine.md` and the step-1 analysis. Schema plan: v1
 - Docs: `docs/security/audit_trail.md` (including what a same-database hash chain cannot protect against).
 - **Not built:** audit dashboard/log/detail screens, integrity verification screen, categories/units/customers/suppliers/backup/import audit, tax configuration edit audit.
 
+### Checkpoint D1 (steps 11-13, engine half): auditor export and audit queries - written, **not compiled or run**
+- Schema v13; `features/auditor_exports` (period/dataset/format model, CSV encoder, deterministic package builder with manifest and SHA256SUMS, package verifier, `GenerateAuditorExport`, history/verify/share/delete use cases, Drift data source with one-transaction snapshot, XLSX writer without a package, PDF writer, ZIP codec, file store); audit query repository (filters, stats, details) for the screens; DI in `register_exports.dart`.
+- Tests written: primitives, package + tamper detection, use case flow with fakes, history use cases, DB-level export flow (posted invoices, tax snapshot, FY filtering, unchanged business data, tampered chain stated), audit query repository.
+- **Not built (D2):** every screen of the Audit & Export Center and the export wizard, routing, signed manifests.
+
+### Checkpoint D2 (steps 11-13, screens): Audit & Export Center UI - written, **not compiled or run**
+Checkpoints A-D1 were compiled, analysed and tested by the project owner before this one ("everything is good").
+- Screens: audit & export dashboard, audit log with filters, event details (before/after, integrity), integrity check with checkpoints, export wizard, export history, export details. Cubits registered in `register_blocs.dart`, routes under `/more/audit`, new More destination.
+- Tests written: label helpers, `AuditLogCubit` (paging, debounce, stale responses), `AuditEventCubit`, `AuditIntegrityCubit`, `ExportWizardCubit`, `ExportListCubit`, widget tests for the diff, event tile and the wizard page in light and dark.
+- Risk to check first: the new More destination adds a row to the More page; `app_widgets_test.dart` renders it at 400x1600 and expects every destination title once.
+
+### Checkpoint E: tax settings screens, product tax and classification screen, operator name - written, **not compiled or run**
+- Write side: `TaxConfigEditor`, `TaxConfigValidator` (including rule-tie detection), Drift `DriftTaxConfigRepository` / `DriftTaxPreferencesRepository` (explicit upsert that keeps creation time), `SetProductTaxTreatment`, `SaveAuditOperatorName`.
+- Screens: tax settings home with setup warnings, six editable lists, rule page with tax lines, preferences, product "Tax and classification" page, operator-name card on the audit dashboard. Routes `/more/tax/...` and `/products/:id/tax`.
+- Tests written: validator, labels and parsers, setup warnings, form widgets (light and dark), real-schema editor tests, `TaxSettingsCubit` and `ProductTaxCubit` flows, operator name.
+- Things to check first when you run it: the product detail page gained an app-bar action (a test that counts actions would notice), the More page gained "Tax settings" (the 400x1600 test lists every destination), and my added imports are not alphabetically sorted.
+- Still open: signed export manifests; audit of categories, units, customers, suppliers and backup/restore events; an in-app HSN/SAC / tax summary report screen; bulk category assignment; the final full regression and acceptance report (step 15).
+

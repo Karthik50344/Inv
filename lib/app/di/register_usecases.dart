@@ -47,11 +47,16 @@ import 'package:inventrix/features/products/domain/services/product_validator.da
 import 'package:inventrix/features/products/domain/usecases/add_common_units.dart';
 import 'package:inventrix/features/audit/domain/repositories/audit_event_repository.dart';
 import 'package:inventrix/features/audit/domain/services/audit_canonical.dart';
+import 'package:inventrix/features/audit/domain/repositories/audit_operator_repository.dart';
+import 'package:inventrix/features/audit/domain/usecases/save_audit_operator_name.dart';
 import 'package:inventrix/features/audit/domain/usecases/verify_audit_chain.dart';
 import 'package:inventrix/features/product_classification/domain/repositories/product_classification_repository.dart';
 import 'package:inventrix/features/product_classification/domain/usecases/classification_use_cases.dart';
 import 'package:inventrix/features/products/domain/usecases/archive_product.dart';
+import 'package:inventrix/features/products/domain/usecases/set_product_tax_treatment.dart';
+import 'package:inventrix/features/taxation/domain/repositories/tax_config_repository.dart';
 import 'package:inventrix/features/taxation/domain/repositories/tax_repository.dart';
+import 'package:inventrix/features/taxation/domain/usecases/tax_config_editor.dart';
 import 'package:inventrix/features/taxation/domain/services/tax_line_service.dart';
 import 'package:inventrix/features/products/domain/usecases/archive_unit.dart';
 import 'package:inventrix/features/products/domain/usecases/create_product.dart';
@@ -292,6 +297,15 @@ void registerUseCases(GetIt g) {
     )
     // Audit
     ..registerLazySingleton(
+      () => SaveAuditOperatorName(
+        repository: g<AuditOperatorRepository>(),
+        transactions: g<TransactionRunner>(),
+        audit: g<AuditLogRepository>(),
+        clock: g<Clock>(),
+        ids: g<IdGenerator>(),
+      ),
+    )
+    ..registerLazySingleton(
       () => VerifyAuditChain(
         repository: g<AuditEventRepository>(),
         hasher: g<AuditHasher>(),
@@ -304,6 +318,27 @@ void registerUseCases(GetIt g) {
       ),
     )
     // Tax and classification
+    ..registerLazySingleton(
+      () => SetProductTaxTreatment(
+        products: g<ProductRepository>(),
+        tax: g<TaxRepository>(),
+        transactions: g<TransactionRunner>(),
+        audit: g<AuditLogRepository>(),
+        clock: g<Clock>(),
+        ids: g<IdGenerator>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => TaxConfigEditor(
+        read: g<TaxRepository>(),
+        write: g<TaxConfigRepository>(),
+        preferences: g<TaxPreferencesRepository>(),
+        transactions: g<TransactionRunner>(),
+        audit: g<AuditLogRepository>(),
+        clock: g<Clock>(),
+        ids: g<IdGenerator>(),
+      ),
+    )
     ..registerLazySingleton(() => TaxLineService(repository: g<TaxRepository>()))
     ..registerLazySingleton(
       () => AddProductClassification(

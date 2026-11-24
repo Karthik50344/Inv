@@ -10774,6 +10774,1033 @@ class AuditOutboxCompanion extends UpdateCompanion<AuditOutboxRow> {
   }
 }
 
+class $AuditExportHistoryTable extends AuditExportHistory
+    with TableInfo<$AuditExportHistoryTable, AuditExportHistoryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AuditExportHistoryTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _periodKindMeta = const VerificationMeta(
+    'periodKind',
+  );
+  @override
+  late final GeneratedColumn<String> periodKind = GeneratedColumn<String>(
+    'period_kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _periodLabelMeta = const VerificationMeta(
+    'periodLabel',
+  );
+  @override
+  late final GeneratedColumn<String> periodLabel = GeneratedColumn<String>(
+    'period_label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _periodFromMeta = const VerificationMeta(
+    'periodFrom',
+  );
+  @override
+  late final GeneratedColumn<String> periodFrom = GeneratedColumn<String>(
+    'period_from',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _periodToMeta = const VerificationMeta(
+    'periodTo',
+  );
+  @override
+  late final GeneratedColumn<String> periodTo = GeneratedColumn<String>(
+    'period_to',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _formatMeta = const VerificationMeta('format');
+  @override
+  late final GeneratedColumn<String> format = GeneratedColumn<String>(
+    'format',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _datasetsMeta = const VerificationMeta(
+    'datasets',
+  );
+  @override
+  late final GeneratedColumn<String> datasets = GeneratedColumn<String>(
+    'datasets',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fileNameMeta = const VerificationMeta(
+    'fileName',
+  );
+  @override
+  late final GeneratedColumn<String> fileName = GeneratedColumn<String>(
+    'file_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sizeBytesMeta = const VerificationMeta(
+    'sizeBytes',
+  );
+  @override
+  late final GeneratedColumn<int> sizeBytes = GeneratedColumn<int>(
+    'size_bytes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sha256Meta = const VerificationMeta('sha256');
+  @override
+  late final GeneratedColumn<String> sha256 = GeneratedColumn<String>(
+    'sha256',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _integrityStatusMeta = const VerificationMeta(
+    'integrityStatus',
+  );
+  @override
+  late final GeneratedColumn<String> integrityStatus = GeneratedColumn<String>(
+    'integrity_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _chainStatusMeta = const VerificationMeta(
+    'chainStatus',
+  );
+  @override
+  late final GeneratedColumn<String> chainStatus = GeneratedColumn<String>(
+    'chain_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _appVersionMeta = const VerificationMeta(
+    'appVersion',
+  );
+  @override
+  late final GeneratedColumn<String> appVersion = GeneratedColumn<String>(
+    'app_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _schemaVersionMeta = const VerificationMeta(
+    'schemaVersion',
+  );
+  @override
+  late final GeneratedColumn<int> schemaVersion = GeneratedColumn<int>(
+    'schema_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _verifiedAtMeta = const VerificationMeta(
+    'verifiedAt',
+  );
+  @override
+  late final GeneratedColumn<int> verifiedAt = GeneratedColumn<int>(
+    'verified_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fileDeletedAtMeta = const VerificationMeta(
+    'fileDeletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> fileDeletedAt = GeneratedColumn<int>(
+    'file_deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    createdAt,
+    periodKind,
+    periodLabel,
+    periodFrom,
+    periodTo,
+    format,
+    datasets,
+    fileName,
+    sizeBytes,
+    sha256,
+    integrityStatus,
+    chainStatus,
+    appVersion,
+    schemaVersion,
+    verifiedAt,
+    fileDeletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'audit_export_history';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AuditExportHistoryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('period_kind')) {
+      context.handle(
+        _periodKindMeta,
+        periodKind.isAcceptableOrUnknown(data['period_kind']!, _periodKindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_periodKindMeta);
+    }
+    if (data.containsKey('period_label')) {
+      context.handle(
+        _periodLabelMeta,
+        periodLabel.isAcceptableOrUnknown(
+          data['period_label']!,
+          _periodLabelMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_periodLabelMeta);
+    }
+    if (data.containsKey('period_from')) {
+      context.handle(
+        _periodFromMeta,
+        periodFrom.isAcceptableOrUnknown(data['period_from']!, _periodFromMeta),
+      );
+    }
+    if (data.containsKey('period_to')) {
+      context.handle(
+        _periodToMeta,
+        periodTo.isAcceptableOrUnknown(data['period_to']!, _periodToMeta),
+      );
+    }
+    if (data.containsKey('format')) {
+      context.handle(
+        _formatMeta,
+        format.isAcceptableOrUnknown(data['format']!, _formatMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_formatMeta);
+    }
+    if (data.containsKey('datasets')) {
+      context.handle(
+        _datasetsMeta,
+        datasets.isAcceptableOrUnknown(data['datasets']!, _datasetsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_datasetsMeta);
+    }
+    if (data.containsKey('file_name')) {
+      context.handle(
+        _fileNameMeta,
+        fileName.isAcceptableOrUnknown(data['file_name']!, _fileNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fileNameMeta);
+    }
+    if (data.containsKey('size_bytes')) {
+      context.handle(
+        _sizeBytesMeta,
+        sizeBytes.isAcceptableOrUnknown(data['size_bytes']!, _sizeBytesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sizeBytesMeta);
+    }
+    if (data.containsKey('sha256')) {
+      context.handle(
+        _sha256Meta,
+        sha256.isAcceptableOrUnknown(data['sha256']!, _sha256Meta),
+      );
+    } else if (isInserting) {
+      context.missing(_sha256Meta);
+    }
+    if (data.containsKey('integrity_status')) {
+      context.handle(
+        _integrityStatusMeta,
+        integrityStatus.isAcceptableOrUnknown(
+          data['integrity_status']!,
+          _integrityStatusMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_integrityStatusMeta);
+    }
+    if (data.containsKey('chain_status')) {
+      context.handle(
+        _chainStatusMeta,
+        chainStatus.isAcceptableOrUnknown(
+          data['chain_status']!,
+          _chainStatusMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_chainStatusMeta);
+    }
+    if (data.containsKey('app_version')) {
+      context.handle(
+        _appVersionMeta,
+        appVersion.isAcceptableOrUnknown(data['app_version']!, _appVersionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_appVersionMeta);
+    }
+    if (data.containsKey('schema_version')) {
+      context.handle(
+        _schemaVersionMeta,
+        schemaVersion.isAcceptableOrUnknown(
+          data['schema_version']!,
+          _schemaVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_schemaVersionMeta);
+    }
+    if (data.containsKey('verified_at')) {
+      context.handle(
+        _verifiedAtMeta,
+        verifiedAt.isAcceptableOrUnknown(data['verified_at']!, _verifiedAtMeta),
+      );
+    }
+    if (data.containsKey('file_deleted_at')) {
+      context.handle(
+        _fileDeletedAtMeta,
+        fileDeletedAt.isAcceptableOrUnknown(
+          data['file_deleted_at']!,
+          _fileDeletedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AuditExportHistoryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AuditExportHistoryRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      periodKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}period_kind'],
+      )!,
+      periodLabel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}period_label'],
+      )!,
+      periodFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}period_from'],
+      ),
+      periodTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}period_to'],
+      ),
+      format: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}format'],
+      )!,
+      datasets: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}datasets'],
+      )!,
+      fileName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_name'],
+      )!,
+      sizeBytes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}size_bytes'],
+      )!,
+      sha256: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sha256'],
+      )!,
+      integrityStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}integrity_status'],
+      )!,
+      chainStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}chain_status'],
+      )!,
+      appVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}app_version'],
+      )!,
+      schemaVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}schema_version'],
+      )!,
+      verifiedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}verified_at'],
+      ),
+      fileDeletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}file_deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $AuditExportHistoryTable createAlias(String alias) {
+    return $AuditExportHistoryTable(attachedDatabase, alias);
+  }
+}
+
+class AuditExportHistoryRow extends DataClass
+    implements Insertable<AuditExportHistoryRow> {
+  final String id;
+  final String name;
+  final int createdAt;
+  final String periodKind;
+  final String periodLabel;
+  final String? periodFrom;
+  final String? periodTo;
+  final String format;
+  final String datasets;
+  final String fileName;
+  final int sizeBytes;
+  final String sha256;
+  final String integrityStatus;
+  final String chainStatus;
+  final String appVersion;
+  final int schemaVersion;
+  final int? verifiedAt;
+  final int? fileDeletedAt;
+  const AuditExportHistoryRow({
+    required this.id,
+    required this.name,
+    required this.createdAt,
+    required this.periodKind,
+    required this.periodLabel,
+    this.periodFrom,
+    this.periodTo,
+    required this.format,
+    required this.datasets,
+    required this.fileName,
+    required this.sizeBytes,
+    required this.sha256,
+    required this.integrityStatus,
+    required this.chainStatus,
+    required this.appVersion,
+    required this.schemaVersion,
+    this.verifiedAt,
+    this.fileDeletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['created_at'] = Variable<int>(createdAt);
+    map['period_kind'] = Variable<String>(periodKind);
+    map['period_label'] = Variable<String>(periodLabel);
+    if (!nullToAbsent || periodFrom != null) {
+      map['period_from'] = Variable<String>(periodFrom);
+    }
+    if (!nullToAbsent || periodTo != null) {
+      map['period_to'] = Variable<String>(periodTo);
+    }
+    map['format'] = Variable<String>(format);
+    map['datasets'] = Variable<String>(datasets);
+    map['file_name'] = Variable<String>(fileName);
+    map['size_bytes'] = Variable<int>(sizeBytes);
+    map['sha256'] = Variable<String>(sha256);
+    map['integrity_status'] = Variable<String>(integrityStatus);
+    map['chain_status'] = Variable<String>(chainStatus);
+    map['app_version'] = Variable<String>(appVersion);
+    map['schema_version'] = Variable<int>(schemaVersion);
+    if (!nullToAbsent || verifiedAt != null) {
+      map['verified_at'] = Variable<int>(verifiedAt);
+    }
+    if (!nullToAbsent || fileDeletedAt != null) {
+      map['file_deleted_at'] = Variable<int>(fileDeletedAt);
+    }
+    return map;
+  }
+
+  AuditExportHistoryCompanion toCompanion(bool nullToAbsent) {
+    return AuditExportHistoryCompanion(
+      id: Value(id),
+      name: Value(name),
+      createdAt: Value(createdAt),
+      periodKind: Value(periodKind),
+      periodLabel: Value(periodLabel),
+      periodFrom: periodFrom == null && nullToAbsent
+          ? const Value.absent()
+          : Value(periodFrom),
+      periodTo: periodTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(periodTo),
+      format: Value(format),
+      datasets: Value(datasets),
+      fileName: Value(fileName),
+      sizeBytes: Value(sizeBytes),
+      sha256: Value(sha256),
+      integrityStatus: Value(integrityStatus),
+      chainStatus: Value(chainStatus),
+      appVersion: Value(appVersion),
+      schemaVersion: Value(schemaVersion),
+      verifiedAt: verifiedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(verifiedAt),
+      fileDeletedAt: fileDeletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fileDeletedAt),
+    );
+  }
+
+  factory AuditExportHistoryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AuditExportHistoryRow(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      periodKind: serializer.fromJson<String>(json['periodKind']),
+      periodLabel: serializer.fromJson<String>(json['periodLabel']),
+      periodFrom: serializer.fromJson<String?>(json['periodFrom']),
+      periodTo: serializer.fromJson<String?>(json['periodTo']),
+      format: serializer.fromJson<String>(json['format']),
+      datasets: serializer.fromJson<String>(json['datasets']),
+      fileName: serializer.fromJson<String>(json['fileName']),
+      sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
+      sha256: serializer.fromJson<String>(json['sha256']),
+      integrityStatus: serializer.fromJson<String>(json['integrityStatus']),
+      chainStatus: serializer.fromJson<String>(json['chainStatus']),
+      appVersion: serializer.fromJson<String>(json['appVersion']),
+      schemaVersion: serializer.fromJson<int>(json['schemaVersion']),
+      verifiedAt: serializer.fromJson<int?>(json['verifiedAt']),
+      fileDeletedAt: serializer.fromJson<int?>(json['fileDeletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'periodKind': serializer.toJson<String>(periodKind),
+      'periodLabel': serializer.toJson<String>(periodLabel),
+      'periodFrom': serializer.toJson<String?>(periodFrom),
+      'periodTo': serializer.toJson<String?>(periodTo),
+      'format': serializer.toJson<String>(format),
+      'datasets': serializer.toJson<String>(datasets),
+      'fileName': serializer.toJson<String>(fileName),
+      'sizeBytes': serializer.toJson<int>(sizeBytes),
+      'sha256': serializer.toJson<String>(sha256),
+      'integrityStatus': serializer.toJson<String>(integrityStatus),
+      'chainStatus': serializer.toJson<String>(chainStatus),
+      'appVersion': serializer.toJson<String>(appVersion),
+      'schemaVersion': serializer.toJson<int>(schemaVersion),
+      'verifiedAt': serializer.toJson<int?>(verifiedAt),
+      'fileDeletedAt': serializer.toJson<int?>(fileDeletedAt),
+    };
+  }
+
+  AuditExportHistoryRow copyWith({
+    String? id,
+    String? name,
+    int? createdAt,
+    String? periodKind,
+    String? periodLabel,
+    Value<String?> periodFrom = const Value.absent(),
+    Value<String?> periodTo = const Value.absent(),
+    String? format,
+    String? datasets,
+    String? fileName,
+    int? sizeBytes,
+    String? sha256,
+    String? integrityStatus,
+    String? chainStatus,
+    String? appVersion,
+    int? schemaVersion,
+    Value<int?> verifiedAt = const Value.absent(),
+    Value<int?> fileDeletedAt = const Value.absent(),
+  }) => AuditExportHistoryRow(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    createdAt: createdAt ?? this.createdAt,
+    periodKind: periodKind ?? this.periodKind,
+    periodLabel: periodLabel ?? this.periodLabel,
+    periodFrom: periodFrom.present ? periodFrom.value : this.periodFrom,
+    periodTo: periodTo.present ? periodTo.value : this.periodTo,
+    format: format ?? this.format,
+    datasets: datasets ?? this.datasets,
+    fileName: fileName ?? this.fileName,
+    sizeBytes: sizeBytes ?? this.sizeBytes,
+    sha256: sha256 ?? this.sha256,
+    integrityStatus: integrityStatus ?? this.integrityStatus,
+    chainStatus: chainStatus ?? this.chainStatus,
+    appVersion: appVersion ?? this.appVersion,
+    schemaVersion: schemaVersion ?? this.schemaVersion,
+    verifiedAt: verifiedAt.present ? verifiedAt.value : this.verifiedAt,
+    fileDeletedAt: fileDeletedAt.present
+        ? fileDeletedAt.value
+        : this.fileDeletedAt,
+  );
+  AuditExportHistoryRow copyWithCompanion(AuditExportHistoryCompanion data) {
+    return AuditExportHistoryRow(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      periodKind: data.periodKind.present
+          ? data.periodKind.value
+          : this.periodKind,
+      periodLabel: data.periodLabel.present
+          ? data.periodLabel.value
+          : this.periodLabel,
+      periodFrom: data.periodFrom.present
+          ? data.periodFrom.value
+          : this.periodFrom,
+      periodTo: data.periodTo.present ? data.periodTo.value : this.periodTo,
+      format: data.format.present ? data.format.value : this.format,
+      datasets: data.datasets.present ? data.datasets.value : this.datasets,
+      fileName: data.fileName.present ? data.fileName.value : this.fileName,
+      sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
+      sha256: data.sha256.present ? data.sha256.value : this.sha256,
+      integrityStatus: data.integrityStatus.present
+          ? data.integrityStatus.value
+          : this.integrityStatus,
+      chainStatus: data.chainStatus.present
+          ? data.chainStatus.value
+          : this.chainStatus,
+      appVersion: data.appVersion.present
+          ? data.appVersion.value
+          : this.appVersion,
+      schemaVersion: data.schemaVersion.present
+          ? data.schemaVersion.value
+          : this.schemaVersion,
+      verifiedAt: data.verifiedAt.present
+          ? data.verifiedAt.value
+          : this.verifiedAt,
+      fileDeletedAt: data.fileDeletedAt.present
+          ? data.fileDeletedAt.value
+          : this.fileDeletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditExportHistoryRow(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('periodKind: $periodKind, ')
+          ..write('periodLabel: $periodLabel, ')
+          ..write('periodFrom: $periodFrom, ')
+          ..write('periodTo: $periodTo, ')
+          ..write('format: $format, ')
+          ..write('datasets: $datasets, ')
+          ..write('fileName: $fileName, ')
+          ..write('sizeBytes: $sizeBytes, ')
+          ..write('sha256: $sha256, ')
+          ..write('integrityStatus: $integrityStatus, ')
+          ..write('chainStatus: $chainStatus, ')
+          ..write('appVersion: $appVersion, ')
+          ..write('schemaVersion: $schemaVersion, ')
+          ..write('verifiedAt: $verifiedAt, ')
+          ..write('fileDeletedAt: $fileDeletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    createdAt,
+    periodKind,
+    periodLabel,
+    periodFrom,
+    periodTo,
+    format,
+    datasets,
+    fileName,
+    sizeBytes,
+    sha256,
+    integrityStatus,
+    chainStatus,
+    appVersion,
+    schemaVersion,
+    verifiedAt,
+    fileDeletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AuditExportHistoryRow &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.createdAt == this.createdAt &&
+          other.periodKind == this.periodKind &&
+          other.periodLabel == this.periodLabel &&
+          other.periodFrom == this.periodFrom &&
+          other.periodTo == this.periodTo &&
+          other.format == this.format &&
+          other.datasets == this.datasets &&
+          other.fileName == this.fileName &&
+          other.sizeBytes == this.sizeBytes &&
+          other.sha256 == this.sha256 &&
+          other.integrityStatus == this.integrityStatus &&
+          other.chainStatus == this.chainStatus &&
+          other.appVersion == this.appVersion &&
+          other.schemaVersion == this.schemaVersion &&
+          other.verifiedAt == this.verifiedAt &&
+          other.fileDeletedAt == this.fileDeletedAt);
+}
+
+class AuditExportHistoryCompanion
+    extends UpdateCompanion<AuditExportHistoryRow> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<int> createdAt;
+  final Value<String> periodKind;
+  final Value<String> periodLabel;
+  final Value<String?> periodFrom;
+  final Value<String?> periodTo;
+  final Value<String> format;
+  final Value<String> datasets;
+  final Value<String> fileName;
+  final Value<int> sizeBytes;
+  final Value<String> sha256;
+  final Value<String> integrityStatus;
+  final Value<String> chainStatus;
+  final Value<String> appVersion;
+  final Value<int> schemaVersion;
+  final Value<int?> verifiedAt;
+  final Value<int?> fileDeletedAt;
+  final Value<int> rowid;
+  const AuditExportHistoryCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.periodKind = const Value.absent(),
+    this.periodLabel = const Value.absent(),
+    this.periodFrom = const Value.absent(),
+    this.periodTo = const Value.absent(),
+    this.format = const Value.absent(),
+    this.datasets = const Value.absent(),
+    this.fileName = const Value.absent(),
+    this.sizeBytes = const Value.absent(),
+    this.sha256 = const Value.absent(),
+    this.integrityStatus = const Value.absent(),
+    this.chainStatus = const Value.absent(),
+    this.appVersion = const Value.absent(),
+    this.schemaVersion = const Value.absent(),
+    this.verifiedAt = const Value.absent(),
+    this.fileDeletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AuditExportHistoryCompanion.insert({
+    required String id,
+    required String name,
+    required int createdAt,
+    required String periodKind,
+    required String periodLabel,
+    this.periodFrom = const Value.absent(),
+    this.periodTo = const Value.absent(),
+    required String format,
+    required String datasets,
+    required String fileName,
+    required int sizeBytes,
+    required String sha256,
+    required String integrityStatus,
+    required String chainStatus,
+    required String appVersion,
+    required int schemaVersion,
+    this.verifiedAt = const Value.absent(),
+    this.fileDeletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       createdAt = Value(createdAt),
+       periodKind = Value(periodKind),
+       periodLabel = Value(periodLabel),
+       format = Value(format),
+       datasets = Value(datasets),
+       fileName = Value(fileName),
+       sizeBytes = Value(sizeBytes),
+       sha256 = Value(sha256),
+       integrityStatus = Value(integrityStatus),
+       chainStatus = Value(chainStatus),
+       appVersion = Value(appVersion),
+       schemaVersion = Value(schemaVersion);
+  static Insertable<AuditExportHistoryRow> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<int>? createdAt,
+    Expression<String>? periodKind,
+    Expression<String>? periodLabel,
+    Expression<String>? periodFrom,
+    Expression<String>? periodTo,
+    Expression<String>? format,
+    Expression<String>? datasets,
+    Expression<String>? fileName,
+    Expression<int>? sizeBytes,
+    Expression<String>? sha256,
+    Expression<String>? integrityStatus,
+    Expression<String>? chainStatus,
+    Expression<String>? appVersion,
+    Expression<int>? schemaVersion,
+    Expression<int>? verifiedAt,
+    Expression<int>? fileDeletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (createdAt != null) 'created_at': createdAt,
+      if (periodKind != null) 'period_kind': periodKind,
+      if (periodLabel != null) 'period_label': periodLabel,
+      if (periodFrom != null) 'period_from': periodFrom,
+      if (periodTo != null) 'period_to': periodTo,
+      if (format != null) 'format': format,
+      if (datasets != null) 'datasets': datasets,
+      if (fileName != null) 'file_name': fileName,
+      if (sizeBytes != null) 'size_bytes': sizeBytes,
+      if (sha256 != null) 'sha256': sha256,
+      if (integrityStatus != null) 'integrity_status': integrityStatus,
+      if (chainStatus != null) 'chain_status': chainStatus,
+      if (appVersion != null) 'app_version': appVersion,
+      if (schemaVersion != null) 'schema_version': schemaVersion,
+      if (verifiedAt != null) 'verified_at': verifiedAt,
+      if (fileDeletedAt != null) 'file_deleted_at': fileDeletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AuditExportHistoryCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<int>? createdAt,
+    Value<String>? periodKind,
+    Value<String>? periodLabel,
+    Value<String?>? periodFrom,
+    Value<String?>? periodTo,
+    Value<String>? format,
+    Value<String>? datasets,
+    Value<String>? fileName,
+    Value<int>? sizeBytes,
+    Value<String>? sha256,
+    Value<String>? integrityStatus,
+    Value<String>? chainStatus,
+    Value<String>? appVersion,
+    Value<int>? schemaVersion,
+    Value<int?>? verifiedAt,
+    Value<int?>? fileDeletedAt,
+    Value<int>? rowid,
+  }) {
+    return AuditExportHistoryCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      createdAt: createdAt ?? this.createdAt,
+      periodKind: periodKind ?? this.periodKind,
+      periodLabel: periodLabel ?? this.periodLabel,
+      periodFrom: periodFrom ?? this.periodFrom,
+      periodTo: periodTo ?? this.periodTo,
+      format: format ?? this.format,
+      datasets: datasets ?? this.datasets,
+      fileName: fileName ?? this.fileName,
+      sizeBytes: sizeBytes ?? this.sizeBytes,
+      sha256: sha256 ?? this.sha256,
+      integrityStatus: integrityStatus ?? this.integrityStatus,
+      chainStatus: chainStatus ?? this.chainStatus,
+      appVersion: appVersion ?? this.appVersion,
+      schemaVersion: schemaVersion ?? this.schemaVersion,
+      verifiedAt: verifiedAt ?? this.verifiedAt,
+      fileDeletedAt: fileDeletedAt ?? this.fileDeletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (periodKind.present) {
+      map['period_kind'] = Variable<String>(periodKind.value);
+    }
+    if (periodLabel.present) {
+      map['period_label'] = Variable<String>(periodLabel.value);
+    }
+    if (periodFrom.present) {
+      map['period_from'] = Variable<String>(periodFrom.value);
+    }
+    if (periodTo.present) {
+      map['period_to'] = Variable<String>(periodTo.value);
+    }
+    if (format.present) {
+      map['format'] = Variable<String>(format.value);
+    }
+    if (datasets.present) {
+      map['datasets'] = Variable<String>(datasets.value);
+    }
+    if (fileName.present) {
+      map['file_name'] = Variable<String>(fileName.value);
+    }
+    if (sizeBytes.present) {
+      map['size_bytes'] = Variable<int>(sizeBytes.value);
+    }
+    if (sha256.present) {
+      map['sha256'] = Variable<String>(sha256.value);
+    }
+    if (integrityStatus.present) {
+      map['integrity_status'] = Variable<String>(integrityStatus.value);
+    }
+    if (chainStatus.present) {
+      map['chain_status'] = Variable<String>(chainStatus.value);
+    }
+    if (appVersion.present) {
+      map['app_version'] = Variable<String>(appVersion.value);
+    }
+    if (schemaVersion.present) {
+      map['schema_version'] = Variable<int>(schemaVersion.value);
+    }
+    if (verifiedAt.present) {
+      map['verified_at'] = Variable<int>(verifiedAt.value);
+    }
+    if (fileDeletedAt.present) {
+      map['file_deleted_at'] = Variable<int>(fileDeletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditExportHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('periodKind: $periodKind, ')
+          ..write('periodLabel: $periodLabel, ')
+          ..write('periodFrom: $periodFrom, ')
+          ..write('periodTo: $periodTo, ')
+          ..write('format: $format, ')
+          ..write('datasets: $datasets, ')
+          ..write('fileName: $fileName, ')
+          ..write('sizeBytes: $sizeBytes, ')
+          ..write('sha256: $sha256, ')
+          ..write('integrityStatus: $integrityStatus, ')
+          ..write('chainStatus: $chainStatus, ')
+          ..write('appVersion: $appVersion, ')
+          ..write('schemaVersion: $schemaVersion, ')
+          ..write('verifiedAt: $verifiedAt, ')
+          ..write('fileDeletedAt: $fileDeletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $InventoryBalancesTable extends InventoryBalances
     with TableInfo<$InventoryBalancesTable, InventoryBalanceRow> {
   @override
@@ -29217,6 +30244,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $InvoiceItemTaxComponentsTable(this);
   late final $AuditEventsTable auditEvents = $AuditEventsTable(this);
   late final $AuditOutboxTable auditOutbox = $AuditOutboxTable(this);
+  late final $AuditExportHistoryTable auditExportHistory =
+      $AuditExportHistoryTable(this);
   late final $InventoryBalancesTable inventoryBalances =
       $InventoryBalancesTable(this);
   late final $StockMovementsTable stockMovements = $StockMovementsTable(this);
@@ -29294,6 +30323,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_audit_events_correlation',
     'CREATE INDEX idx_audit_events_correlation ON audit_events (correlation_id)',
   );
+  late final Index idxAuditExportHistoryCreated = Index(
+    'idx_audit_export_history_created',
+    'CREATE INDEX idx_audit_export_history_created ON audit_export_history (created_at)',
+  );
   late final Index idxProductsCategoryId = Index(
     'idx_products_category_id',
     'CREATE INDEX idx_products_category_id ON products (category_id)',
@@ -29332,6 +30365,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     invoiceItemTaxComponents,
     auditEvents,
     auditOutbox,
+    auditExportHistory,
     inventoryBalances,
     stockMovements,
     customers,
@@ -29364,6 +30398,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxAuditEventsType,
     idxAuditEventsTime,
     idxAuditEventsCorrelation,
+    idxAuditExportHistoryCreated,
     idxProductsCategoryId,
     idxProductsName,
     idxStockMovementsProductOccurred,
@@ -38370,6 +39405,484 @@ typedef $$AuditOutboxTableProcessedTableManager =
         BaseReferences<_$AppDatabase, $AuditOutboxTable, AuditOutboxRow>,
       ),
       AuditOutboxRow,
+      PrefetchHooks Function()
+    >;
+typedef $$AuditExportHistoryTableCreateCompanionBuilder =
+    AuditExportHistoryCompanion Function({
+      required String id,
+      required String name,
+      required int createdAt,
+      required String periodKind,
+      required String periodLabel,
+      Value<String?> periodFrom,
+      Value<String?> periodTo,
+      required String format,
+      required String datasets,
+      required String fileName,
+      required int sizeBytes,
+      required String sha256,
+      required String integrityStatus,
+      required String chainStatus,
+      required String appVersion,
+      required int schemaVersion,
+      Value<int?> verifiedAt,
+      Value<int?> fileDeletedAt,
+      Value<int> rowid,
+    });
+typedef $$AuditExportHistoryTableUpdateCompanionBuilder =
+    AuditExportHistoryCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<int> createdAt,
+      Value<String> periodKind,
+      Value<String> periodLabel,
+      Value<String?> periodFrom,
+      Value<String?> periodTo,
+      Value<String> format,
+      Value<String> datasets,
+      Value<String> fileName,
+      Value<int> sizeBytes,
+      Value<String> sha256,
+      Value<String> integrityStatus,
+      Value<String> chainStatus,
+      Value<String> appVersion,
+      Value<int> schemaVersion,
+      Value<int?> verifiedAt,
+      Value<int?> fileDeletedAt,
+      Value<int> rowid,
+    });
+
+class $$AuditExportHistoryTableFilterComposer
+    extends Composer<_$AppDatabase, $AuditExportHistoryTable> {
+  $$AuditExportHistoryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get periodKind => $composableBuilder(
+    column: $table.periodKind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get periodLabel => $composableBuilder(
+    column: $table.periodLabel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get periodFrom => $composableBuilder(
+    column: $table.periodFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get periodTo => $composableBuilder(
+    column: $table.periodTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get format => $composableBuilder(
+    column: $table.format,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get datasets => $composableBuilder(
+    column: $table.datasets,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sha256 => $composableBuilder(
+    column: $table.sha256,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get integrityStatus => $composableBuilder(
+    column: $table.integrityStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get chainStatus => $composableBuilder(
+    column: $table.chainStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get appVersion => $composableBuilder(
+    column: $table.appVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get schemaVersion => $composableBuilder(
+    column: $table.schemaVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get verifiedAt => $composableBuilder(
+    column: $table.verifiedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fileDeletedAt => $composableBuilder(
+    column: $table.fileDeletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AuditExportHistoryTableOrderingComposer
+    extends Composer<_$AppDatabase, $AuditExportHistoryTable> {
+  $$AuditExportHistoryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get periodKind => $composableBuilder(
+    column: $table.periodKind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get periodLabel => $composableBuilder(
+    column: $table.periodLabel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get periodFrom => $composableBuilder(
+    column: $table.periodFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get periodTo => $composableBuilder(
+    column: $table.periodTo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get format => $composableBuilder(
+    column: $table.format,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get datasets => $composableBuilder(
+    column: $table.datasets,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sha256 => $composableBuilder(
+    column: $table.sha256,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get integrityStatus => $composableBuilder(
+    column: $table.integrityStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get chainStatus => $composableBuilder(
+    column: $table.chainStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get appVersion => $composableBuilder(
+    column: $table.appVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get schemaVersion => $composableBuilder(
+    column: $table.schemaVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get verifiedAt => $composableBuilder(
+    column: $table.verifiedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fileDeletedAt => $composableBuilder(
+    column: $table.fileDeletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AuditExportHistoryTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AuditExportHistoryTable> {
+  $$AuditExportHistoryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get periodKind => $composableBuilder(
+    column: $table.periodKind,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get periodLabel => $composableBuilder(
+    column: $table.periodLabel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get periodFrom => $composableBuilder(
+    column: $table.periodFrom,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get periodTo =>
+      $composableBuilder(column: $table.periodTo, builder: (column) => column);
+
+  GeneratedColumn<String> get format =>
+      $composableBuilder(column: $table.format, builder: (column) => column);
+
+  GeneratedColumn<String> get datasets =>
+      $composableBuilder(column: $table.datasets, builder: (column) => column);
+
+  GeneratedColumn<String> get fileName =>
+      $composableBuilder(column: $table.fileName, builder: (column) => column);
+
+  GeneratedColumn<int> get sizeBytes =>
+      $composableBuilder(column: $table.sizeBytes, builder: (column) => column);
+
+  GeneratedColumn<String> get sha256 =>
+      $composableBuilder(column: $table.sha256, builder: (column) => column);
+
+  GeneratedColumn<String> get integrityStatus => $composableBuilder(
+    column: $table.integrityStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get chainStatus => $composableBuilder(
+    column: $table.chainStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get appVersion => $composableBuilder(
+    column: $table.appVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get schemaVersion => $composableBuilder(
+    column: $table.schemaVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get verifiedAt => $composableBuilder(
+    column: $table.verifiedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get fileDeletedAt => $composableBuilder(
+    column: $table.fileDeletedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$AuditExportHistoryTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AuditExportHistoryTable,
+          AuditExportHistoryRow,
+          $$AuditExportHistoryTableFilterComposer,
+          $$AuditExportHistoryTableOrderingComposer,
+          $$AuditExportHistoryTableAnnotationComposer,
+          $$AuditExportHistoryTableCreateCompanionBuilder,
+          $$AuditExportHistoryTableUpdateCompanionBuilder,
+          (
+            AuditExportHistoryRow,
+            BaseReferences<
+              _$AppDatabase,
+              $AuditExportHistoryTable,
+              AuditExportHistoryRow
+            >,
+          ),
+          AuditExportHistoryRow,
+          PrefetchHooks Function()
+        > {
+  $$AuditExportHistoryTableTableManager(
+    _$AppDatabase db,
+    $AuditExportHistoryTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AuditExportHistoryTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AuditExportHistoryTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AuditExportHistoryTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<String> periodKind = const Value.absent(),
+                Value<String> periodLabel = const Value.absent(),
+                Value<String?> periodFrom = const Value.absent(),
+                Value<String?> periodTo = const Value.absent(),
+                Value<String> format = const Value.absent(),
+                Value<String> datasets = const Value.absent(),
+                Value<String> fileName = const Value.absent(),
+                Value<int> sizeBytes = const Value.absent(),
+                Value<String> sha256 = const Value.absent(),
+                Value<String> integrityStatus = const Value.absent(),
+                Value<String> chainStatus = const Value.absent(),
+                Value<String> appVersion = const Value.absent(),
+                Value<int> schemaVersion = const Value.absent(),
+                Value<int?> verifiedAt = const Value.absent(),
+                Value<int?> fileDeletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AuditExportHistoryCompanion(
+                id: id,
+                name: name,
+                createdAt: createdAt,
+                periodKind: periodKind,
+                periodLabel: periodLabel,
+                periodFrom: periodFrom,
+                periodTo: periodTo,
+                format: format,
+                datasets: datasets,
+                fileName: fileName,
+                sizeBytes: sizeBytes,
+                sha256: sha256,
+                integrityStatus: integrityStatus,
+                chainStatus: chainStatus,
+                appVersion: appVersion,
+                schemaVersion: schemaVersion,
+                verifiedAt: verifiedAt,
+                fileDeletedAt: fileDeletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required int createdAt,
+                required String periodKind,
+                required String periodLabel,
+                Value<String?> periodFrom = const Value.absent(),
+                Value<String?> periodTo = const Value.absent(),
+                required String format,
+                required String datasets,
+                required String fileName,
+                required int sizeBytes,
+                required String sha256,
+                required String integrityStatus,
+                required String chainStatus,
+                required String appVersion,
+                required int schemaVersion,
+                Value<int?> verifiedAt = const Value.absent(),
+                Value<int?> fileDeletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AuditExportHistoryCompanion.insert(
+                id: id,
+                name: name,
+                createdAt: createdAt,
+                periodKind: periodKind,
+                periodLabel: periodLabel,
+                periodFrom: periodFrom,
+                periodTo: periodTo,
+                format: format,
+                datasets: datasets,
+                fileName: fileName,
+                sizeBytes: sizeBytes,
+                sha256: sha256,
+                integrityStatus: integrityStatus,
+                chainStatus: chainStatus,
+                appVersion: appVersion,
+                schemaVersion: schemaVersion,
+                verifiedAt: verifiedAt,
+                fileDeletedAt: fileDeletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AuditExportHistoryTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AuditExportHistoryTable,
+      AuditExportHistoryRow,
+      $$AuditExportHistoryTableFilterComposer,
+      $$AuditExportHistoryTableOrderingComposer,
+      $$AuditExportHistoryTableAnnotationComposer,
+      $$AuditExportHistoryTableCreateCompanionBuilder,
+      $$AuditExportHistoryTableUpdateCompanionBuilder,
+      (
+        AuditExportHistoryRow,
+        BaseReferences<
+          _$AppDatabase,
+          $AuditExportHistoryTable,
+          AuditExportHistoryRow
+        >,
+      ),
+      AuditExportHistoryRow,
       PrefetchHooks Function()
     >;
 typedef $$InventoryBalancesTableCreateCompanionBuilder =
@@ -52661,6 +54174,8 @@ class $AppDatabaseManager {
       $$AuditEventsTableTableManager(_db, _db.auditEvents);
   $$AuditOutboxTableTableManager get auditOutbox =>
       $$AuditOutboxTableTableManager(_db, _db.auditOutbox);
+  $$AuditExportHistoryTableTableManager get auditExportHistory =>
+      $$AuditExportHistoryTableTableManager(_db, _db.auditExportHistory);
   $$InventoryBalancesTableTableManager get inventoryBalances =>
       $$InventoryBalancesTableTableManager(_db, _db.inventoryBalances);
   $$StockMovementsTableTableManager get stockMovements =>

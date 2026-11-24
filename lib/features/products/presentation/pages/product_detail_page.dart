@@ -46,6 +46,18 @@ class ProductDetailPage extends StatelessWidget {
                   },
                 ),
                 AppIconButton(
+                  key: const Key('product_tax'),
+                  tooltip: 'Tax and classification',
+                  icon: Icons.percent,
+                  onPressed: () async {
+                    await context.pushNamed(
+                      RouteNames.productTax,
+                      pathParameters: {'id': product.id},
+                    );
+                    await cubit.load(product.id);
+                  },
+                ),
+                AppIconButton(
                   key: const Key('toggle_archive_product'),
                   tooltip: product.isArchived ? 'Restore' : 'Archive',
                   icon: product.isArchived

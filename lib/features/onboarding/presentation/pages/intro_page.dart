@@ -114,76 +114,146 @@ class _IntroPageState extends State<IntroPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final dark = theme.brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: colors.surface,
       body: SafeArea(
         child: AppContentWidth(
           maxWidth: 560,
           child: Column(
             children: [
+              // Header
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20,
+                  AppSpacing.s24,
+                  AppSpacing.s16,
+                  AppSpacing.s24,
                   AppSpacing.s8,
-                  AppSpacing.s12,
-                  0,
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Image.asset(
                       dark
                           ? 'assets/branding/inventrix_symbol_dark.png'
                           : 'assets/branding/inventrix_symbol.png',
-                      width: 32,
-                      height: 32,
-                      excludeFromSemantics: true,
+                      width: 36,
+                      height: 36,
                       errorBuilder: (_, _, _) =>
-                          const SizedBox(width: 32, height: 32),
+                          Icon(
+                            Icons.inventory_2_rounded,
+                            size: 30,
+                            color: colors.primary,
+                          ),
                     ),
-                    Visibility(
-                      visible: !_isLast,
-                      maintainSize: true,
-                      maintainAnimation: true,
-                      maintainState: true,
-                      child: AppButton(
-                        key: const Key('intro_skip'),
-                        label: 'Skip',
-                        variant: AppButtonVariant.text,
-                        onPressed: () => _goTo(_slides.length - 1),
+                    const SizedBox(width: 10),
+                    Text(
+                      'INVENTRIX',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5,
                       ),
                     ),
+                    const Spacer(),
+                    if (!_isLast)
+                      TextButton(
+                        onPressed: () =>
+                            _goTo(_slides.length - 1),
+                        child: const Text('Skip'),
+                      ),
                   ],
                 ),
               ),
+
+              // Main content
               Expanded(
                 child: PageView.builder(
                   key: const Key('intro_pages'),
                   controller: _controller,
                   itemCount: _slides.length,
-                  onPageChanged: (page) => setState(() => _page = page),
-                  itemBuilder: (context, index) =>
-                      _SlideView(slide: _slides[index]),
+                  onPageChanged: (page) {
+                    setState(() => _page = page);
+                  },
+                  itemBuilder: (context, index) {
+                    return _SlideView(
+                      slide: _slides[index],
+                    );
+                  },
                 ),
               ),
-              Row(
-                key: const Key('intro_dots'),
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (var i = 0; i < _slides.length; i++)
-                    _Dot(active: i == _page),
-                ],
-              ),
+
+              // Bottom navigation
               Padding(
-                padding: const EdgeInsets.all(AppSpacing.s20),
-                child: AppButton(
-                  key: const Key('intro_next'),
-                  label: _isLast ? 'Continue' : 'Next',
-                  icon: _isLast ? Icons.check : Icons.arrow_forward,
-                  expand: true,
-                  onPressed: _isLast ? _finish : () => _goTo(_page + 1),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s24,
+                  AppSpacing.s12,
+                  AppSpacing.s24,
+                  AppSpacing.s24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          (_page + 1).toString().padLeft(2, '0'),
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: colors.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: LinearProgressIndicator(
+                              value: (_page + 1) / _slides.length,
+                              minHeight: 5,
+                              backgroundColor:
+                              colors.surfaceContainerHighest,
+                              color: colors.primary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _slides.length.toString().padLeft(2, '0'),
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: AppSpacing.s20),
+
+                    AppButton(
+                      key: const Key('intro_next'),
+                      label: _isLast ? 'Get Started' : 'Continue',
+                      icon: _isLast
+                          ? Icons.arrow_forward_rounded
+                          : Icons.arrow_forward_rounded,
+                      expand: true,
+                      onPressed: _isLast
+                          ? _finish
+                          : () => _goTo(_page + 1),
+                    ),
+
+                    if (!_isLast) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        'Swipe to explore Inventrix',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],
@@ -217,6 +287,7 @@ class _Dot extends StatelessWidget {
   }
 }
 
+
 class _SlideView extends StatelessWidget {
   const _SlideView({required this.slide});
 
@@ -225,76 +296,193 @@ class _SlideView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final tokens = context.appColors;
-    final colors = slide.tone.colors(context);
-    final info = AppTone.info.colors(context);
+    final tone = slide.tone.colors(context);
+
     return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s24),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colors.container,
-                  borderRadius: BorderRadius.circular(AppRadius.card * 1.5),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.s32),
-                  child: Icon(slide.icon, size: 56, color: colors.onContainer),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.s32),
-              Text(
-                slide.title,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headlineSmall,
-              ),
-              AppSpacing.gap12,
-              Text(
-                slide.message,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: tokens.textSecondary,
-                ),
-              ),
-              if (slide.showsDataNotice) ...[
-                AppSpacing.gap24,
-                DecoratedBox(
-                  key: const Key('intro_data_notice'),
-                  decoration: BoxDecoration(
-                    color: info.container,
-                    borderRadius: AppRadius.controlRadius,
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.s24,
+            vertical: AppSpacing.s16,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight - AppSpacing.s32,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Hero illustration
+                SizedBox(
+                  width: 220,
+                  height: 220,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 210,
+                        height: 210,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: colors.primary.withValues(alpha: 0.045),
+                        ),
+                      ),
+                      Container(
+                        width: 168,
+                        height: 168,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              tone.container,
+                              tone.container.withValues(alpha: 0.65),
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            slide.icon,
+                            size: 76,
+                            color: tone.onContainer,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 24,
+                        right: 20,
+                        child: _FloatingIcon(
+                          icon: Icons.check_circle_rounded,
+                          color: colors.primary,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 24,
+                        left: 16,
+                        child: _FloatingIcon(
+                          icon: Icons.auto_awesome_rounded,
+                          color: colors.tertiary,
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.s16),
+                ),
+
+                const SizedBox(height: AppSpacing.s24),
+
+                // Slide title
+                Text(
+                  slide.title,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    height: 1.2,
+                    letterSpacing: -0.8,
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.s16),
+
+                // Description
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 390,
+                  ),
+                  child: Text(
+                    slide.message,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: tokens.textSecondary,
+                      height: 1.65,
+                    ),
+                  ),
+                ),
+
+                // Information panel
+                if (slide.showsDataNotice) ...[
+                  const SizedBox(height: AppSpacing.s32),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(
+                      AppSpacing.s16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerLow,
+                      borderRadius: AppRadius.controlRadius,
+                      border: Border.all(
+                        color: colors.outlineVariant,
+                      ),
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.backup_outlined,
-                          size: 20,
-                          color: info.onContainer,
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: colors.primaryContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.shield_outlined,
+                            color: colors.onPrimaryContainer,
+                            size: 22,
+                          ),
                         ),
-                        AppSpacing.hGap12,
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             AppConstants.localDataWarning,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: info.onContainer,
+                              color: colors.onSurface,
+                              height: 1.5,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
+        );
+      },
+    );
+  }
+}
+
+class _FloatingIcon extends StatelessWidget {
+  const _FloatingIcon({
+    required this.icon,
+    required this.color,
+  });
+
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(11),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Icon(
+        icon,
+        size: 20,
+        color: color,
       ),
     );
   }

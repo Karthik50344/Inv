@@ -25,6 +25,7 @@ part 'app_database.g.dart';
     InvoiceItemTaxComponents,
     AuditEvents,
     AuditOutbox,
+    AuditExportHistory,
     Products,
     InventoryBalances,
     StockMovements,
@@ -56,7 +57,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Current schema version. Increment with every schema change and add a
   /// migration step plus a migration test.
-  static const int currentSchemaVersion = 12;
+  static const int currentSchemaVersion = 13;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -199,6 +200,9 @@ class AppDatabase extends _$AppDatabase {
         for (final statement in kSchemaExtraStatementsV12) {
           await customStatement(statement);
         }
+      }
+      if (from < 13) {
+        await migrator.createTable(auditExportHistory);
       }
     },
     beforeOpen: (details) async {

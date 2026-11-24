@@ -120,7 +120,27 @@ final class Product extends Equatable {
   /// Restored (active) copy.
   Product restored(DateTime at) => _copy(updatedAt: at);
 
-  Product _copy({required DateTime updatedAt, DateTime? archivedAt}) => Product(
+  /// A copy with another tax category and override (either may be `null`
+  /// to clear it). Keeps the archive state.
+  Product withTaxTreatment({
+    required DateTime at,
+    String? taxCategoryId,
+    String? taxOverrideId,
+  }) => _copy(
+    updatedAt: at,
+    archivedAt: archivedAt,
+    taxCategory: taxCategoryId,
+    taxOverride: taxOverrideId,
+    replaceTax: true,
+  );
+
+  Product _copy({
+    required DateTime updatedAt,
+    DateTime? archivedAt,
+    String? taxCategory,
+    String? taxOverride,
+    bool replaceTax = false,
+  }) => Product(
     id: id,
     sku: sku,
     barcode: barcode,
@@ -132,8 +152,8 @@ final class Product extends Equatable {
     sellingPrice: sellingPrice,
     priceIncludesTax: priceIncludesTax,
     taxRateId: taxRateId,
-    taxCategoryId: taxCategoryId,
-    taxOverrideId: taxOverrideId,
+    taxCategoryId: replaceTax ? taxCategory : taxCategoryId,
+    taxOverrideId: replaceTax ? taxOverride : taxOverrideId,
     reorderLevel: reorderLevel,
     imagePath: imagePath,
     createdAt: createdAt,

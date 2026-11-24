@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/di/register_backup.dart';
+import 'package:inventrix/app/di/register_exports.dart';
 import 'package:inventrix/app/di/register_blocs.dart';
 import 'package:inventrix/app/di/register_core.dart';
 import 'package:inventrix/app/di/register_repositories.dart';
@@ -30,6 +31,7 @@ Future<void> configureDependencies({
   registerUseCases(target);
   registerBlocs(target);
   registerBackup(target, runtime: runtime);
+  registerExports(target);
   target.registerLazySingleton<GoRouter>(
     () => AppRouter.create(
       locator: target,

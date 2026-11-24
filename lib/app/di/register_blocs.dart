@@ -1,4 +1,24 @@
 import 'package:get_it/get_it.dart';
+import 'package:inventrix/features/audit/domain/repositories/audit_operator_repository.dart';
+import 'package:inventrix/features/audit/domain/usecases/save_audit_operator_name.dart';
+import 'package:inventrix/features/taxation/domain/repositories/tax_config_repository.dart';
+import 'package:inventrix/features/taxation/domain/usecases/tax_config_editor.dart';
+import 'package:inventrix/features/taxation/presentation/bloc/tax_settings_cubit.dart';
+import 'package:inventrix/features/product_classification/domain/repositories/product_classification_repository.dart';
+import 'package:inventrix/features/product_classification/domain/usecases/classification_use_cases.dart';
+import 'package:inventrix/features/products/domain/usecases/set_product_tax_treatment.dart';
+import 'package:inventrix/features/products/presentation/bloc/product_tax_cubit.dart';
+import 'package:inventrix/features/taxation/domain/repositories/tax_repository.dart';
+import 'package:inventrix/features/audit/domain/repositories/audit_query_repository.dart';
+import 'package:inventrix/features/audit/domain/services/audit_canonical.dart';
+import 'package:inventrix/features/audit/domain/usecases/verify_audit_chain.dart';
+import 'package:inventrix/features/audit/presentation/bloc/audit_center_cubit.dart';
+import 'package:inventrix/features/audit/presentation/bloc/audit_event_cubit.dart';
+import 'package:inventrix/features/audit/presentation/bloc/audit_integrity_cubit.dart';
+import 'package:inventrix/features/audit/presentation/bloc/audit_log_cubit.dart';
+import 'package:inventrix/features/auditor_exports/domain/repositories/export_ports.dart';
+import 'package:inventrix/features/auditor_exports/domain/usecases/export_history_use_cases.dart';
+import 'package:inventrix/features/auditor_exports/presentation/bloc/export_history_cubit.dart';
 import 'package:inventrix/core/services/clock.dart';
 import 'package:inventrix/core/services/id_generator.dart';
 import 'package:inventrix/features/categories/domain/repositories/category_repository.dart';
@@ -433,6 +453,60 @@ void registerBlocs(GetIt g) {
         setNextDocumentNumber: g<SetNextDocumentNumber>(),
       ),
       dispose: (cubit) => cubit.close(),
+    )
+    ..registerFactory(
+      () => ProductTaxCubit(
+        products: g<ProductRepository>(),
+        tax: g<TaxRepository>(),
+        classifications: g<ProductClassificationRepository>(),
+        setTreatment: g<SetProductTaxTreatment>(),
+        add: g<AddProductClassification>(),
+        update: g<UpdateProductClassification>(),
+        remove: g<RemoveProductClassification>(),
+        setPrimary: g<SetPrimaryProductClassification>(),
+      ),
+    )
+    ..registerFactory(
+      () => TaxSettingsCubit(
+        read: g<TaxRepository>(),
+        preferences: g<TaxPreferencesRepository>(),
+        settings: g<SettingsRepository>(),
+        editor: g<TaxConfigEditor>(),
+      ),
+    )
+    ..registerFactory(
+      () => AuditCenterCubit(
+        queries: g<AuditQueryRepository>(),
+        exports: g<ListExportHistory>(),
+        operators: g<AuditOperatorRepository>(),
+        saveOperator: g<SaveAuditOperatorName>(),
+      ),
+    )
+    ..registerFactory(
+      () => AuditLogCubit(queries: g<AuditQueryRepository>()),
+    )
+    ..registerFactory(
+      () => AuditEventCubit(
+        queries: g<AuditQueryRepository>(),
+        hasher: g<AuditHasher>(),
+      ),
+    )
+    ..registerFactory(
+      () => AuditIntegrityCubit(
+        verify: g<VerifyAuditChain>(),
+        createCheckpoint: g<CreateAuditCheckpoint>(),
+        clock: g<Clock>(),
+      ),
+    )
+    ..registerFactoryParam<ExportListCubit, String?, void>(
+      (only, _) => ExportListCubit(
+        list: g<ListExportHistory>(),
+        history: g<ExportHistoryRepository>(),
+        verify: g<VerifyExportFile>(),
+        share: g<ShareExportFile>(),
+        deleteFile: g<DeleteExportFile>(),
+        only: only,
+      ),
     )
     ..registerFactory(
       () => TaxRatesCubit(
