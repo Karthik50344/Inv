@@ -123,6 +123,16 @@ void main() {
       expect(c.state.period!.fromText, '2026-05-01');
     });
 
+    test('opening the wizard from the audit log (preset without dates) works and the sets stay editable', () {
+      final c = wizard(ExportHarness(), preset: ExportPreset.auditTrail());
+      expect(c.state.datasets, {ExportDataset.auditTrail});
+      expect(c.state.periodKind, ExportPeriodKind.financialYear);
+      c.toggleDataset(ExportDataset.products, selected: true);
+      expect(c.state.datasets, {ExportDataset.auditTrail, ExportDataset.products});
+      c.selectAll();
+      expect(c.state.datasets, isNot(contains(ExportDataset.invoicePdfs)));
+    });
+
     test('creating the export gives a verified record', () async {
       final h = ExportHarness();
       final c = wizard(h)..selectNone()..toggleDataset(ExportDataset.products, selected: true);

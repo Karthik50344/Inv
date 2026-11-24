@@ -192,7 +192,10 @@ class ExportWizardCubit extends Cubit<ExportWizardState> {
       fyStartMonth: 4,
       customFrom: preset?.from,
       customTo: preset?.to,
-      datasets: preset?.datasets ?? {...ExportDataset.values}..remove(ExportDataset.invoicePdfs),
+      // Copy the preset's set (it may be const) so it is never modified.
+      datasets: preset?.datasets == null
+          ? ({...ExportDataset.values}..remove(ExportDataset.invoicePdfs))
+          : {...preset!.datasets!},
       format: preset?.format ?? ExportFormat.zip,
     );
   }
