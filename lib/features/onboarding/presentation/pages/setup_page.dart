@@ -1,7 +1,9 @@
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:inventrix/app/router/route_paths.dart';
 import 'package:inventrix/app/theme/app_radius.dart';
 import 'package:inventrix/app/theme/app_spacing.dart';
@@ -11,25 +13,26 @@ import 'package:inventrix/features/backup/presentation/bloc/backup_event.dart';
 import 'package:inventrix/features/backup/presentation/widgets/restore_confirmation_dialog.dart';
 import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
 
-/// First-time setup, shown after the introduction until the company details
-/// exist. The owner chooses one of two ways to get started:
+/// First-time setup, shown after the introduction until company details exist.
 ///
-/// * enter the company details, or
-/// * restore a backup file (which brings the company details with it).
-///
-/// Needs a [BackupBloc] above it. After a successful restore the whole app
-/// is rebuilt, so this page does not navigate by itself.
+/// The owner can either:
+/// - Enter company details.
+/// - Restore an existing backup.
 class SetupPage extends StatelessWidget {
-  /// Creates the page.
   const SetupPage({super.key});
 
   Future<void> _pickBackup(BuildContext context) async {
     final bloc = context.read<BackupBloc>();
+
     final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: const ['zip'],
     );
-    final path = result?.files.single.path;
+
+    if (result == null || result.files.isEmpty) return;
+
+    final path = result.files.single.path;
+
     if (path != null) {
       bloc.add(BackupFileSelected(path));
     }
@@ -38,27 +41,36 @@ class SetupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final tokens = context.appColors;
+    final colors = context.appColors;
     final brand = AppTone.brand.colors(context);
+
     return MultiBlocListener(
       listeners: [
         BlocListener<BackupBloc, BackupState>(
-          listenWhen: (a, b) => a.error != b.error && b.error != null,
-          listener: (context, state) =>
-              showAppMessage(context, state.error!, type: AppMessageType.error),
+          listenWhen: (previous, current) =>
+          previous.error != current.error && current.error != null,
+          listener: (context, state) {
+            showAppMessage(
+              context,
+              state.error!,
+              type: AppMessageType.error,
+            );
+          },
         ),
         BlocListener<BackupBloc, BackupState>(
-          listenWhen: (a, b) =>
-              a.preview == null &&
-              b.preview != null &&
-              b.activity == BackupActivity.idle,
+          listenWhen: (previous, current) =>
+          previous.preview == null &&
+              current.preview != null &&
+              current.activity == BackupActivity.idle,
           listener: (context, state) async {
             final bloc = context.read<BackupBloc>();
+
             final confirmed = await showRestoreConfirmationDialog(
               context,
               state.preview!,
               firstSetup: true,
             );
+
             bloc.add(
               confirmed
                   ? const BackupRestoreConfirmed()
@@ -72,77 +84,182 @@ class SetupPage extends StatelessWidget {
           child: BlocBuilder<BackupBloc, BackupState>(
             builder: (context, state) {
               final busy = state.busy;
+
               return Column(
                 children: [
-                  if (busy)
-                    const LinearProgressIndicator(
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: busy
+                        ? const LinearProgressIndicator(
                       key: Key('setup_progress'),
                       minHeight: 3,
+                    )
+                        : const SizedBox(
+                      key: Key('setup_idle'),
+                      height: 3,
                     ),
+                  ),
                   Expanded(
                     child: AppContentWidth(
                       maxWidth: 560,
                       child: ListView(
-                        padding: const EdgeInsets.all(AppSpacing.s24),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s24,
+                          vertical: AppSpacing.s32,
+                        ),
                         children: [
-                          AppSpacing.gap24,
+                          // Hero section
                           Center(
-                            child: DecoratedBox(
+                            child: Container(
+                              width: 104,
+                              height: 104,
                               decoration: BoxDecoration(
                                 color: brand.container,
                                 borderRadius: BorderRadius.circular(
                                   AppRadius.card * 1.5,
                                 ),
+                                border: Border.all(
+                                  color: brand.solid.withValues(alpha: 0.12),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: brand.solid.withValues(alpha: 0.10),
+                                    blurRadius: 28,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                ],
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(AppSpacing.s24),
-                                child: Icon(
-                                  Icons.storefront_outlined,
-                                  size: 48,
+                              child: Icon(
+                                Icons.storefront_rounded,
+                                size: 46,
+                                color: brand.onContainer,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: AppSpacing.s24),
+
+                          // Eyebrow label
+                          Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.s12,
+                                vertical: AppSpacing.s8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: brand.container,
+                                borderRadius: AppRadius.pillRadius,
+                              ),
+                              child: Text(
+                                'FIRST-TIME SETUP',
+                                style: theme.textTheme.labelSmall?.copyWith(
                                   color: brand.onContainer,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.1,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.s24),
+
+                          const SizedBox(height: AppSpacing.s16),
+
                           Text(
                             'Set up your business',
                             textAlign: TextAlign.center,
-                            style: theme.textTheme.headlineSmall,
-                          ),
-                          AppSpacing.gap12,
-                          Text(
-                            'Your company details are needed before you '
-                            'start, because they appear on your invoices. '
-                            'Choose how you want to begin.',
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: tokens.textSecondary,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.6,
+                              color: colors.primaryText,
                             ),
                           ),
+
+                          const SizedBox(height: AppSpacing.s12),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.s8,
+                            ),
+                            child: Text(
+                              'Your company details are needed before you '
+                                  'start, because they appear on your invoices. '
+                                  'Choose how you want to begin.',
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colors.textSecondary,
+                                height: 1.6,
+                              ),
+                            ),
+                          ),
+
                           const SizedBox(height: AppSpacing.s32),
+
+                          // Options heading
+                          Text(
+                            'CHOOSE HOW TO CONTINUE',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colors.textSecondary,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.1,
+                            ),
+                          ),
+
+                          const SizedBox(height: AppSpacing.s16),
+
+                          // Create company option
                           _OptionCard(
                             key: const Key('setup_company'),
-                            icon: Icons.edit_note_outlined,
+                            icon: Icons.business_rounded,
                             title: 'Enter company details',
                             subtitle:
-                                'New to Inventrix? Add your business name, '
+                            'New to Inventrix? Add your business name, '
                                 'address and contact details.',
+                            badge: 'RECOMMENDED',
                             highlighted: true,
                             onTap: busy
                                 ? null
-                                : () => context.push(RoutePaths.setupCompany),
+                                : () => context.push(
+                              RoutePaths.setupCompany,
+                            ),
                           ),
-                          AppSpacing.gap12,
+
+                          const SizedBox(height: AppSpacing.s16),
+
+                          // Restore backup option
                           _OptionCard(
                             key: const Key('setup_restore'),
-                            icon: Icons.restore_outlined,
-                            title: 'Use a backup file',
+                            icon: Icons.cloud_download_outlined,
+                            title: 'Restore from backup',
                             subtitle:
-                                'Already used Inventrix? Pick a backup (.zip) '
-                                'to bring back your data and company '
-                                'details.',
+                            'Already used Inventrix? Select a backup '
+                                '(.zip) to bring back your data and '
+                                'company details.',
                             onTap: busy ? null : () => _pickBackup(context),
+                          ),
+
+                          const SizedBox(height: AppSpacing.s24),
+
+                          // Supporting information
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.info_outline_rounded,
+                                  size: 15,
+                                  color: colors.textSecondary,
+                                ),
+                                const SizedBox(width: AppSpacing.s8),
+                                Flexible(
+                                  child: Text(
+                                    'You can restore an existing backup at setup.',
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -165,6 +282,7 @@ class _OptionCard extends StatelessWidget {
     required this.subtitle,
     required this.onTap,
     this.highlighted = false,
+    this.badge,
     super.key,
   });
 
@@ -173,46 +291,102 @@ class _OptionCard extends StatelessWidget {
   final String subtitle;
   final VoidCallback? onTap;
   final bool highlighted;
+  final String? badge;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final tokens = context.appColors;
+    final colors = context.appColors;
     final brand = AppTone.brand.colors(context);
+
     return AppCard(
       selected: highlighted,
       onTap: onTap,
-      child: Row(
-        children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: brand.container,
-              borderRadius: BorderRadius.circular(AppRadius.small),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.s8,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icon
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: brand.container,
+                borderRadius: AppRadius.controlRadius,
+              ),
+              child: Icon(
+                icon,
+                size: 24,
+                color: brand.onContainer,
+              ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.s12),
-              child: Icon(icon, size: 24, color: brand.onContainer),
-            ),
-          ),
-          AppSpacing.hGap16,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: theme.textTheme.titleMedium),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: tokens.textSecondary,
+
+            const SizedBox(width: AppSpacing.s16),
+
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (badge != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.s8,
+                        vertical: AppSpacing.s4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: brand.container,
+                        borderRadius: AppRadius.pillRadius,
+                      ),
+                      child: Text(
+                        badge!,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: brand.onContainer,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.s8),
+                  ],
+
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colors.primaryText,
+                    ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: AppSpacing.s4),
+
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          AppSpacing.hGap8,
-          Icon(Icons.chevron_right, color: tokens.textSecondary),
-        ],
+
+            const SizedBox(width: AppSpacing.s8),
+
+            // Trailing action
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.s8),
+              child: Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 15,
+                color: colors.textSecondary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
