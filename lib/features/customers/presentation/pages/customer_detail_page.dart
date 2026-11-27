@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/features/payments/domain/entities/party_type.dart';
 import 'package:inventrix/features/payments/presentation/widgets/party_balance_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

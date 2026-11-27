@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/app/theme/app_theme_extensions.dart';
 
 /// Kind of message shown by [showAppMessage].

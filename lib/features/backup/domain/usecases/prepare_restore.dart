@@ -29,7 +29,13 @@ final class PrepareRestore {
   final BackupLocations _locations;
 
   /// Validates the archive at [archivePath].
-  Future<Result<BackupPreview>> call(String archivePath) async {
+  ///
+  /// [passphrase] is the recovery passphrase, needed only for a backup made
+  /// on another device or installation.
+  Future<Result<BackupPreview>> call(
+    String archivePath, {
+    String? passphrase,
+  }) async {
     String? staging;
     var succeeded = false;
     try {
@@ -37,6 +43,7 @@ final class PrepareRestore {
       final unpacked = await _packager.unpack(
         archivePath: archivePath,
         stagingDirectory: staging,
+        passphrase: passphrase,
       );
       if (unpacked case Err<StagedBackup>(:final failure)) {
         return Result.failure(failure);
@@ -51,7 +58,10 @@ final class PrepareRestore {
         return Result.failure(incompatible);
       }
 
-      final inspected = await _inspector.inspect(staged.databasePath);
+      final inspected = await _inspector.inspect(
+        staged.databasePath,
+        key: staged.databaseKey,
+      );
       if (inspected case Err<DatabaseInspection>(:final failure)) {
         return Result.failure(failure);
       }

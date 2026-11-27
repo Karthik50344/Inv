@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Shows an image stored by `ImageStorage`, resolving its relative path
 /// first. Falls back to [placeholder] when there is no image.

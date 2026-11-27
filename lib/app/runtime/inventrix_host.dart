@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/app/app.dart';
 import 'package:inventrix/app/runtime/inventrix_runtime.dart';
 import 'package:inventrix/app/runtime/startup_failure_app.dart';
@@ -53,7 +53,7 @@ class _InventrixHostState extends State<InventrixHost> {
               scaffoldMessengerKey: _messenger,
             );
           case RuntimePhase.failed:
-            return const StartupFailureApp();
+            return StartupFailureApp(message: runtime.failureMessage);
           case RuntimePhase.starting:
           case RuntimePhase.restarting:
             return MaterialApp(

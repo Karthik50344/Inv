@@ -5,6 +5,7 @@ import 'package:inventrix/core/services/id_generator.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_kind.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_record.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_history_repository.dart';
+import 'package:inventrix/features/backup/domain/repositories/backup_key_provider.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_locations.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_packager.dart';
 import 'package:inventrix/features/backup/domain/repositories/database_inspector.dart';
@@ -18,8 +19,10 @@ import 'package:path/path.dart' as p;
 ///    copy of a file that is in use).
 /// 2. Refuse to package a snapshot that fails the integrity or foreign-key
 ///    check: a backup of a damaged database would give false comfort.
-/// 3. Write the ZIP (database, attachments, manifest with SHA-256 checksums).
-/// 4. Re-read the finished archive and verify every checksum.
+/// 3. Write the ZIP (database, attachments, manifest with SHA-256 checksums)
+///    and seal it in the authenticated encryption container; the plaintext
+///    ZIP never leaves the private scratch folder and is overwritten.
+/// 4. Re-open the finished container and verify every checksum.
 /// 5. Record the result (also failures) in the history.
 final class CreateBackup {
   /// Creates the use case.
@@ -29,6 +32,7 @@ final class CreateBackup {
     required BackupPackager packager,
     required BackupLocations locations,
     required BackupHistoryRepository history,
+    required BackupKeyProvider keys,
     required IdGenerator ids,
     required Clock clock,
     required String appVersion,
@@ -37,6 +41,7 @@ final class CreateBackup {
        _packager = packager,
        _locations = locations,
        _history = history,
+       _keys = keys,
        _ids = ids,
        _clock = clock,
        _appVersion = appVersion;
@@ -46,17 +51,36 @@ final class CreateBackup {
   final BackupPackager _packager;
   final BackupLocations _locations;
   final BackupHistoryRepository _history;
+  final BackupKeyProvider _keys;
   final IdGenerator _ids;
   final Clock _clock;
   final String _appVersion;
 
+  /// Shortest accepted recovery passphrase.
+  static const int minPassphraseLength = 10;
+
   /// Creates a backup of [kind] (`backup`, or `safety` before a restore).
+  ///
+  /// With a [recoveryPassphrase] the backup can also be opened on another
+  /// device or after a reinstall; without one only this installation can
+  /// open it.
   Future<Result<BackupRecord>> call({
     BackupKind kind = BackupKind.backup,
+    String? recoveryPassphrase,
   }) async {
     if (kind == BackupKind.restore) {
       return const Result.failure(
         ValidationFailure('A restore is not a backup.'),
+      );
+    }
+    if (recoveryPassphrase != null &&
+        recoveryPassphrase.isNotEmpty &&
+        recoveryPassphrase.length < minPassphraseLength) {
+      return const Result.failure(
+        ValidationFailure(
+          'The recovery passphrase must have at least $minPassphraseLength '
+          'characters.',
+        ),
       );
     }
     final createdAt = _clock.now();
@@ -70,7 +94,10 @@ final class CreateBackup {
         return await _fail(kind, createdAt, failure);
       }
 
-      final inspection = await _inspector.inspect(snapshotPath);
+      final inspection = await _inspector.inspect(
+        snapshotPath,
+        key: _keys.databaseKey,
+      );
       if (inspection case Err<dynamic>(:final failure)) {
         return await _fail(kind, createdAt, failure);
       }
@@ -97,6 +124,7 @@ final class CreateBackup {
           createdAt: createdAt,
           appVersion: _appVersion,
           schemaVersion: health.schemaVersion,
+          recoveryPassphrase: recoveryPassphrase,
         ),
       );
       if (packed case Err<PackedBackup>(:final failure)) {

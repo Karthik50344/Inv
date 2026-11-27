@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventrix/features/backup/data/services/file_restore_swapper.dart';
+import 'package:inventrix/features/backup/data/services/backup_envelope.dart';
+import 'package:inventrix/features/backup/data/services/encrypted_backup_packager.dart';
 import 'package:inventrix/features/backup/data/services/zip_backup_packager.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_kind.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_exporter.dart';
@@ -29,13 +31,20 @@ void main() {
     final ids = SeqIds();
     final snapshotter = FakeSnapshotter(storage.database);
     final inspector = FakeInspector();
-    final packager = ZipBackupPackager();
+    final keys = FakeKeys();
+    final packager = EncryptedBackupPackager(
+      inner: ZipBackupPackager(),
+      keys: keys,
+      locations: storage.locations,
+      envelope: BackupEnvelope(argonMemoryKib: 64, argonIterations: 1),
+    );
     final create = CreateBackup(
       snapshotter: snapshotter,
       inspector: inspector,
       packager: packager,
       locations: storage.locations,
       history: history,
+      keys: keys,
       ids: ids,
       clock: clock,
       appVersion: '1.0.0',
@@ -64,6 +73,8 @@ void main() {
         inspector: inspector,
         locations: storage.locations,
         createBackup: create,
+        keys: keys,
+        aligner: FakeAligner(),
         swapper: FileRestoreSwapper(),
         journal: InMemoryJournal(),
         runtime: runtime,

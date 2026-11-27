@@ -485,3 +485,6 @@ Checkpoints A-D1 were compiled, analysed and tested by the project owner before 
 - Things to check first when you run it: the product detail page gained an app-bar action (a test that counts actions would notice), the More page gained "Tax settings" (the 400x1600 test lists every destination), and my added imports are not alphabetically sorted.
 - Still open: signed export manifests; audit of categories, units, customers, suppliers and backup/restore events; an in-app HSN/SAC / tax summary report screen; bulk category assignment; the final full regression and acceptance report (step 15).
 
+### Issue 1 (hardening series): database and backup encryption - implemented, partly verified
+- SQLCipher 4 via the sqlite3 build hook, Keystore/Keychain key storage, safe plaintext-to-encrypted migration, authenticated encrypted backup container with device and passphrase key slots, key-aligned restore. See `docs/security/database_encryption.md`.
+- Verified outside Flutter against the real SQLCipher 4.20 binary and real Dart 3.14 (see the Issue 1 report); `flutter analyze`, the widget/BLoC tests and on-device Keystore/Keychain behaviour are **not yet run**.

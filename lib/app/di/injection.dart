@@ -9,6 +9,7 @@ import 'package:inventrix/app/di/register_usecases.dart';
 import 'package:inventrix/app/router/app_router.dart';
 import 'package:inventrix/app/router/route_paths.dart';
 import 'package:inventrix/core/database/app_database.dart';
+import 'package:inventrix/core/database/database_session.dart';
 import 'package:inventrix/features/backup/domain/repositories/app_runtime.dart';
 import 'package:inventrix/features/settings/presentation/bloc/settings_cubit.dart';
 
@@ -23,14 +24,15 @@ final GetIt getIt = GetIt.instance;
 Future<void> configureDependencies({
   GetIt? locator,
   AppDatabase? database,
+  DatabaseSession? session,
   AppRuntime? runtime,
 }) async {
   final target = locator ?? getIt;
-  registerCore(target, database: database);
+  registerCore(target, database: database, session: session);
   registerRepositories(target);
   registerUseCases(target);
   registerBlocs(target);
-  registerBackup(target, runtime: runtime);
+  registerBackup(target, runtime: runtime, session: session);
   registerExports(target);
   target.registerLazySingleton<GoRouter>(
     () => AppRouter.create(

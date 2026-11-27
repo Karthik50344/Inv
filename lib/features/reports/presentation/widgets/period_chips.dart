@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/features/reports/domain/entities/report_period.dart';
 import 'package:inventrix/shared/domain/value_objects/date_range.dart';

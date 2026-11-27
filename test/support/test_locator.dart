@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:inventrix/features/backup/data/services/app_storage_locations.dart';
 import 'package:inventrix/features/backup/data/services/file_restore_swapper.dart';
+import 'package:inventrix/features/backup/data/services/backup_envelope.dart';
+import 'package:inventrix/features/backup/data/services/encrypted_backup_packager.dart';
 import 'package:inventrix/features/backup/data/services/zip_backup_packager.dart';
 import 'package:inventrix/features/backup/domain/usecases/create_backup.dart';
 import 'package:inventrix/features/backup/domain/usecases/manage_backups.dart';
@@ -120,7 +122,13 @@ class TestWiring {
     );
     final history = bk.InMemoryHistory();
     final inspector = bk.FakeInspector();
-    final packager = ZipBackupPackager();
+    final keys = bk.FakeKeys();
+    final packager = EncryptedBackupPackager(
+      inner: ZipBackupPackager(),
+      keys: keys,
+      locations: locations,
+      envelope: BackupEnvelope(argonMemoryKib: 64, argonIterations: 1),
+    );
     final ids = bk.SeqIds();
     final backupClock = bk.FakeClock();
     final create = CreateBackup(
@@ -129,6 +137,7 @@ class TestWiring {
       packager: packager,
       locations: locations,
       history: history,
+      keys: keys,
       ids: ids,
       clock: backupClock,
       appVersion: '1.0.0',
@@ -155,6 +164,8 @@ class TestWiring {
           inspector: inspector,
           locations: locations,
           createBackup: create,
+          keys: keys,
+          aligner: bk.FakeAligner(),
           swapper: FileRestoreSwapper(),
           journal: bk.InMemoryJournal(),
           runtime: bk.FakeRuntime(),

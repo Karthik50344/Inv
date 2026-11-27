@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventrix/app/theme/app_theme.dart';
 import 'package:inventrix/features/settings/presentation/widgets/theme_mode_selector.dart';

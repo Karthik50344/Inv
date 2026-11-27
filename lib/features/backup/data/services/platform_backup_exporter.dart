@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
+import 'package:inventrix/features/backup/domain/entities/backup_format.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_exporter.dart';
 import 'package:logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
@@ -43,10 +44,10 @@ final class PlatformBackupExporter implements BackupExporter {
             fileName: fileName,
             bytes: bytes,
             type: FileType.custom,
-            allowedExtensions: const ['zip'],
+            allowedExtensions: const [BackupFormat.fileExtension, 'zip'],
           );
           return Result.success(
-            ExportResult(completed: saved != null, destination: saved),
+            ExportResult(completed: saved != null, destination: saved?.path),
           );
       }
     } on Object catch (error, stackTrace) {

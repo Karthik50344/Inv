@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/core/formatters/money_formatter.dart';
 import 'package:inventrix/features/payments/domain/entities/open_invoice.dart';
 import 'package:inventrix/features/payments/presentation/bloc/payment_methods_cubit.dart';

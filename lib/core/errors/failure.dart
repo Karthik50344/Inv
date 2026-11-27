@@ -81,6 +81,21 @@ final class BackupFailure extends Failure {
   const BackupFailure(super.message, {super.cause, super.stackTrace});
 }
 
+/// A backup needs a recovery passphrase (or the one given was wrong).
+final class BackupPassphraseFailure extends Failure {
+  /// Creates a [BackupPassphraseFailure]; [incorrect] is `true` when a
+  /// passphrase was supplied but did not match.
+  const BackupPassphraseFailure(
+    super.message, {
+    this.incorrect = false,
+    super.cause,
+    super.stackTrace,
+  });
+
+  /// Whether a supplied passphrase was wrong.
+  final bool incorrect;
+}
+
 /// Restoring a backup failed.
 final class RestoreFailure extends Failure {
   /// Creates a [RestoreFailure].

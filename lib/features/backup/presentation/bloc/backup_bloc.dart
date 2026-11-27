@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_kind.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_record.dart';
@@ -32,6 +33,21 @@ enum BackupActivity {
   restoring,
 }
 
+/// A backup that needs a recovery passphrase before it can be checked.
+final class PassphrasePrompt extends Equatable {
+  /// Creates the prompt.
+  const PassphrasePrompt({required this.path, this.incorrect = false});
+
+  /// File waiting for the passphrase.
+  final String path;
+
+  /// Whether the previous attempt was wrong.
+  final bool incorrect;
+
+  @override
+  List<Object?> get props => [path, incorrect];
+}
+
 /// State of the backup screen.
 final class BackupState extends Equatable {
   /// Creates a state.
@@ -40,6 +56,7 @@ final class BackupState extends Equatable {
     this.records = const [],
     this.activity = BackupActivity.idle,
     this.preview,
+    this.passphrasePrompt,
     this.message,
     this.error,
   });
@@ -55,6 +72,9 @@ final class BackupState extends Equatable {
 
   /// A validated backup waiting for the user's confirmation.
   final BackupPreview? preview;
+
+  /// Set while a backup waits for its recovery passphrase.
+  final PassphrasePrompt? passphrasePrompt;
 
   /// One-shot success message.
   final String? message;
@@ -96,6 +116,8 @@ final class BackupState extends Equatable {
     BackupActivity? activity,
     BackupPreview? preview,
     bool clearPreview = false,
+    PassphrasePrompt? passphrasePrompt,
+    bool clearPassphrasePrompt = false,
     String? message,
     String? error,
   }) => BackupState(
@@ -103,6 +125,9 @@ final class BackupState extends Equatable {
     records: records ?? this.records,
     activity: activity ?? this.activity,
     preview: clearPreview ? null : (preview ?? this.preview),
+    passphrasePrompt: clearPassphrasePrompt
+        ? null
+        : (passphrasePrompt ?? this.passphrasePrompt),
     message: message,
     error: error,
   );
@@ -113,6 +138,7 @@ final class BackupState extends Equatable {
     records,
     activity,
     preview,
+    passphrasePrompt,
     message,
     error,
   ];
@@ -147,10 +173,15 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     on<BackupExportRequested>(_onExport, transformer: sequentialTransformer());
     on<BackupDeleteRequested>(_onDelete, transformer: sequentialTransformer());
     on<BackupFileSelected>(
-      (event, emit) => _validate(event.path, emit),
+      (event, emit) =>
+          _validate(event.path, emit, passphrase: event.passphrase),
       transformer: sequentialTransformer(),
     );
     on<BackupStoredSelected>(_onStored, transformer: sequentialTransformer());
+    on<BackupPassphraseCancelled>(
+      (event, emit) => emit(state.copyWith(clearPassphrasePrompt: true)),
+      transformer: sequentialTransformer(),
+    );
     on<BackupPreviewDiscarded>(
       _onDiscard,
       transformer: sequentialTransformer(),
@@ -194,7 +225,9 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
       return;
     }
     emit(state.copyWith(activity: BackupActivity.creating));
-    final result = await _create();
+    final result = await _create(
+      recoveryPassphrase: event.recoveryPassphrase,
+    );
     await _refreshAfter(
       emit,
       result.when(
@@ -249,7 +282,11 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     await _validate(await _locations.resolveBackup(stored), emit);
   }
 
-  Future<void> _validate(String path, Emitter<BackupState> emit) async {
+  Future<void> _validate(
+    String path,
+    Emitter<BackupState> emit, {
+    String? passphrase,
+  }) async {
     if (state.busy) {
       return;
     }
@@ -258,17 +295,29 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
       await _discard(old.staged);
     }
     emit(
-      state.copyWith(activity: BackupActivity.validating, clearPreview: true),
+      state.copyWith(
+        activity: BackupActivity.validating,
+        clearPreview: true,
+        clearPassphrasePrompt: true,
+      ),
     );
-    final result = await _prepare(path);
+    final result = await _prepare(path, passphrase: passphrase);
     result.when(
       success: (preview) =>
           emit(state.copyWith(activity: BackupActivity.idle, preview: preview)),
       failure: (failure) => emit(
-        state.copyWith(
-          activity: BackupActivity.idle,
-          error: failure.userMessage,
-        ),
+        failure is BackupPassphraseFailure
+            ? state.copyWith(
+                activity: BackupActivity.idle,
+                passphrasePrompt: PassphrasePrompt(
+                  path: path,
+                  incorrect: failure.incorrect,
+                ),
+              )
+            : state.copyWith(
+                activity: BackupActivity.idle,
+                error: failure.userMessage,
+              ),
       ),
     );
   }

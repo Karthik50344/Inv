@@ -8,6 +8,13 @@ analyzer:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - drift_schemas/**
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/features/backup/data/services/file_restore_swapper.dart';
+import 'package:inventrix/features/backup/data/services/backup_envelope.dart';
+import 'package:inventrix/features/backup/data/services/encrypted_backup_packager.dart';
 import 'package:inventrix/features/backup/data/services/zip_backup_packager.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_kind.dart';
 import 'package:inventrix/features/backup/domain/entities/restore_journal.dart';
@@ -23,7 +25,9 @@ void main() {
   late SeqIds ids;
   late FakeSnapshotter snapshotter;
   late FakeInspector inspector;
-  late ZipBackupPackager packager;
+  late BackupPackager packager;
+  late FakeKeys keys;
+  late FakeAligner aligner;
   late InMemoryHistory history;
   late InMemoryJournal journal;
   late FakeRuntime runtime;
@@ -38,7 +42,14 @@ void main() {
     ids = SeqIds();
     snapshotter = FakeSnapshotter(storage.database);
     inspector = FakeInspector();
-    packager = ZipBackupPackager();
+    keys = FakeKeys();
+    aligner = FakeAligner();
+    packager = EncryptedBackupPackager(
+      inner: ZipBackupPackager(),
+      keys: keys,
+      locations: storage.locations,
+      envelope: BackupEnvelope(argonMemoryKib: 64, argonIterations: 1),
+    );
     history = InMemoryHistory();
     journal = InMemoryJournal();
     runtime = FakeRuntime();
@@ -49,6 +60,7 @@ void main() {
       packager: packager,
       locations: storage.locations,
       history: history,
+      keys: keys,
       ids: ids,
       clock: clock,
       appVersion: '1.0.0',
@@ -62,6 +74,8 @@ void main() {
       inspector: inspector,
       locations: storage.locations,
       createBackup: create,
+      keys: keys,
+      aligner: aligner,
       swapper: swapper,
       journal: journal,
       runtime: runtime,
@@ -90,7 +104,7 @@ void main() {
       final record = result.valueOrNull!;
       expect(record.kind, BackupKind.backup);
       expect(record.sha256!.length, 64);
-      expect(record.fileName, 'inventrix_backup_20261115_100000.zip');
+      expect(record.fileName, 'inventrix_backup_20261115_100000.ivxbak');
       expect(history.rows[record.id], record);
       expect(await storage.locations.backupExists(record.storedPath!), isTrue);
     });

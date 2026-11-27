@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/app/theme/app_spacing.dart';
 
 /// Shows a modal bottom sheet with the app look and returns what it pops.

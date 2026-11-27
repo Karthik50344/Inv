@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventrix/app/router/more_destinations.dart';
 import 'package:inventrix/app/shell/more_page.dart';

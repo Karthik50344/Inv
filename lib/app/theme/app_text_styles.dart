@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Typography adjustments applied on top of the Material 3 defaults.
 abstract final class AppTextStyles {

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:inventrix/core/security/database_key.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_manifest.dart';
 import 'package:inventrix/features/backup/domain/entities/database_inspection.dart';
 
@@ -14,6 +15,8 @@ final class StagedBackup extends Equatable {
     required this.sourceName,
     required this.archiveSha256,
     required this.archiveSizeBytes,
+    this.databaseKey,
+    this.isLegacyPlaintext = false,
   });
 
   /// Verified manifest.
@@ -37,6 +40,33 @@ final class StagedBackup extends Equatable {
   /// Size of the archive file.
   final int archiveSizeBytes;
 
+  /// Key of the staged database file (kept in memory only). `null` means the
+  /// staged database is a plain, unencrypted file from a legacy backup.
+  final SecretKey256? databaseKey;
+
+  /// Whether this came from an old, unencrypted backup file.
+  final bool isLegacyPlaintext;
+
+  /// Copy with the database key, legacy flag and (optionally) the details of
+  /// the outer file set.
+  StagedBackup withSecurity({
+    SecretKey256? databaseKey,
+    bool isLegacyPlaintext = false,
+    String? sourceName,
+    String? archiveSha256,
+    int? archiveSizeBytes,
+  }) => StagedBackup(
+    manifest: manifest,
+    directory: directory,
+    databasePath: databasePath,
+    dataFolders: dataFolders,
+    sourceName: sourceName ?? this.sourceName,
+    archiveSha256: archiveSha256 ?? this.archiveSha256,
+    archiveSizeBytes: archiveSizeBytes ?? this.archiveSizeBytes,
+    databaseKey: databaseKey,
+    isLegacyPlaintext: isLegacyPlaintext,
+  );
+
   @override
   List<Object?> get props => [
     manifest,
@@ -46,6 +76,8 @@ final class StagedBackup extends Equatable {
     sourceName,
     archiveSha256,
     archiveSizeBytes,
+    databaseKey,
+    isLegacyPlaintext,
   ];
 }
 

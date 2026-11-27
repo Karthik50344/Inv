@@ -1,6 +1,6 @@
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +9,7 @@ import 'package:inventrix/app/theme/app_radius.dart';
 import 'package:inventrix/app/theme/app_spacing.dart';
 import 'package:inventrix/app/theme/app_theme_extensions.dart';
 import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
+import 'package:inventrix/features/backup/presentation/widgets/backup_passphrase_dialogs.dart';
 import 'package:inventrix/features/backup/presentation/bloc/backup_event.dart';
 import 'package:inventrix/features/backup/presentation/widgets/restore_confirmation_dialog.dart';
 import 'package:inventrix/shared/presentation/widgets/app_widgets.dart';
@@ -24,14 +25,11 @@ class SetupPage extends StatelessWidget {
   Future<void> _pickBackup(BuildContext context) async {
     final bloc = context.read<BackupBloc>();
 
-    final result = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['zip'],
-    );
+    final result = await FilePicker.pickFiles();
 
-    if (result == null || result.files.isEmpty) return;
+    if (result == null || result.isEmpty) return;
 
-    final path = result.files.single.path;
+    final path = result.single.path;
 
     if (path != null) {
       bloc.add(BackupFileSelected(path));
@@ -46,6 +44,7 @@ class SetupPage extends StatelessWidget {
 
     return MultiBlocListener(
       listeners: [
+        backupPassphraseListener(),
         BlocListener<BackupBloc, BackupState>(
           listenWhen: (previous, current) =>
           previous.error != current.error && current.error != null,
@@ -231,7 +230,7 @@ class SetupPage extends StatelessWidget {
                             title: 'Restore from backup',
                             subtitle:
                             'Already used Inventrix? Select a backup '
-                                '(.zip) to bring back your data and '
+                                '(.ivxbak) to bring back your data and '
                                 'company details.',
                             onTap: busy ? null : () => _pickBackup(context),
                           ),

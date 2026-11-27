@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/shared/presentation/widgets/app_search_field.dart';
 
 /// Search box used by the list screens.

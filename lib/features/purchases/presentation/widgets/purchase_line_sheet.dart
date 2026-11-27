@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/app/theme/app_dimensions.dart';
 import 'package:inventrix/features/products/domain/entities/product.dart';
 import 'package:inventrix/features/products/domain/entities/unit_of_measure.dart';

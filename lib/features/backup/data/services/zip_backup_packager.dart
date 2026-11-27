@@ -179,7 +179,10 @@ final class ZipBackupPackager implements BackupPackager {
   // -------------------------------------------------------------- verify
 
   @override
-  Future<Result<BackupManifest>> verify(String archivePath) async {
+  Future<Result<BackupManifest>> verify(
+    String archivePath, {
+    String? passphrase,
+  }) async {
     InputFileStream? input;
     try {
       input = InputFileStream(archivePath);
@@ -218,6 +221,7 @@ final class ZipBackupPackager implements BackupPackager {
   Future<Result<StagedBackup>> unpack({
     required String archivePath,
     required String stagingDirectory,
+    String? passphrase,
   }) async {
     final staging = Directory(stagingDirectory);
     InputFileStream? input;

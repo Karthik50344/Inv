@@ -8,7 +8,9 @@ import 'package:inventrix/features/backup/domain/entities/database_inspection.da
 import 'package:inventrix/features/backup/domain/entities/restore_journal.dart';
 import 'package:inventrix/features/backup/domain/entities/staged_backup.dart';
 import 'package:inventrix/features/backup/domain/repositories/app_runtime.dart';
+import 'package:inventrix/features/backup/domain/repositories/backup_key_provider.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_locations.dart';
+import 'package:inventrix/features/backup/domain/repositories/database_key_aligner.dart';
 import 'package:inventrix/features/backup/domain/repositories/database_inspector.dart';
 import 'package:inventrix/features/backup/domain/repositories/restore_journal_store.dart';
 import 'package:inventrix/features/backup/domain/repositories/restore_swapper.dart';
@@ -42,6 +44,8 @@ final class RestoreBackup {
     required DatabaseInspector inspector,
     required BackupLocations locations,
     required CreateBackup createBackup,
+    required BackupKeyProvider keys,
+    required DatabaseKeyAligner aligner,
     required RestoreSwapper swapper,
     required RestoreJournalStore journal,
     required AppRuntime runtime,
@@ -50,6 +54,8 @@ final class RestoreBackup {
   }) : _inspector = inspector,
        _locations = locations,
        _createBackup = createBackup,
+       _keys = keys,
+       _aligner = aligner,
        _swapper = swapper,
        _journal = journal,
        _runtime = runtime,
@@ -59,6 +65,8 @@ final class RestoreBackup {
   final DatabaseInspector _inspector;
   final BackupLocations _locations;
   final CreateBackup _createBackup;
+  final BackupKeyProvider _keys;
+  final DatabaseKeyAligner _aligner;
   final RestoreSwapper _swapper;
   final RestoreJournalStore _journal;
   final AppRuntime _runtime;
@@ -88,7 +96,10 @@ final class RestoreBackup {
 
     try {
       // 2. Upgrade and verify the staged copy.
-      final migrated = await _inspector.migrateAndInspect(staged.databasePath);
+      final migrated = await _inspector.migrateAndInspect(
+        staged.databasePath,
+        key: staged.databaseKey,
+      );
       if (migrated case Err<DatabaseInspection>(:final failure)) {
         return Result.failure(
           RestoreFailure(
@@ -106,6 +117,37 @@ final class RestoreBackup {
             '(${health.problem}), so nothing was changed.',
           ),
         );
+      }
+
+      // 2b. Make the staged database use THIS device's key, so the live
+      // database keeps opening with the key in secure storage. It is
+      // proven by opening the result with that key before anything live is
+      // touched.
+      final liveKey = _keys.databaseKey;
+      if (liveKey != null) {
+        final aligned = await _aligner.align(
+          staged.databasePath,
+          currentKey: staged.databaseKey,
+          targetKey: liveKey,
+        );
+        if (aligned case Err<void>(:final failure)) {
+          return Result.failure(failure);
+        }
+        final reopened = await _inspector.inspect(
+          staged.databasePath,
+          key: liveKey,
+        );
+        if (reopened case Err<DatabaseInspection>(:final failure)) {
+          return Result.failure(failure);
+        }
+        if (!reopened.valueOrNull!.isHealthy) {
+          return const Result.failure(
+            RestoreFailure(
+              'The backup failed its checks after being prepared for this '
+              'device, so nothing was changed.',
+            ),
+          );
+        }
       }
 
       // 3. Safety backup of what is about to be replaced.

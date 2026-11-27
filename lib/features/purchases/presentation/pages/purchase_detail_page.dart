@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/features/payments/presentation/widgets/invoice_settlement_card.dart';
 import 'package:inventrix/features/returns/presentation/widgets/invoice_returns_card.dart';
 import 'package:inventrix/shared/domain/enums/invoice_kind.dart';

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
 import 'package:inventrix/core/services/clock.dart';
+import 'package:inventrix/core/security/database_key.dart';
 import 'package:inventrix/core/services/id_generator.dart';
 import 'package:inventrix/features/backup/data/services/app_storage_locations.dart';
 import 'package:inventrix/features/backup/domain/entities/backup_record.dart';
@@ -11,9 +12,40 @@ import 'package:inventrix/features/backup/domain/entities/restore_journal.dart';
 import 'package:inventrix/features/backup/domain/repositories/app_runtime.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_exporter.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_history_repository.dart';
+import 'package:inventrix/features/backup/domain/repositories/backup_key_provider.dart';
+import 'package:inventrix/features/backup/domain/repositories/database_key_aligner.dart';
 import 'package:inventrix/features/backup/domain/repositories/database_inspector.dart';
 import 'package:inventrix/features/backup/domain/repositories/database_snapshotter.dart';
 import 'package:inventrix/features/backup/domain/repositories/restore_journal_store.dart';
+
+/// Keys of a pretend device. [databaseKey] is `null` for the plain in-memory
+/// setups most tests use.
+class FakeKeys implements BackupKeyProvider {
+  FakeKeys({SecretKey256? device, this.databaseKey})
+    : device = device ?? SecretKey256.generate();
+  final SecretKey256 device;
+  @override
+  final SecretKey256? databaseKey;
+  @override
+  Future<SecretKey256> deviceKey() async => device;
+}
+
+/// Records the re-keying requests of a restore.
+class FakeAligner implements DatabaseKeyAligner {
+  final List<(SecretKey256?, SecretKey256)> calls = [];
+  Failure? failure;
+  @override
+  Future<Result<void>> align(
+    String path, {
+    required SecretKey256? currentKey,
+    required SecretKey256 targetKey,
+  }) async {
+    calls.add((currentKey, targetKey));
+    return failure == null
+        ? const Result.success(null)
+        : Result.failure(failure!);
+  }
+}
 
 /// Clock that moves only when told to.
 class FakeClock implements Clock {
@@ -51,6 +83,7 @@ class FakeInspector implements DatabaseInspector {
   int schemaVersion;
   Failure? migrateFailure;
   final List<String> migrated = [];
+  final List<SecretKey256?> inspectedWithKeys = [];
   @override
   int get appSchemaVersion => 9;
 
@@ -65,11 +98,19 @@ class FakeInspector implements DatabaseInspector {
   }
 
   @override
-  Future<Result<DatabaseInspection>> inspect(String path) async =>
-      Result.success(await _look(path));
+  Future<Result<DatabaseInspection>> inspect(
+    String path, {
+    SecretKey256? key,
+  }) async {
+    inspectedWithKeys.add(key);
+    return Result.success(await _look(path));
+  }
 
   @override
-  Future<Result<DatabaseInspection>> migrateAndInspect(String path) async {
+  Future<Result<DatabaseInspection>> migrateAndInspect(
+    String path, {
+    SecretKey256? key,
+  }) async {
     if (migrateFailure != null) {
       return Result.failure(migrateFailure!);
     }

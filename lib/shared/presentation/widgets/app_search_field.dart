@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/app/theme/app_spacing.dart';
 
 /// Search box with a clear button and an optional trailing slot (for

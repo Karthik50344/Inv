@@ -10,6 +10,15 @@ abstract final class BackupFormat {
   /// version is refused.
   static const int formatVersion = 1;
 
+  /// File extension of encrypted backups.
+  static const String fileExtension = 'ivxbak';
+
+  /// Whether a plain ZIP made by an older version (before backups were
+  /// encrypted) may still be restored. Such files are never created any more.
+  /// They are not authenticated and not encrypted; restoring one re-encrypts
+  /// the data under this device's key. Set to `false` to refuse them.
+  static const bool allowLegacyPlaintextRestore = true;
+
   /// Manifest entry name.
   static const String manifestPath = 'manifest.json';
 

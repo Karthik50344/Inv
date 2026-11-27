@@ -50,3 +50,11 @@ Crash safety: on every start, before the database opens, `RecoverInterruptedRest
 - "Save to device" passes the archive bytes to the file picker (needed on mobile), so it also loads the file into memory.
 - Backups taken while another backup/restore is running are prevented only by the screen (one operation at a time), not by a global lock.
 - Automatic/scheduled backups are not implemented. Phase 11 adds a *backup reminder* preference (off/7/14/30 days) that shows a banner on the Backup screen when no backup was exported that recently. The business logo lives in `product_images/` and is therefore part of every backup.
+
+## Encryption (Issue 1)
+
+Backups are now **encrypted containers** named `inventrix_backup_YYYYMMDD_HHmmss.ivxbak`
+instead of plain ZIPs. The ZIP described above is the payload inside the container, and the database inside is SQLCipher-encrypted. Optional recovery
+passphrase at creation; passphrase prompt on restore when the backup was made on another device.
+Older `.zip` backups can still be restored. Details, limits and the restore key
+handling are in `docs/security/database_encryption.md`.

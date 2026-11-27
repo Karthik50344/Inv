@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/shared/presentation/widgets/app_app_bar.dart';
 import 'package:inventrix/shared/presentation/widgets/empty_state.dart';
 

@@ -14,6 +14,7 @@ final class PackRequest extends Equatable {
     required this.createdAt,
     required this.appVersion,
     required this.schemaVersion,
+    this.recoveryPassphrase,
   });
 
   /// Consistent snapshot to include.
@@ -33,6 +34,10 @@ final class PackRequest extends Equatable {
 
   /// Schema version of [databasePath].
   final int schemaVersion;
+
+  /// Optional passphrase that lets the backup be opened on another device.
+  /// Never stored; not part of equality.
+  final String? recoveryPassphrase;
 
   @override
   List<Object?> get props => [
@@ -82,7 +87,10 @@ abstract interface class BackupPackager {
 
   /// Re-reads the archive at [archivePath] and checks every checksum without
   /// extracting anything.
-  Future<Result<BackupManifest>> verify(String archivePath);
+  Future<Result<BackupManifest>> verify(
+    String archivePath, {
+    String? passphrase,
+  });
 
   /// Extracts the archive at [archivePath] into the empty directory
   /// [stagingDirectory] after validating every entry name, rejecting links
@@ -91,5 +99,6 @@ abstract interface class BackupPackager {
   Future<Result<StagedBackup>> unpack({
     required String archivePath,
     required String stagingDirectory,
+    String? passphrase,
   });
 }

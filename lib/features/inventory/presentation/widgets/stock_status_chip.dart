@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/features/inventory/domain/entities/stock_status.dart';
 import 'package:inventrix/shared/presentation/widgets/app_badge.dart';
 import 'package:inventrix/shared/presentation/widgets/app_tone.dart';

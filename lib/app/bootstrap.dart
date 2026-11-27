@@ -1,11 +1,11 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
 import 'package:inventrix/app/runtime/inventrix_host.dart';
 import 'package:inventrix/app/runtime/inventrix_runtime.dart';
 import 'package:inventrix/app/runtime/startup_failure_app.dart';
 import 'package:inventrix/core/logging/app_logger.dart';
 import 'package:logging/logging.dart';
+import 'package:material_ui/material_ui.dart';
 
 export 'package:inventrix/app/runtime/startup_failure_app.dart';
 
@@ -35,6 +35,6 @@ Future<void> bootstrap() async {
     runApp(InventrixHost(runtime: runtime));
   } on Object catch (error, stackTrace) {
     log.severe('Startup failed', error, stackTrace);
-    runApp(const StartupFailureApp());
+    runApp(StartupFailureApp(message: runtime.failureMessage));
   }
 }

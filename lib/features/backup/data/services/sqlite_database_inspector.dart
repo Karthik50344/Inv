@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:drift/native.dart';
 import 'package:inventrix/core/database/app_database.dart';
+import 'package:inventrix/core/database/sqlcipher_gateway_impl.dart';
 import 'package:inventrix/core/errors/failure.dart';
 import 'package:inventrix/core/result/result.dart';
+import 'package:inventrix/core/security/database_key.dart';
 import 'package:inventrix/features/backup/domain/entities/database_inspection.dart';
 import 'package:inventrix/features/backup/domain/repositories/database_inspector.dart';
 import 'package:logging/logging.dart';
@@ -30,10 +32,16 @@ final class SqliteDatabaseInspector implements DatabaseInspector {
   int get appSchemaVersion => AppDatabase.currentSchemaVersion;
 
   @override
-  Future<Result<DatabaseInspection>> inspect(String path) async {
+  Future<Result<DatabaseInspection>> inspect(
+    String path, {
+    SecretKey256? key,
+  }) async {
     Database? db;
     try {
       db = sqlite3.open(path, mode: OpenMode.readOnly);
+      if (key != null) {
+        applyKey(db, key.toHex());
+      }
       final integrity = db
           .select('PRAGMA integrity_check')
           .map((row) => row.values.first.toString())
@@ -69,13 +77,22 @@ final class SqliteDatabaseInspector implements DatabaseInspector {
         ),
       );
     } finally {
-      db?.dispose();
+      db?.close();
     }
   }
 
   @override
-  Future<Result<DatabaseInspection>> migrateAndInspect(String path) async {
-    final db = AppDatabase(NativeDatabase(File(path)));
+  Future<Result<DatabaseInspection>> migrateAndInspect(
+    String path, {
+    SecretKey256? key,
+  }) async {
+    final hex = key?.toHex();
+    final db = AppDatabase(
+      NativeDatabase(
+        File(path),
+        setup: hex == null ? null : (raw) => applyKey(raw, hex),
+      ),
+    );
     try {
       // Runs the same migrations and post-migration foreign-key check the
       // app runs at start-up.
@@ -92,6 +109,6 @@ final class SqliteDatabaseInspector implements DatabaseInspector {
     } finally {
       await db.close();
     }
-    return inspect(path);
+    return inspect(path, key: key);
   }
 }

@@ -5,7 +5,7 @@ import 'package:inventrix/features/products/domain/usecases/create_product.dart'
 import 'package:inventrix/features/products/presentation/pages/product_detail_page.dart';
 import 'package:inventrix/features/products/presentation/pages/product_form_page.dart';
 import 'package:inventrix/features/products/presentation/pages/products_page.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../support/test_locator.dart';
 import '../../support/widget_helpers.dart';

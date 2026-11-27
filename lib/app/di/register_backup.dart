@@ -2,11 +2,17 @@ import 'package:get_it/get_it.dart';
 import 'package:inventrix/app/runtime/unavailable_app_runtime.dart';
 import 'package:inventrix/core/constants/app_constants.dart';
 import 'package:inventrix/core/database/app_database.dart';
+import 'package:inventrix/core/database/database_session.dart';
+import 'package:inventrix/core/security/secret_store.dart';
+import 'package:inventrix/core/security/secure_storage_secret_store.dart';
 import 'package:inventrix/core/services/clock.dart';
 import 'package:inventrix/core/services/id_generator.dart';
 import 'package:inventrix/features/backup/data/repositories/drift_backup_history_repository.dart';
 import 'package:inventrix/features/backup/data/services/app_storage_locations.dart';
 import 'package:inventrix/features/backup/data/services/drift_database_snapshotter.dart';
+import 'package:inventrix/features/backup/data/services/encrypted_backup_packager.dart';
+import 'package:inventrix/features/backup/data/services/session_backup_key_provider.dart';
+import 'package:inventrix/features/backup/data/services/sqlcipher_key_aligner.dart';
 import 'package:inventrix/features/backup/data/services/file_restore_journal_store.dart';
 import 'package:inventrix/features/backup/data/services/file_restore_swapper.dart';
 import 'package:inventrix/features/backup/data/services/platform_backup_exporter.dart';
@@ -15,7 +21,9 @@ import 'package:inventrix/features/backup/data/services/zip_backup_packager.dart
 import 'package:inventrix/features/backup/domain/repositories/app_runtime.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_exporter.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_history_repository.dart';
+import 'package:inventrix/features/backup/domain/repositories/backup_key_provider.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_locations.dart';
+import 'package:inventrix/features/backup/domain/repositories/database_key_aligner.dart';
 import 'package:inventrix/features/backup/domain/repositories/backup_packager.dart';
 import 'package:inventrix/features/backup/domain/repositories/database_inspector.dart';
 import 'package:inventrix/features/backup/domain/repositories/database_snapshotter.dart';
@@ -33,8 +41,19 @@ import 'package:path_provider/path_provider.dart';
 ///
 /// [runtime] is the object that can stop and restart the app; without one a
 /// restore is refused before any file is touched.
-void registerBackup(GetIt locator, {AppRuntime? runtime}) {
+void registerBackup(
+  GetIt locator, {
+  AppRuntime? runtime,
+  DatabaseSession? session,
+}) {
   locator
+    ..registerLazySingleton<BackupKeyProvider>(
+      () => SessionBackupKeyProvider(
+        keys: SecretKeyManager(SecureStorageSecretStore()),
+        session: session,
+      ),
+    )
+    ..registerLazySingleton<DatabaseKeyAligner>(SqlcipherKeyAligner.new)
     ..registerLazySingleton<AppRuntime>(
       () => runtime ?? const UnavailableAppRuntime(),
     )
@@ -61,7 +80,13 @@ void registerBackup(GetIt locator, {AppRuntime? runtime}) {
       () => DriftDatabaseSnapshotter(locator<AppDatabase>()),
     )
     ..registerLazySingleton<DatabaseInspector>(SqliteDatabaseInspector.new)
-    ..registerLazySingleton<BackupPackager>(ZipBackupPackager.new)
+    ..registerLazySingleton<BackupPackager>(
+      () => EncryptedBackupPackager(
+        inner: ZipBackupPackager(),
+        keys: locator<BackupKeyProvider>(),
+        locations: locator<BackupLocations>(),
+      ),
+    )
     ..registerLazySingleton<BackupExporter>(PlatformBackupExporter.new)
     ..registerLazySingleton<RestoreSwapper>(FileRestoreSwapper.new)
     ..registerLazySingleton<RestoreJournalStore>(
@@ -74,6 +99,7 @@ void registerBackup(GetIt locator, {AppRuntime? runtime}) {
         packager: locator<BackupPackager>(),
         locations: locator<BackupLocations>(),
         history: locator<BackupHistoryRepository>(),
+        keys: locator<BackupKeyProvider>(),
         ids: locator<IdGenerator>(),
         clock: locator<Clock>(),
         appVersion: AppConstants.appVersion,
@@ -115,6 +141,8 @@ void registerBackup(GetIt locator, {AppRuntime? runtime}) {
         inspector: locator<DatabaseInspector>(),
         locations: locator<BackupLocations>(),
         createBackup: locator<CreateBackup>(),
+        keys: locator<BackupKeyProvider>(),
+        aligner: locator<DatabaseKeyAligner>(),
         swapper: locator<RestoreSwapper>(),
         journal: locator<RestoreJournalStore>(),
         runtime: locator<AppRuntime>(),

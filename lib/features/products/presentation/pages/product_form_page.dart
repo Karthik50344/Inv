@@ -1,5 +1,5 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inventrix/app/theme/app_spacing.dart';
@@ -86,7 +86,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
   Future<void> _pickImage(ProductFormCubit cubit) async {
     final result = await FilePicker.pickFiles(type: FileType.image);
-    final path = result?.files.single.path;
+    final path = result.single.path;
     if (path != null) {
       await cubit.attachImage(path);
     }

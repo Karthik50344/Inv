@@ -1,5 +1,5 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventrix/app/theme/app_radius.dart';
 import 'package:inventrix/app/theme/app_spacing.dart';
@@ -11,6 +11,7 @@ import 'package:inventrix/features/backup/domain/repositories/backup_exporter.da
 import 'package:inventrix/features/backup/domain/services/backup_reminder.dart';
 import 'package:inventrix/features/backup/presentation/bloc/backup_bloc.dart';
 import 'package:inventrix/features/backup/presentation/bloc/backup_event.dart';
+import 'package:inventrix/features/backup/presentation/widgets/backup_passphrase_dialogs.dart';
 import 'package:inventrix/features/backup/presentation/widgets/restore_confirmation_dialog.dart';
 import 'package:inventrix/shared/presentation/snackbar.dart';
 import 'package:inventrix/shared/presentation/view_status.dart';
@@ -27,11 +28,8 @@ class BackupPage extends StatelessWidget {
 
   Future<void> _pickFile(BuildContext context) async {
     final bloc = context.read<BackupBloc>();
-    final result = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['zip'],
-    );
-    final path = result?.files.single.path;
+    final result = await FilePicker.pickFiles();
+    final path = result.single.path;
     if (path != null) {
       bloc.add(BackupFileSelected(path));
     }
@@ -41,6 +39,7 @@ class BackupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
+        backupPassphraseListener(),
         BlocListener<BackupBloc, BackupState>(
           listenWhen: (a, b) =>
               (a.message != b.message && b.message != null) ||
@@ -208,7 +207,17 @@ class _Content extends StatelessWidget {
                 expand: true,
                 onPressed: state.busy
                     ? null
-                    : () => bloc.add(const BackupCreateRequested()),
+                    : () async {
+                        final passphrase = await showCreateBackupDialog(context);
+                        if (passphrase != null) {
+                          bloc.add(
+                            BackupCreateRequested(
+                              recoveryPassphrase:
+                                  passphrase.isEmpty ? null : passphrase,
+                            ),
+                          );
+                        }
+                      },
               ),
               AppSpacing.gap8,
               AppButton(

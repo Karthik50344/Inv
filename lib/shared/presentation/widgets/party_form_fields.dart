@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:inventrix/app/theme/app_dimensions.dart';
 import 'package:inventrix/shared/domain/services/party_validation.dart';
 

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Shadows. Deliberately few and faint: separation comes from borders and
 /// tonal surfaces first, shadows only lift things that float.

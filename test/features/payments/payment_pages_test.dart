@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inventrix/features/customers/domain/usecases/create_customer.dart';
 import 'package:inventrix/features/payments/domain/entities/party_type.dart';
